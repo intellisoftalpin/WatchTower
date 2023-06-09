@@ -33,7 +33,7 @@ Ask repository owner to add you to contributors list.
 ### Branches
 
 Branches **must be** created from [develop](https://github.com/intellisoftalpin/WatchTower/tree/develop) branch. 
-Direct pushes to **develop** and **master** are not allowed.
+Direct pushes to **develop** and **main** are not allowed.
 
 Name conventions for branches:
 
