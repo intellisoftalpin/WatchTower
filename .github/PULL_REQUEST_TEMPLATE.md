@@ -14,6 +14,9 @@ Summary:
 - All platforms (iOS, Android)
 - Android
 - iOS
+- Windows
+- Linux
+- macOS
 
 ### Kind of changes
 
