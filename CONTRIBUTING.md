@@ -16,7 +16,7 @@ You can help us with the following:
 
 To start you can check [open issues](https://github.com/intellisoftalpin/WatchTower/issues) and 
 choose a preferred work. You can also create your own
-[bug reports](https://github.com/intellisoftalpin/WatchTower/issues/new?assignees=&labels=bug&template=bug-report.md&title=) 
+[bug reports](https://github.com/intellisoftalpin/WatchTower/issues/new?assignees=&labels=bug&template=bug_report.md&title=) 
 or [feature requests](https://github.com/intellisoftalpin/WatchTower/issues/new?assignees=&labels=feature&template=feature_request.md&title=).
 
 Ask repository owner to add you to contributors list.
