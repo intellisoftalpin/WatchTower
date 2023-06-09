@@ -12,7 +12,7 @@ Work in progress...
 
 ## Tables of Contents
 
-* [Features](#how-to-generate-app-icons-for-linux-windows--web)
+* [How to generate app icons for Linux, Windows & Web](#how-to-generate-app-icons-for-linux-windows--web)
 * [Contributing](#contributing)
 * [Dependencies](#dependencies)
 
