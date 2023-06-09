@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_7" orientation="landscape" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ydg-fD-yQy"/>
+                        <viewControllerLayoutGuide type="bottom" id="xbc-2k-c8Z"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="926" height="428"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash_logo" translatesAutoresizingMaskIntoConstraints="NO" id="afl-iG-J1X">
+                                <rect key="frame" x="10" y="104" width="907" height="190"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ut2-Mf-vEf">
+                                <rect key="frame" x="10" y="329" width="907" height="39"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="39" id="Fx2-Sg-sHt"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="Ada Rocket">
+                                        <attributes>
+                                            <color key="NSColor" red="0.16862745098039217" green="0.16470588235294117" blue="0.15686274509803921" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" size="25" name="Montserrat-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.92941176470588238" green="0.95294117647058818" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="afl-iG-J1X" secondAttribute="trailing" constant="9" id="50p-r1-BO5"/>
+                            <constraint firstItem="xbc-2k-c8Z" firstAttribute="top" secondItem="Ut2-Mf-vEf" secondAttribute="bottom" constant="39" id="Hca-Lt-HBu"/>
+                            <constraint firstItem="Ut2-Mf-vEf" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="10" id="Wpb-vI-ubV"/>
+                            <constraint firstAttribute="trailing" secondItem="Ut2-Mf-vEf" secondAttribute="trailing" constant="9" id="cjb-jM-973"/>
+                            <constraint firstItem="afl-iG-J1X" firstAttribute="top" secondItem="Ydg-fD-yQy" secondAttribute="bottom" constant="104" id="eeC-1a-WQx"/>
+                            <constraint firstItem="afl-iG-J1X" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="10" id="hEV-Ml-Mjc"/>
+                            <constraint firstItem="Ut2-Mf-vEf" firstAttribute="top" secondItem="afl-iG-J1X" secondAttribute="bottom" constant="35" id="hwu-ao-GTc"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="76.811594202898561" y="251.11607142857142"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="splash_logo" width="421" height="624"/>
+    </resources>
+</document>
