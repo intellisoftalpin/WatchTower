@@ -1,4 +1,4 @@
-package com.bykovsoft.adarocket
+package com.intellisoftalpin.watchtower
 
 import io.flutter.embedding.android.FlutterActivity
 

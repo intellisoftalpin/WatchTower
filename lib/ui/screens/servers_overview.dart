@@ -1194,7 +1194,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                   (route) => false);
             },
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.27,
+              height: MediaQuery.of(context).size.height * 0.3,
               child: Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: MediaQuery.of(context).size.width * 0.02,
