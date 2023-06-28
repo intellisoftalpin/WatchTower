@@ -195,23 +195,23 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                         : Colors.black,
                   ),
                 )),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: SizedBox(
-                  width: 34,
-                  child: FloatingActionButton(
-                    backgroundColor: const Color(0xFF5690FF),
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
+            ///actions: [
+            ///  Padding(
+            ///    padding: const EdgeInsets.only(right: 20),
+            ///    child: SizedBox(
+            ///      width: 34,
+            ///      child: FloatingActionButton(
+            ///        backgroundColor: const Color(0xFF5690FF),
+            ///        child: const Icon(
+            ///          Icons.add,
+            ///          color: Colors.white,
+            ///          size: 24,
+            ///        ),
+            ///        onPressed: () {},
+            ///      ),
+            ///    ),
+            ///  ),
+            ///],
             backgroundColor: Theme.of(context).brightness == Brightness.dark
                 ? const Color(0xFF131629)
                 : kBackgroundColorLight,
@@ -488,7 +488,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '38.68k',
+                                    '39.51k',
                                     style: TextStyle(
                                         color: Colors.black.withOpacity(0.95),
                                         fontWeight: FontWeight.w500),
@@ -497,7 +497,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                                     height: 15,
                                   ),
                                   Text(
-                                    '18',
+                                    '29',
                                     style: TextStyle(
                                         color: Colors.black.withOpacity(0.95),
                                         fontWeight: FontWeight.w500),

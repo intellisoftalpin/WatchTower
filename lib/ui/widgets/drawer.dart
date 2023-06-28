@@ -83,22 +83,22 @@ Widget drawer(BuildContext context) {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 50),
-                          Row(
-                            children: [
-                              SvgPicture.asset('assets/add_node.svg',
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.grey.shade700),
-                              const SizedBox(width: 15),
-                              Text('Add node',
-                                  style: GoogleFonts.montserrat(
-                                    textStyle: const TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 16),
-                                  )),
-                            ],
-                          ),
+                          ///Row(
+                          ///  children: [
+                          ///    SvgPicture.asset('assets/add_node.svg',
+                          ///        color: Theme.of(context).brightness ==
+                          ///                Brightness.dark
+                          ///            ? Colors.white
+                          ///            : Colors.grey.shade700),
+                          ///    const SizedBox(width: 15),
+                          ///    Text('Add node',
+                          ///        style: GoogleFonts.montserrat(
+                          ///          textStyle: const TextStyle(
+                          ///              fontWeight: FontWeight.w400,
+                          ///              fontSize: 16),
+                          ///        )),
+                          ///  ],
+                          ///),
                           const SizedBox(height: 20),
                           GestureDetector(
                             onTap: () {
@@ -343,22 +343,22 @@ Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uu
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             nodesSideMenu(context),
-                            Row(
-                              children: [
-                                SvgPicture.asset('assets/add_node.svg',
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey.shade700),
-                                const SizedBox(width: 15),
-                                Text('Add node',
-                                    style: GoogleFonts.montserrat(
-                                      textStyle: const TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 16),
-                                    )),
-                              ],
-                            ),
+                            ///Row(
+                            ///  children: [
+                            ///    SvgPicture.asset('assets/add_node.svg',
+                            ///        color: Theme.of(context).brightness ==
+                            ///                Brightness.dark
+                            ///            ? Colors.white
+                            ///            : Colors.grey.shade700),
+                            ///    const SizedBox(width: 15),
+                            ///    Text('Add node',
+                            ///        style: GoogleFonts.montserrat(
+                            ///          textStyle: const TextStyle(
+                            ///              fontWeight: FontWeight.w400,
+                            ///              fontSize: 16),
+                            ///        )),
+                            ///  ],
+                            ///),
                             const SizedBox(height: 20),
                             GestureDetector(
                               onTap: () {

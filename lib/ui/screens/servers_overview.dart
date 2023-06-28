@@ -414,20 +414,20 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                           fontWeight: FontWeight.w500)),
                 ),
                 const SizedBox(height: 15),
-                Text('Pool: ',
+                Text('Pool ID: ',
                     style: GoogleFonts.montserrat(
                       textStyle:
                           const TextStyle(color: Colors.grey, fontSize: 16),
                     )),
                 const SizedBox(height: 5),
-                Text('23456789765445',
+                Text('59b59f232e80f18ce64e0f74560effbf49a3e95ddf6d079681db8b23',
                     style: GoogleFonts.montserrat(
                         textStyle: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white
                                     : Colors.black,
-                            fontSize: 20,
+                            fontSize: 16,
                             fontWeight: FontWeight.w500))),
                 const SizedBox(height: 15),
                 Text('Website: ',
@@ -436,7 +436,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                           const TextStyle(color: Colors.grey, fontSize: 16),
                     )),
                 const SizedBox(height: 5),
-                Text('blackrocket.space',
+                Text('https://blackrocket.space',
                     style: GoogleFonts.montserrat(
                         textStyle: TextStyle(
                             color:
@@ -475,7 +475,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '38.68k',
+                                '39.51k',
                                 style: TextStyle(
                                     color: Colors.black.withOpacity(0.95),
                                     fontWeight: FontWeight.w500),
@@ -484,7 +484,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                 height: 15,
                               ),
                               Text(
-                                '18',
+                                '29',
                                 style: TextStyle(
                                     color: Colors.black.withOpacity(0.95),
                                     fontWeight: FontWeight.w500),
