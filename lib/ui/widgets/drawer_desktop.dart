@@ -123,35 +123,35 @@ Widget drawerNodes(BuildContext context) {
                         ),
                       ],
                     ),
-                    InkWell(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.01),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: SvgPicture.asset('assets/add_node.svg',
-                                    color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey.shade700),
-                              ),
-                            ),
-                            const SizedBox(width: 15),
-                            Text(
-                              'Add node',
-                              style: GoogleFonts.montserrat(
-                                  textStyle: const TextStyle(
-                                      fontWeight: FontWeight.w400, fontSize: 16)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      onTap: () {},
-                    ),
+                    ///InkWell(
+                    ///  child: Padding(
+                    ///    padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.01),
+                    ///    child: Row(
+                    ///      mainAxisAlignment: MainAxisAlignment.start,
+                    ///      children: [
+                    ///        SizedBox(
+                    ///          width: 20,
+                    ///          child: Align(
+                    ///            alignment: Alignment.centerLeft,
+                    ///            child: SvgPicture.asset('assets/add_node.svg',
+                    ///                color: Theme.of(context).brightness ==
+                    ///                    Brightness.dark
+                    ///                    ? Colors.white
+                    ///                    : Colors.grey.shade700),
+                    ///          ),
+                    ///        ),
+                    ///        const SizedBox(width: 15),
+                    ///        Text(
+                    ///          'Add node',
+                    ///          style: GoogleFonts.montserrat(
+                    ///              textStyle: const TextStyle(
+                    ///                  fontWeight: FontWeight.w400, fontSize: 16)),
+                    ///        ),
+                    ///      ],
+                    ///    ),
+                    ///  ),
+                    ///  onTap: () {},
+                    ///),
                     InkWell(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.01),
