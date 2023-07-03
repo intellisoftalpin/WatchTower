@@ -58,20 +58,25 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        signingConfig signingConfigs.debug
         ndk {
             // Filter for architectures supported by Flutter.
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
         }
     }
 
-    signingConfigs {
+      signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
+            Properties keyProps = new Properties()
+            keyProps.load(new FileInputStream(file('../key.properties')))
+            if (keyProps.size() == 4) {
+                storeFile file(keyProps['store_file'])
+                storePassword keyProps['store_password']
+                keyPassword keyProps['key_password']
+                keyAlias keyProps['key_alias']
+            }
         }
-    }
+    }  
     buildTypes {
         release {
             signingConfig signingConfigs.release
