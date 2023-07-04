@@ -35,7 +35,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
 //    compileSdkVersion flutter.compileSdkVersion
-    compileSdkVersion 32
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -54,7 +54,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
        applicationId "com.intellisoftalpin.watchtower"
-        minSdkVersion flutterMinSdkVersion.toInteger()
+        minSdkVersion 28
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -66,10 +66,14 @@ android {
 
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
+            Properties keyProps = new Properties()
+            keyProps.load(new FileInputStream(file('../key.properties')))
+            if (keyProps.size() == 4) {
+                storeFile file(keyProps['store_file'])
+                storePassword keyProps['store_password']
+                keyPassword keyProps['key_password']
+                keyAlias keyProps['key_alias']
+            }
         }
     }
     buildTypes {
