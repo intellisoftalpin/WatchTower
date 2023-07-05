@@ -33,6 +33,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
   AppLifecycle isServerDetailsScreenBackground = AppLifecycle.active;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   List<bool> blocksExpanded = List.filled(sortedDataBlocks.length, false);
+  double scrollPosition = 0.0;
 
   @override
   initState() {
@@ -124,6 +125,48 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
   }
 
   Widget mobileMarkup(BuildContext context) {
+    AppBar appBar = AppBar(
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Theme.of(context).brightness == Brightness.dark
+            ? kBackgroundColorDark
+            : kBackgroundColorLight,
+      ),
+      leading: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Builder(builder: (context) {
+          return Container(
+            child: InkWell(
+              onTap: () {
+                Scaffold.of(context).openDrawer();
+              },
+              child: const Icon(
+                Icons.menu,
+                color: Color(0xFF5690FF),
+              ),
+            ),
+            decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF162143)
+                    : const Color(0xFFE5ECFE),
+                borderRadius: BorderRadius.circular(10.0)),
+          );
+        }),
+      ),
+      title: Text('Server Details',
+          style: GoogleFonts.montserrat(
+            textStyle: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+            ),
+          )),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF131629)
+          : kBackgroundColorLight,
+      elevation: 0,
+    );
     return WillPopScope(
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
@@ -159,54 +202,14 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
           backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? const Color(0xFF131629)
               : kBackgroundColorLight,
-          drawer: DrawerMenu(clickedNode: widget.clickedNode, uuid: widget.uuid),
-          appBar: AppBar(
-            systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarColor: Theme.of(context).brightness == Brightness.dark
-                  ? kBackgroundColorDark
-                  : kBackgroundColorLight,
-            ),
-            leading: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Builder(builder: (context) {
-                return Container(
-                  child: InkWell(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: const Icon(
-                      Icons.menu,
-                      color: Color(0xFF5690FF),
-                    ),
-                  ),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? const Color(0xFF162143)
-                          : const Color(0xFFE5ECFE),
-                      borderRadius: BorderRadius.circular(10.0)),
-                );
-              }),
-            ),
-            title: Text('Server Details',
-                style: GoogleFonts.montserrat(
-                  textStyle: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                  ),
-                )),
-            backgroundColor: Theme.of(context).brightness == Brightness.dark
-                ? const Color(0xFF131629)
-                : kBackgroundColorLight,
-            elevation: 0,
-          ),
+          drawer:
+              DrawerMenu(clickedNode: widget.clickedNode, uuid: widget.uuid),
+          appBar: appBar,
           body: FutureBuilder(
             future: serversOverview,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
-                return stack();
+                return stack(appBar);
               } else {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -217,111 +220,116 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
     );
   }
 
-  Widget stack() {
+  Widget stack(AppBar appBar) {
     return Stack(
       alignment: Alignment.center,
       children: [
         SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.05),
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Text(lastUpdateTime),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                            onTap: () {
-                              mode == UpdateMode.manual
-                                  ? mode = UpdateMode.auto
-                                  : mode = UpdateMode.manual;
-                              if (mode == UpdateMode.auto) {
-                                box.write('mode', 'auto');
-                                enableRefreshIndicator = false;
-                                manualUpdateTimer?.cancel();
-                                next = DateTime.now().add(updateSettingsTime);
-                                autoUpdateTimer = Timer.periodic(
-                                    const Duration(milliseconds: 30),
-                                    (Timer t) => {
-                                          timeBeforeAutoUpdate(),
-                                        });
-                              } else {
-                                box.write('mode', 'manual');
-                                showLastUpdateTime = '0s';
-                                autoUpdateTimer?.cancel();
-                                enableRefreshIndicator = true;
-                                manualUpdateTimer = Timer.periodic(
-                                    const Duration(seconds: 1), (Timer t) {
-                                  timeLastAutoUpdate(manualUpdateTimer?.tick);
-                                  setState(() {});
-                                });
-                              }
-                              setState(() {});
-                            },
-                            child: mode == UpdateMode.auto
-                                ? Container(
-                                    width: 80,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: kBlueColorUpdateMode,
-                                            width: 3),
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.white),
-                                    child: Padding(
+            child: Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.05),
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(lastUpdateTime),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                          onTap: () {
+                            mode == UpdateMode.manual
+                                ? mode = UpdateMode.auto
+                                : mode = UpdateMode.manual;
+                            if (mode == UpdateMode.auto) {
+                              box.write('mode', 'auto');
+                              enableRefreshIndicator = false;
+                              manualUpdateTimer?.cancel();
+                              next = DateTime.now().add(updateSettingsTime);
+                              autoUpdateTimer = Timer.periodic(
+                                  const Duration(milliseconds: 30),
+                                  (Timer t) => {
+                                        timeBeforeAutoUpdate(),
+                                      });
+                            } else {
+                              box.write('mode', 'manual');
+                              showLastUpdateTime = '0s';
+                              autoUpdateTimer?.cancel();
+                              enableRefreshIndicator = true;
+                              manualUpdateTimer = Timer.periodic(
+                                  const Duration(seconds: 1), (Timer t) {
+                                timeLastAutoUpdate(manualUpdateTimer?.tick);
+                                setState(() {});
+                              });
+                            }
+                            setState(() {});
+                          },
+                          child: mode == UpdateMode.auto
+                              ? Container(
+                                  width: 80,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: kBlueColorUpdateMode,
+                                          width: 3),
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4, vertical: 4),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          showNextUpdateTime,
+                                          style: TextStyle(
+                                              color: kLightBlue,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16),
+                                        ),
+                                        SvgPicture.asset(
+                                            'assets/refresh_btn_pause.svg')
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  width: 50,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 4, vertical: 4),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            showNextUpdateTime,
-                                            style: TextStyle(
-                                                color: kLightBlue,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 16),
-                                          ),
-                                          SvgPicture.asset(
-                                              'assets/refresh_btn_pause.svg')
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    width: 50,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 4, vertical: 4),
-                                        child: SvgPicture.asset(
-                                            'assets/refresh_btn_load.svg')),
-                                  )),
-                      ],
-                    ),
-                  ],
-                ),
-                serversList1.isNotEmpty ? mobileContent() : Container(),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-              ],
-            ),
+                                      child: SvgPicture.asset(
+                                          'assets/refresh_btn_load.svg')),
+                                )),
+                    ],
+                  ),
+                ],
+              ),
+              serversList1.isNotEmpty
+                  ? SizedBox(
+                      height: MediaQuery.of(context).size.height -
+                          appBar.preferredSize.height -
+                          MediaQuery.of(context).viewPadding.top,
+                      child: mobileContent())
+                  : Container(),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+            ],
           ),
-        ),
+        )),
         Positioned(
           bottom: 20,
           child: ElevatedButton(
@@ -451,9 +459,14 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
     return Column(children: blocksList);
   }
 
-  Column mobileContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  ListView mobileContent() {
+    ScrollController scrollController =
+        ScrollController(initialScrollOffset: scrollPosition);
+    scrollController.addListener(() {
+      scrollPosition = scrollController.offset;
+    });
+    return ListView(
+      controller: scrollController,
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.02),
         Row(
@@ -463,7 +476,8 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                 style: GoogleFonts.montserrat(
                     textStyle: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.w500))),
-            getStatusStyle(context, '${serversList1.first.serverStatus}', textSize: 16),
+            getStatusStyle(context, '${serversList1.first.serverStatus}',
+                textSize: 16),
           ],
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.02),
@@ -514,15 +528,10 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
-    windowHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    windowWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    if(kDebugMode){
+    windowHeight = MediaQuery.of(context).size.height;
+    windowWidth = MediaQuery.of(context).size.width;
+    if (kDebugMode) {
+      print('scrollPosition: $scrollPosition');
       print('Window height: $windowHeight');
       print('Window width: $windowWidth');
     }
@@ -530,7 +539,18 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       if (Platform.isAndroid || Platform.isIOS) {
         return mobileMarkup(context);
       } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-        return desktopMarkup(context);
+        return FutureBuilder(
+          future: serversOverview,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              return serversList1.isNotEmpty
+                  ? desktopMarkup(context)
+                  : Container();
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
+        );
       } else {
         return const ErrorMessage();
       }
@@ -548,61 +568,55 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
   }
 
   Scaffold desktopMarkup(BuildContext context) {
-     windowWidth = MediaQuery.of(context).size.width;
+    windowWidth = MediaQuery.of(context).size.width;
+    ScrollController scrollController =
+    ScrollController(initialScrollOffset: scrollPosition);
+    scrollController.addListener(() {
+      scrollPosition = scrollController.offset;
+    });
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).brightness == Brightness.dark
           ? kBackgroundColorDark
           : kBackgroundColorLight,
       drawer: const DrawerDesktopMenu(),
-      body: Stack(
-        children: [
-          Scrollbar(
-            child: ListView(
-              children: [
-                desktopHeader(context, DesktopPage.serverDetails, scaffoldKey),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                FutureBuilder(
-                  future: serversOverview,
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.hasData) {
-                      return serversList1.isNotEmpty
-                          ? desktopFutureBuilder()
-                          : Container();
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-          // Positioned(
-          //   bottom: MediaQuery.of(context).size.height * 0.15,
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.start,
-          //     children: [
-          //       Padding(
-          //         padding: EdgeInsets.symmetric(
-          //             horizontal: MediaQuery.of(context).size.width * 0.02),
-          //         child: SizedBox(
-          //           child: backScreenButton(context, text: 'Back to servers', screen: (){
-          //             Navigator.pushAndRemoveUntil(
-          //               context,
-          //               MaterialPageRoute(
-          //                   builder: (context) => ServersOverviewScreen(
-          //                     clickedNode: widget.clickedNode,
-          //                   )),
-          //                     (route) => false);
-          //           }),
-          //           height: 45,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-        ],
+      body: Scrollbar(
+        controller: scrollController,
+        child: ListView(
+          controller: scrollController,
+          children: [
+            desktopHeader(context, DesktopPage.serverDetails, scaffoldKey),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            serversList1.isNotEmpty
+                ? desktopFutureBuilder()
+                : Container(),
+          ],
+        ),
       ),
+      // Positioned(
+      //   bottom: MediaQuery.of(context).size.height * 0.15,
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.start,
+      //     children: [
+      //       Padding(
+      //         padding: EdgeInsets.symmetric(
+      //             horizontal: MediaQuery.of(context).size.width * 0.02),
+      //         child: SizedBox(
+      //           child: backScreenButton(context, text: 'Back to servers', screen: (){
+      //             Navigator.pushAndRemoveUntil(
+      //               context,
+      //               MaterialPageRoute(
+      //                   builder: (context) => ServersOverviewScreen(
+      //                     clickedNode: widget.clickedNode,
+      //                   )),
+      //                     (route) => false);
+      //           }),
+      //           height: 45,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 
@@ -619,44 +633,49 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                 child: Container(
                   height: 50,
                   child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical:
-                        MediaQuery.of(context).size.height * 0.005)
-                        .copyWith(left: 14, right: 14),
-                    child: windowWidth > 1300 ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text('${serversList1.first.name}',
-                            style: GoogleFonts.montserrat(
-                                textStyle: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16))),
-                        const Spacer(),
-                        getStatusStyle(context, '${serversList1.first.serverStatus}',
-                            textSize: 16),
-                      ],
-                    ):
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('${serversList1.first.name}',
-                          style: GoogleFonts.montserrat(
-                              textStyle: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16))),
-                      getStatusStyle(context, '${serversList1.first.serverStatus}',
-                          textSize: 16),
-                    ],)
-                  ),
+                      padding: EdgeInsets.symmetric(
+                              vertical:
+                                  MediaQuery.of(context).size.height * 0.005)
+                          .copyWith(left: 14, right: 14),
+                      child: windowWidth > 1300
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('${serversList1.first.name}',
+                                    style: GoogleFonts.montserrat(
+                                        textStyle: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16))),
+                                const Spacer(),
+                                getStatusStyle(context,
+                                    '${serversList1.first.serverStatus}',
+                                    textSize: 16),
+                              ],
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('${serversList1.first.name}',
+                                    style: GoogleFonts.montserrat(
+                                        textStyle: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16))),
+                                getStatusStyle(context,
+                                    '${serversList1.first.serverStatus}',
+                                    textSize: 16),
+                              ],
+                            )),
                   decoration: BoxDecoration(
                       border:
                           Border.all(color: Colors.grey.shade300, width: 1.5),
@@ -670,8 +689,8 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                   height: 50,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                        vertical:
-                        MediaQuery.of(context).size.height * 0.005)
+                            vertical:
+                                MediaQuery.of(context).size.height * 0.005)
                         .copyWith(left: 14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -708,8 +727,8 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                   height: 50,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                        vertical:
-                        MediaQuery.of(context).size.height * 0.005)
+                            vertical:
+                                MediaQuery.of(context).size.height * 0.005)
                         .copyWith(left: 14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -746,8 +765,8 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                   height: 50,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                        vertical:
-                        MediaQuery.of(context).size.height * 0.005)
+                            vertical:
+                                MediaQuery.of(context).size.height * 0.005)
                         .copyWith(left: 14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -984,11 +1003,11 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
           ),
         ),
         Column(
-        children: [
-           SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-           sortedDataDesktop()
-            ],
-          ),
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            sortedDataDesktop()
+          ],
+        ),
         footer(context),
       ],
     );
@@ -1001,7 +1020,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
     Column parameters(int i) {
       List<Widget> list = [];
       int amountOfParameters = sortedDataBlocks[i].data.length;
-      if(blocksExpanded[i] == false){
+      if (blocksExpanded[i] == false) {
         amountOfParameters > 5 ? amountOfParameters = 5 : amountOfParameters;
       }
       for (int m = 0; m < amountOfParameters; m++) {
@@ -1015,7 +1034,8 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
           status = entry.value;
         });
         list.add(Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(
+              left: 8.0, right: 8.0, top: 3.0, bottom: 3.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -1038,157 +1058,165 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       Column dataBlock = Column(
         children: [
           Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.03),
-              child: InkWell(
-                child: Container(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.02,
-                        vertical: MediaQuery.of(context).size.height * 0.02),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    MediaQuery.of(context).size.width * 0.02,
-                                vertical:
-                                    MediaQuery.of(context).size.height * 0.02),
-                            child: Row(
-                              children: [
-                                Text(
-                                  '${sortedDataBlocks[i].blockName}',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                const Spacer(),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    getStatusStyle(context, sortedDataBlocks[i].status),
-                                    const SizedBox(width: 5),
-                                    sortedDataBlocks[i].errors != null
-                                        ? IconButton(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) => AlertDialog(
-                                                  content: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      Text(
-                                                          'Error Code: ${sortedDataBlocks[i].errors?.errorCode}'),
-                                                      Text(
-                                                          'Error Message: ${sortedDataBlocks[i].errors?.errorMessage}'),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            icon: Icon(
-                                              Icons.info_outline,
-                                              color: kTimeUpdateBarNumberLight,
-                                            ),
-                                            //TODO: This button uses the minimum splash radius, because it is impossible to make it bigger if padding is zero
-                                            splashRadius: 20.0,
-                                            splashColor: Colors.grey.shade200,
-                                            padding: const EdgeInsets.all(0),
-                                            constraints: const BoxConstraints(),
-                                          )
-                                        : const SizedBox.shrink()
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.transparent
-                                        : Colors.grey.shade400,
-                                offset: const Offset(
-                                  0.0,
-                                  4.0,
-                                ),
-                                blurRadius: 2.0,
-                                spreadRadius: 0.0,
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.03),
+            child: InkWell(
+              child: Container(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.of(context).size.width * 0.02,
+                      vertical: MediaQuery.of(context).size.height * 0.02),
+                  child: Column(
+                    children: [
+                      Container(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.02,
+                              vertical:
+                                  MediaQuery.of(context).size.height * 0.02),
+                          child: Row(
+                            children: [
+                              Text(
+                                '${sortedDataBlocks[i].blockName}',
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500),
                               ),
-                              BoxShadow(
-                                color:
-                                    Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.transparent
-                                        : Colors.grey.shade300,
-                                offset: const Offset(
-                                  0.0,
-                                  -0.0,
-                                ),
-                                blurRadius: 2.0,
-                                spreadRadius: 0.0,
+                              const Spacer(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  getStatusStyle(
+                                      context, sortedDataBlocks[i].status),
+                                  const SizedBox(width: 5),
+                                  sortedDataBlocks[i].errors != null
+                                      ? IconButton(
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                content: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                        'Error Code: ${sortedDataBlocks[i].errors?.errorCode}'),
+                                                    Text(
+                                                        'Error Message: ${sortedDataBlocks[i].errors?.errorMessage}'),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          icon: Icon(
+                                            Icons.info_outline,
+                                            color: kTimeUpdateBarNumberLight,
+                                          ),
+                                          //TODO: This button uses the minimum splash radius, because it is impossible to make it bigger if padding is zero
+                                          splashRadius: 20.0,
+                                          splashColor: Colors.grey.shade200,
+                                          padding: const EdgeInsets.all(0),
+                                          constraints: const BoxConstraints(),
+                                        )
+                                      : const SizedBox.shrink()
+                                ],
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                            child: parameters(i),
-                          height: blocksExpanded[i] == true ? sortedDataBlocks[i].data.length * 33.0 : 5 * 33.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.transparent
+                                  : Colors.grey.shade400,
+                              offset: const Offset(
+                                0.0,
+                                4.0,
+                              ),
+                              blurRadius: 2.0,
+                              spreadRadius: 0.0,
+                            ),
+                            BoxShadow(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.transparent
+                                  : Colors.grey.shade300,
+                              offset: const Offset(
+                                0.0,
+                                -0.0,
+                              ),
+                              blurRadius: 2.0,
+                              spreadRadius: 0.0,
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          height: 20,
-                          child: sortedDataBlocks[i].data.length > 5 ? RotatedBox(
-                            quarterTurns: blocksExpanded[i] == true ? 1 : 3,
-                            child: SvgPicture.asset(
-                                'assets/ic_back_btn.svg',
-                                color: Theme
-                                    .of(context)
-                                    .brightness == Brightness.dark
-                                    ? Colors.white
-                                    :  Colors.black54),
-                          ): const SizedBox.shrink(),
-                        )
-
-                      ],
-                    ),
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? kDesktopCardColor
-                        : const Color(0xFFEFEFF3),
-                    borderRadius: BorderRadius.circular(10),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        child: parameters(i),
+                        height: blocksExpanded[i] == true
+                            ? sortedDataBlocks[i].data.length * 33.0
+                            : 5 * 33.0,
+                      ),
+                      SizedBox(
+                        height: 20,
+                        child: sortedDataBlocks[i].data.length > 5
+                            ? RotatedBox(
+                                quarterTurns: blocksExpanded[i] == true ? 1 : 3,
+                                child: SvgPicture.asset(
+                                    'assets/ic_back_btn.svg',
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black54),
+                              )
+                            : const SizedBox.shrink(),
+                      )
+                    ],
                   ),
                 ),
-                onTap: sortedDataBlocks[i].data.length > 5 ? (){
-                  blocksExpanded[i] = !blocksExpanded[i];
-                  setState(() {});
-                }: null,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? kDesktopCardColor
+                      : const Color(0xFFEFEFF3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
+              onTap: sortedDataBlocks[i].data.length > 5
+                  ? () {
+                      blocksExpanded[i] = !blocksExpanded[i];
+                      setState(() {});
+                    }
+                  : null,
             ),
+          ),
           SizedBox(height: MediaQuery.of(context).size.height * 0.03),
         ],
       );
 
-      i % 2 == 0 ? blocksListLeftColumn.add(dataBlock): blocksListRightColumn.add(dataBlock);
+      i % 2 == 0
+          ? blocksListLeftColumn.add(dataBlock)
+          : blocksListRightColumn.add(dataBlock);
     }
     return Row(
-     crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Expanded(
-         child:  Column(children: blocksListLeftColumn),
-       ),
-         Expanded(
-              child:  Column(children: blocksListRightColumn),
-     ),
-   ],
- );
+          child: Column(children: blocksListLeftColumn),
+        ),
+        Expanded(
+          child: Column(children: blocksListRightColumn),
+        ),
+      ],
+    );
   }
 
   @override

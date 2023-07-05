@@ -24,6 +24,9 @@ bool FlutterWindow::OnCreate() {
   if (!flutter_controller_->engine() || !flutter_controller_->view()) {
     return false;
   }
+  flutter_controller_->engine()->SetNextFrameCallback([&]() {
+
+ });
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
   return true;

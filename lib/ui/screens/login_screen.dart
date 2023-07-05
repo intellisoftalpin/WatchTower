@@ -138,7 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     try {
-      if (Platform.isAndroid || Platform.isIOS) {
+      if (Platform.isAndroid) {
+        return mobileMarkup(context);
+      } else if (Platform.isIOS) {
         return mobileMarkup(context);
       } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
         return desktopMarkup(context);
