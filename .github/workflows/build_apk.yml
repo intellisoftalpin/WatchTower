@@ -1,6 +1,6 @@
 name: build_apk
 
-on: [ workflow_dispatch, push ]
+on: workflow_dispatch
 
 env:
   FILE_APP_VERSION: ./VERSION
