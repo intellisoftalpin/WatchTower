@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 class ThemeManager with ChangeNotifier{
 
@@ -9,7 +8,7 @@ class ThemeManager with ChangeNotifier{
 
  void switchTheme(int value){
    if(value == 1){
-     var systemTheme =  SchedulerBinding.instance.window.platformBrightness;
+     var systemTheme = WidgetsBinding.instance.platformDispatcher.platformBrightness;
      if( systemTheme == Brightness.dark ){
        _theme = ThemeMode.dark;
      }else{

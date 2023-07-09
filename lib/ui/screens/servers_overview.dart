@@ -50,9 +50,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
             const Duration(milliseconds: 30),
-            (Timer t) => {
-                  timeBeforeAutoUpdate(),
-                });
+            (Timer t) => timeBeforeAutoUpdate(),);
       }
     }
   }
@@ -90,9 +88,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
             const Duration(milliseconds: 30),
-            (Timer t) => {
-                  timeBeforeAutoUpdate(),
-                });
+            (Timer t) => timeBeforeAutoUpdate(),);
       }
 
       if (mode == UpdateMode.manual) {
@@ -323,9 +319,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                 next = DateTime.now().add(updateSettingsTime);
                                 autoUpdateTimer = Timer.periodic(
                                     const Duration(milliseconds: 30),
-                                    (Timer t) => {
-                                          timeBeforeAutoUpdate(),
-                                        });
+                                    (Timer t) => timeBeforeAutoUpdate(),);
                               } else {
                                 box.write('mode', 'manual');
                                 showLastUpdateTime = '0s';
@@ -994,13 +988,13 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                               end: Alignment.topCenter),
                                           borderRadius:
                                               BorderRadius.circular(10)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(
                                         horizontal: 4, vertical: 9),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
-                                      children: const [
+                                      children: [
                                         SizedBox(
                                           width: 10,
                                         ),
@@ -1033,9 +1027,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                         DateTime.now().add(updateSettingsTime);
                                     autoUpdateTimer = Timer.periodic(
                                         const Duration(milliseconds: 30),
-                                        (Timer t) => {
-                                              timeBeforeAutoUpdate(),
-                                            });
+                                        (Timer t) => timeBeforeAutoUpdate(),);
                                   } else {
                                     box.write('mode', 'manual');
                                     showLastUpdateTime = '0s';
@@ -1340,10 +1332,10 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                 ],
               ),
               SizedBox(width: MediaQuery.of(context).size.width * 0.005),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     '38.68k',
                     style: TextStyle(fontWeight: FontWeight.w500),
