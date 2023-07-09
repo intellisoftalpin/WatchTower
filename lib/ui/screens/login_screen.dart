@@ -225,10 +225,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 20.0),
+                                      const Padding(
+                                        padding: EdgeInsets.only(left: 20.0),
                                         child: Row(
-                                          children: const [
+                                          children: [
                                             Text(
                                               'Controller server',
                                               style: TextStyle(color: Colors.black),
@@ -271,10 +271,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 20.0),
+                                      const Padding(
+                                        padding: EdgeInsets.only(left: 20.0),
                                         child: Row(
-                                          children: const [
+                                          children: [
                                             Text('User',
                                                 style:
                                                     TextStyle(color: Colors.black)),
@@ -316,10 +316,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 20.0),
+                                      const Padding(
+                                        padding: EdgeInsets.only(left: 20.0),
                                         child: Row(
-                                          children: const [
+                                          children: [
                                             Text(
                                               'Password',
                                               style: TextStyle(color: Colors.black),
@@ -557,10 +557,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 20.0),
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('Controller server'),
                                   Text(
                                     '*',
@@ -599,10 +599,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 20.0),
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('User'),
                                   Text(
                                     '*',
@@ -638,10 +638,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 20.0),
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('Password'),
                                   Text(
                                     '*',

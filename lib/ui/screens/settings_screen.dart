@@ -20,7 +20,9 @@ enum TimeBarValue { tenSeconds, thirtySeconds, sixtySeconds }
 class SettingsScreen extends StatefulWidget {
   final NodeGroupModel? clickedNode;
   final String? uuid;
-  const SettingsScreen({Key? key, this.clickedNode, this.uuid}) : super(key: key);
+
+  const SettingsScreen({Key? key, this.clickedNode, this.uuid})
+      : super(key: key);
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -31,7 +33,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int popUpMenuValue = 1;
   final selectThemeKey = GlobalKey();
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  final SharedPreferencesRepository _preferences = SharedPreferencesRepository();
+  final SharedPreferencesRepository _preferences =
+      SharedPreferencesRepository();
 
   @override
   void initState() {
@@ -55,12 +58,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     //   popUpMenuValue = 1;
     // }
 
-
     if (themeMode.contains('system')) {
       popUpMenuValue = 1;
-    } else if (themeMode .contains('light')) {
+    } else if (themeMode.contains('light')) {
       popUpMenuValue = 2;
-    } else if (themeMode .contains('dark')) {
+    } else if (themeMode.contains('dark')) {
       popUpMenuValue = 3;
     } else {
       popUpMenuValue = 1;
@@ -92,25 +94,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Widget mobileMarkup(BuildContext context, NodeGroupModel? clickedNode, String? uuid) {
+  Widget mobileMarkup(
+      BuildContext context, NodeGroupModel? clickedNode, String? uuid) {
     return WillPopScope(
       onWillPop: () async {
-       Navigator.pushAndRemoveUntil(
-            context,
+        Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (context) {
-              return previousScreenMobile == ScreensMobile.start ? const StartScreen() :
-              previousScreenMobile == ScreensMobile.nodesOverview ? const NodeOverviewScreen() :
-              previousScreenMobile == ScreensMobile.serversOverview ? ServersOverviewScreen(clickedNode: clickedNode!) :
-              ServerDetailsScreen(clickedNode: clickedNode!, uuid: uuid!);
-            }), (route) => false);
+          return previousScreenMobile == ScreensMobile.start
+              ? const StartScreen()
+              : previousScreenMobile == ScreensMobile.nodesOverview
+                  ? const NodeOverviewScreen()
+                  : previousScreenMobile == ScreensMobile.serversOverview
+                      ? ServersOverviewScreen(clickedNode: clickedNode!)
+                      : ServerDetailsScreen(
+                          clickedNode: clickedNode!, uuid: uuid!);
+        }), (route) => false);
         return false;
       },
       child: Scaffold(
         appBar: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: Theme
-                .of(context)
-                .brightness == Brightness.dark
+            statusBarColor: Theme.of(context).brightness == Brightness.dark
                 ? kBackgroundColorDark
                 : kBackgroundColorLight,
           ),
@@ -122,9 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               textStyle: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
-                color: Theme
-                    .of(context)
-                    .brightness == Brightness.dark
+                color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,
               ),
@@ -132,20 +134,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           leading: GestureDetector(
             onTap: () {
-              Navigator.pushAndRemoveUntil(
-                  context,
+              Navigator.pushAndRemoveUntil(context,
                   MaterialPageRoute(builder: (context) {
-                    return previousScreenMobile == ScreensMobile.start ? const StartScreen() :
-                    previousScreenMobile == ScreensMobile.nodesOverview ? const NodeOverviewScreen() :
-                    previousScreenMobile == ScreensMobile.serversOverview ? ServersOverviewScreen(clickedNode: clickedNode!) :
-                    ServerDetailsScreen(clickedNode: clickedNode!, uuid: uuid!);
-                  }), (route) => false);
+                return previousScreenMobile == ScreensMobile.start
+                    ? const StartScreen()
+                    : previousScreenMobile == ScreensMobile.nodesOverview
+                        ? const NodeOverviewScreen()
+                        : previousScreenMobile == ScreensMobile.serversOverview
+                            ? ServersOverviewScreen(clickedNode: clickedNode!)
+                            : ServerDetailsScreen(
+                                clickedNode: clickedNode!, uuid: uuid!);
+              }), (route) => false);
             },
-            child: Platform.isAndroid ? const Icon(Icons.arrow_back_sharp) : const Icon(Icons.arrow_back_ios),
+            child: Platform.isAndroid
+                ? const Icon(Icons.arrow_back_sharp)
+                : const Icon(Icons.arrow_back_ios),
           ),
-          backgroundColor: Theme
-              .of(context)
-              .brightness == Brightness.dark
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? kBackgroundColorDark
               : kBackgroundColorLight,
           elevation: 0,
@@ -158,16 +163,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery
-                          .of(context)
-                          .size
-                          .width * 0.08),
+                      horizontal: MediaQuery.of(context).size.width * 0.08),
                   child: Row(
                     children: [
                       Text(
-                        'Theme Mode (${popUpMenuValue == 1
-                            ? 'system'
-                            : popUpMenuValue == 2 ? 'light' : 'dark'})',
+                        'Theme Mode (${popUpMenuValue == 1 ? 'system' : popUpMenuValue == 2 ? 'light' : 'dark'})',
                         style: GoogleFonts.montserrat(
                           textStyle: const TextStyle(
                             fontSize: 18,
@@ -183,16 +183,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             _showThemePopupMenu(selectThemeKey);
                             setState(() {});
                           },
-                          icon: Icon(
-                              Icons.chevron_left,
+                          icon: Icon(Icons.chevron_left,
                               size: 34,
-                              color: Theme
-                                  .of(context)
-                                  .brightness == Brightness.dark
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? Colors.white
-                                  : kTimeUpdateBarNumberLight
-                          )
-                      ),
+                                  : kTimeUpdateBarNumberLight)),
                     ],
                   ),
                 ),
@@ -200,26 +196,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.05),
+                  horizontal: MediaQuery.of(context).size.width * 0.05),
               child: Container(
                   height: 2,
-                  color: Theme
-                      .of(context)
-                      .brightness == Brightness.dark
+                  color: Theme.of(context).brightness == Brightness.dark
                       ? kDarkDividerColor
                       : Colors.grey.shade100),
             ),
-
             const SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.08),
+                  horizontal: MediaQuery.of(context).size.width * 0.08),
               child: Text(
                 'Data updates (sec)',
                 style: GoogleFonts.montserrat(
@@ -233,9 +220,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             clickableStatusBar(0.08, 0.1, 0.25),
           ],
         ),
-        backgroundColor: Theme
-            .of(context)
-            .brightness == Brightness.dark
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? kBackgroundColorDark
             : kBackgroundColorLight,
       ),
@@ -245,35 +230,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Padding clickableStatusBar(double paddingValue, double progressNumberWidth1,
       double progressNumberWidth2) {
     Color colorTenSec = kBlueColorUpdateMode;
-    Color colorThirtySec = Theme
-        .of(context)
-        .brightness == Brightness.dark
+    Color colorThirtySec = Theme.of(context).brightness == Brightness.dark
         ? kTimeUpdateBarDark
         : kTimeUpdateBarLight;
-    Color colorSixtySec = Theme
-        .of(context)
-        .brightness == Brightness.dark
+    Color colorSixtySec = Theme.of(context).brightness == Brightness.dark
         ? kTimeUpdateBarDark
         : kTimeUpdateBarLight;
 
     if (updateTimeValue == TimeBarValue.tenSeconds) {
       colorTenSec = kBlueColorUpdateMode;
-      colorThirtySec = Theme
-          .of(context)
-          .brightness == Brightness.dark
+      colorThirtySec = Theme.of(context).brightness == Brightness.dark
           ? kTimeUpdateBarDark
           : kTimeUpdateBarLight;
-      colorSixtySec = Theme
-          .of(context)
-          .brightness == Brightness.dark
+      colorSixtySec = Theme.of(context).brightness == Brightness.dark
           ? kTimeUpdateBarDark
           : kTimeUpdateBarLight;
     } else if (updateTimeValue == TimeBarValue.thirtySeconds) {
       colorTenSec = kBlueColorUpdateMode;
       colorThirtySec = kBlueColorUpdateMode;
-      colorSixtySec = Theme
-          .of(context)
-          .brightness == Brightness.dark
+      colorSixtySec = Theme.of(context).brightness == Brightness.dark
           ? kTimeUpdateBarDark
           : kTimeUpdateBarLight;
     } else if (updateTimeValue == TimeBarValue.sixtySeconds) {
@@ -302,12 +277,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       updateSettingsManager.switchSettingsTime(updateTimeValue);
       setState(() {});
     }
+
+    double barWidth = MediaQuery.of(context).size.width -
+        (MediaQuery.of(context).size.width * paddingValue) -
+        (MediaQuery.of(context).size.width * 0.08);
+    Color firstLine = colorThirtySec;
+    Color secondLine = colorSixtySec;
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery
-              .of(context)
-              .size
-              .width * paddingValue),
+          horizontal: MediaQuery.of(context).size.width * paddingValue),
       child: Column(
         children: [
           Stack(
@@ -320,13 +298,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     bottomRight: Radius.circular(10)),
                 child: Container(
                   height: 15,
-                  color: Theme
-                      .of(context)
-                      .brightness == Brightness.dark
+                  color: Theme.of(context).brightness == Brightness.dark
                       ? kTimeUpdateBarDark
                       : kTimeUpdateBarLight,
                 ),
               ),
+              SizedBox(
+                  width: barWidth,
+                  height: 15.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: barWidth * 0.35,
+                        height: 15.0,
+                        decoration: BoxDecoration(
+                          color: firstLine,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              bottomLeft: Radius.circular(10)),
+                        ),
+                      ),
+                      Container(
+                        width: barWidth * 0.65,
+                        height: 15.0,
+                        decoration: BoxDecoration(
+                          color: secondLine,
+                          borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(10),
+                              bottomRight: Radius.circular(10)),
+                        ),
+                      )
+                    ],
+                  )),
               Row(
                 children: [
                   Expanded(
@@ -339,16 +343,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         children: [
                           ClipRRect(
                             borderRadius:
-                            updateTimeValue == TimeBarValue.tenSeconds
-                                ? const BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                            )
-                                : const BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomLeft: Radius.circular(10)),
+                                updateTimeValue == TimeBarValue.tenSeconds
+                                    ? const BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10),
+                                        topRight: Radius.circular(10),
+                                        bottomRight: Radius.circular(10),
+                                      )
+                                    : const BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10)),
                             child: Container(
                               height: 15,
                               color: colorTenSec,
@@ -368,12 +372,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         children: [
                           ClipRRect(
                             borderRadius:
-                            updateTimeValue == TimeBarValue.thirtySeconds
-                                ? const BorderRadius.only(
-                              topRight: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                            )
-                                : BorderRadius.circular(0),
+                                updateTimeValue == TimeBarValue.thirtySeconds
+                                    ? const BorderRadius.only(
+                                        topRight: Radius.circular(10),
+                                        bottomRight: Radius.circular(10),
+                                      )
+                                    : BorderRadius.circular(0),
                             child: Container(height: 15, color: colorThirtySec),
                           ),
                         ],
@@ -390,16 +394,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         children: [
                           ClipRRect(
                             borderRadius:
-                            updateTimeValue == TimeBarValue.sixtySeconds
-                                ? const BorderRadius.only(
-                              topRight: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                            )
-                                : const BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                                bottomRight: Radius.circular(10),
-                                topRight: Radius.circular(10)),
+                                updateTimeValue == TimeBarValue.sixtySeconds
+                                    ? const BorderRadius.only(
+                                        topRight: Radius.circular(10),
+                                        bottomRight: Radius.circular(10),
+                                      )
+                                    : const BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10),
+                                        bottomRight: Radius.circular(10),
+                                        topRight: Radius.circular(10)),
                             child: Container(height: 15, color: colorSixtySec),
                           ),
                         ],
@@ -420,9 +424,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     textStyle: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 16,
-                        color: Theme
-                            .of(context)
-                            .brightness == Brightness.dark
+                        color: Theme.of(context).brightness == Brightness.dark
                             ? kTimeUpdateBarNumberDark
                             : kTimeUpdateBarNumberLight),
                   ),
@@ -432,10 +434,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
               SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * progressNumberWidth1,
+                width: MediaQuery.of(context).size.width * progressNumberWidth1,
               ),
               InkWell(
                 child: Text(
@@ -444,9 +443,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     textStyle: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 16,
-                        color: Theme
-                            .of(context)
-                            .brightness == Brightness.dark
+                        color: Theme.of(context).brightness == Brightness.dark
                             ? kTimeUpdateBarNumberDark
                             : kTimeUpdateBarNumberLight),
                   ),
@@ -456,10 +453,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
               SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * progressNumberWidth2,
+                width: MediaQuery.of(context).size.width * progressNumberWidth2,
               ),
               InkWell(
                 child: Text(
@@ -468,9 +462,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     textStyle: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 16,
-                        color: Theme
-                            .of(context)
-                            .brightness == Brightness.dark
+                        color: Theme.of(context).brightness == Brightness.dark
                             ? kTimeUpdateBarNumberDark
                             : kTimeUpdateBarNumberLight),
                   ),
@@ -487,9 +479,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     textStyle: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 16,
-                        color: Theme
-                            .of(context)
-                            .brightness == Brightness.dark
+                        color: Theme.of(context).brightness == Brightness.dark
                             ? kTimeUpdateBarNumberDark
                             : kTimeUpdateBarNumberLight),
                   ),
@@ -520,10 +510,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Container(
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery
-                        .of(context)
-                        .size
-                        .height * 0.04),
+                    vertical: MediaQuery.of(context).size.height * 0.04),
                 child: Column(
                   children: [
                     // Padding(
@@ -580,25 +567,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     //         .height * 0.04),
                     Padding(
                       padding: EdgeInsets.only(
-                          left: MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.04,
-                          right:
-                          MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.03),
+                          left: MediaQuery.of(context).size.width * 0.04,
+                          right: MediaQuery.of(context).size.width * 0.03),
                       child: Stack(
                         children: [
                           Row(
                             children: [
                               Text(
-                                'Theme Mode (${popUpMenuValue == 1
-                                    ? 'system'
-                                    : popUpMenuValue == 2
-                                    ? 'light'
-                                    : 'dark'})',
+                                'Theme Mode (${popUpMenuValue == 1 ? 'system' : popUpMenuValue == 2 ? 'light' : 'dark'})',
                                 style: GoogleFonts.montserrat(
                                   textStyle: const TextStyle(
                                     fontSize: 16,
@@ -614,16 +590,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     _showThemePopupMenu(selectThemeKey);
                                     setState(() {});
                                   },
-                                  icon: Icon(
-                                      Icons.chevron_left,
+                                  icon: Icon(Icons.chevron_left,
                                       size: 34,
-                                      color: Theme
-                                          .of(context)
-                                          .brightness == Brightness.dark
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
                                           ? Colors.white
-                                          : kTimeUpdateBarNumberLight
-                                  )
-                              )
+                                          : kTimeUpdateBarNumberLight))
                             ],
                           ),
                         ],
@@ -632,16 +604,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 10),
                     Padding(
                       padding: EdgeInsets.symmetric(
-                          horizontal:
-                          MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.04),
+                          horizontal: MediaQuery.of(context).size.width * 0.04),
                       child: Container(
-                        color:
-                        Theme
-                            .of(context)
-                            .brightness == Brightness.dark
+                        color: Theme.of(context).brightness == Brightness.dark
                             ? kDarkDividerColor
                             : const Color(0xFFEFEFF3),
                         height: 2,
@@ -653,10 +618,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal:
-                            MediaQuery
-                                .of(context)
-                                .size
-                                .width * 0.04),
+                                MediaQuery.of(context).size.width * 0.04),
                         child: Column(
                           children: [
                             Align(
@@ -680,9 +642,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               decoration: BoxDecoration(
-                  color: Theme
-                      .of(context)
-                      .brightness == Brightness.dark
+                  color: Theme.of(context).brightness == Brightness.dark
                       ? kBackgroundColorDark
                       : Colors.white),
             ),
@@ -708,11 +668,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     await showMenu(
       context: context,
-      position: RelativeRect.fromLTRB(
-          containerRect.left,
-          containerRect.top,
-          containerRect.right,
-          containerRect.bottom),
+      position: RelativeRect.fromLTRB(containerRect.left, containerRect.top,
+          containerRect.right, containerRect.bottom),
       items: [
         _buildPopupMenuItem(1, "System", mode != "system"),
         _buildPopupMenuItem(2, "Light", mode != "light"),
@@ -729,7 +686,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (popUpMenuValue == 1) {
         themeManager.switchTheme(1);
         themeMode = 'system';
-       // _preferences.setThemeMode('themeMode', 'system');
+        // _preferences.setThemeMode('themeMode', 'system');
         //box.write('themeMode', 'system');
       } else if (popUpMenuValue == 2) {
         themeManager.switchTheme(2);
@@ -744,13 +701,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       } else {
         themeManager.switchTheme(1);
         themeMode = 'system';
-      // _preferences.setThemeMode('themeMode', 'system');
-       // box.write('themeMode', 'system');
+        // _preferences.setThemeMode('themeMode', 'system');
+        // box.write('themeMode', 'system');
       }
     });
-    setState(() {
-
-    });
+    setState(() {});
     _preferences.setThemeMode('themeMode', themeMode);
   }
 }

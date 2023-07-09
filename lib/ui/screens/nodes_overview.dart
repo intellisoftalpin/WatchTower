@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tower/data/repository/client.dart';
@@ -72,9 +71,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
             const Duration(milliseconds: 30),
-            (Timer t) => {
-                  timeBeforeAutoUpdate(),
-                });
+            (Timer t) => timeBeforeAutoUpdate(),);
       }
     }
 
@@ -242,9 +239,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                                   next = DateTime.now().add(updateSettingsTime);
                                   autoUpdateTimer = Timer.periodic(
                                       const Duration(milliseconds: 30),
-                                      (Timer t) => {
-                                            timeBeforeAutoUpdate(),
-                                          });
+                                      (Timer t) => timeBeforeAutoUpdate(),);
                                 } else {
                                   box.write('mode', 'manual');
                                   showLastUpdateTime = '0s';
@@ -329,15 +324,15 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                               if (serversList1.isNotEmpty) {
                                 return nodeCardMobile(context, snapshotNodes);
                               } else {
-                                return Column(
-                                  children: const [
+                                return const Column(
+                                  children: [
                                     Center(child: CircularProgressIndicator()),
                                   ],
                                 );
                               }
                             } else {
-                              return Column(
-                                children: const [
+                              return const Column(
+                                children: [
                                   Center(child: CircularProgressIndicator()),
                                 ],
                               );
@@ -350,14 +345,14 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                             builder:
                                 (BuildContext context, AsyncSnapshot snapshot) {
                               if (snapshot.hasData) {
-                                return Column(
-                                  children: const [
+                                return const Column(
+                                  children: [
                                     Center(child: CircularProgressIndicator()),
                                   ],
                                 );
                               } else {
-                                return Column(
-                                  children: const [
+                                return const Column(
+                                  children: [
                                     Center(child: CircularProgressIndicator()),
                                   ],
                                 );
@@ -365,8 +360,8 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                             });
                       }
                     } else {
-                      return Column(
-                        children: const [
+                      return const Column(
+                        children: [
                           Center(child: CircularProgressIndicator()),
                         ],
                       );
@@ -713,12 +708,12 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                                   begin: Alignment.bottomCenter,
                                   end: Alignment.topCenter),
                               borderRadius: BorderRadius.circular(10)),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
                             horizontal: 4, vertical: 9),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
+                          children: [
                             SizedBox(
                               width: 10,
                             ),
@@ -750,9 +745,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                         next = DateTime.now().add(updateSettingsTime);
                         autoUpdateTimer = Timer.periodic(
                             const Duration(milliseconds: 30),
-                            (Timer t) => {
-                                  timeBeforeAutoUpdate(),
-                                });
+                            (Timer t) => timeBeforeAutoUpdate(),);
                       } else {
                         box.write('mode', 'manual');
                         showLastUpdateTime = '0s';
@@ -880,17 +873,17 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
             //   ),
             // ),
             const Spacer(),
-            FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? kDarkCardColor
-                  : const Color(0xFFEEF6FF),
-              child: const Icon(
-                Icons.add,
-                color: Color(0xFF3E81FF),
-                size: 34,
-              ),
-            ),
+            ///FloatingActionButton(
+            ///  onPressed: () {},
+            ///  backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ///      ? kDarkCardColor
+            ///      : const Color(0xFFEEF6FF),
+            ///  child: const Icon(
+            ///    Icons.add,
+            ///    color: Color(0xFF3E81FF),
+            ///    size: 34,
+            ///  ),
+            ///),
             SizedBox(
                 height: windowHeight < 600
                     ? MediaQuery.of(context).size.height * 0.02
@@ -1214,7 +1207,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
 
   @override
   void didChangePlatformBrightness() {
-    platformBritness = SchedulerBinding.instance.window.platformBrightness;
+    platformBritness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
     runApp( const InitialWidget());
   }
 
@@ -1237,9 +1230,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
             const Duration(milliseconds: 30),
-            (Timer t) => {
-                  timeBeforeAutoUpdate(),
-                });
+            (Timer t) => timeBeforeAutoUpdate(),);
       }
     }
   }

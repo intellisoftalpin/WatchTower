@@ -58,9 +58,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
             const Duration(milliseconds: 30),
-            (Timer t) => {
-                  timeBeforeAutoUpdate(),
-                });
+            (Timer t) => timeBeforeAutoUpdate(),);
       }
 
       if (mode == UpdateMode.manual) {
@@ -256,9 +254,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                               next = DateTime.now().add(updateSettingsTime);
                               autoUpdateTimer = Timer.periodic(
                                   const Duration(milliseconds: 30),
-                                  (Timer t) => {
-                                        timeBeforeAutoUpdate(),
-                                      });
+                                  (Timer t) => timeBeforeAutoUpdate(),);
                             } else {
                               box.write('mode', 'manual');
                               showLastUpdateTime = '0s';
@@ -539,18 +535,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       if (Platform.isAndroid || Platform.isIOS) {
         return mobileMarkup(context);
       } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-        return FutureBuilder(
-          future: serversOverview,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData) {
-              return serversList1.isNotEmpty
-                  ? desktopMarkup(context)
-                  : Container();
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
-        );
+        return desktopMarkup(context);
       } else {
         return const ErrorMessage();
       }
@@ -569,21 +554,13 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
 
   Scaffold desktopMarkup(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
-    ScrollController scrollController =
-    ScrollController(initialScrollOffset: scrollPosition);
-    scrollController.addListener(() {
-      scrollPosition = scrollController.offset;
-    });
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).brightness == Brightness.dark
           ? kBackgroundColorDark
           : kBackgroundColorLight,
       drawer: const DrawerDesktopMenu(),
-      body: Scrollbar(
-        controller: scrollController,
-        child: ListView(
-          controller: scrollController,
+      body: ListView(
           children: [
             desktopHeader(context, DesktopPage.serverDetails, scaffoldKey),
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
@@ -592,7 +569,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                 : Container(),
           ],
         ),
-      ),
+
       // Positioned(
       //   bottom: MediaQuery.of(context).size.height * 0.15,
       //   child: Row(
@@ -907,12 +884,12 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                                     begin: Alignment.bottomCenter,
                                     end: Alignment.topCenter),
                                 borderRadius: BorderRadius.circular(10)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 4, vertical: 9),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            children: const [
+                            children: [
                               SizedBox(
                                 width: 10,
                               ),
@@ -944,9 +921,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                           next = DateTime.now().add(updateSettingsTime);
                           autoUpdateTimer = Timer.periodic(
                               const Duration(milliseconds: 30),
-                              (Timer t) => {
-                                    timeBeforeAutoUpdate(),
-                                  });
+                              (Timer t) => timeBeforeAutoUpdate(),);
                         } else {
                           box.write('mode', 'manual');
                           showLastUpdateTime = '0s';
@@ -1238,9 +1213,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
             const Duration(milliseconds: 30),
-            (Timer t) => {
-                  timeBeforeAutoUpdate(),
-                });
+            (Timer t) => timeBeforeAutoUpdate(),);
       }
     }
   }
