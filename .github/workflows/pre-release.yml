@@ -1,4 +1,4 @@
-name: build_apk
+name: pre-release
 
 on: [ workflow_dispatch, push ]
 
@@ -97,7 +97,7 @@ jobs:
       - name: Artifacts Directory Setup
         run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
           
-      - name: Flutter build apk
+      - name: Flutter Build 
         run: |
           flutter build apk ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
           cp $APK_FILE_PATH $ARTIFACTS_APK_PATH
@@ -201,13 +201,17 @@ jobs:
     needs: build_apk
     steps:
       - name: Artifacts Download
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@v3.0.1
                         
       - name: Create zip for apk
-        run: zip watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip *.apk
+        run: |
+            ls -l
+            echo "-----------------"
+            find . -type d -print
+            zip watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip *.apk
           
-      - name: APK send to Telegram chat
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#       - name: APK send to Telegram chat
+#         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_google_play:
       runs-on: ubuntu-latest
