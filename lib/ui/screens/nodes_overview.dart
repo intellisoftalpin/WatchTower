@@ -67,12 +67,10 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
     });
 
     next = now.add(updateSettingsTime);
-    if (mounted) {
-      if (mode == UpdateMode.auto) {
-        autoUpdateTimer = Timer.periodic(
-            const Duration(milliseconds: 30),
+    if (mode == UpdateMode.auto) {
+      autoUpdateTimer = Timer.periodic(
+        const Duration(milliseconds: 30),
             (Timer t) => timeBeforeAutoUpdate(),);
-      }
     }
 
     if (mode == UpdateMode.manual) {
@@ -80,9 +78,10 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
       enableRefreshIndicator = true;
       manualUpdateTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
         timeLastAutoUpdate(manualUpdateTimer?.tick);
-        setState(() {});
+
       });
     }
+    setState(() {});
   }
 
   @override
@@ -238,7 +237,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                                   manualUpdateTimer?.cancel();
                                   next = DateTime.now().add(updateSettingsTime);
                                   autoUpdateTimer = Timer.periodic(
-                                      const Duration(milliseconds: 30),
+                                      const Duration(milliseconds: 50),
                                       (Timer t) => timeBeforeAutoUpdate(),);
                                 } else {
                                   box.write('mode', 'manual');
@@ -744,7 +743,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                         manualUpdateTimer?.cancel();
                         next = DateTime.now().add(updateSettingsTime);
                         autoUpdateTimer = Timer.periodic(
-                            const Duration(milliseconds: 30),
+                            const Duration(milliseconds: 50),
                             (Timer t) => timeBeforeAutoUpdate(),);
                       } else {
                         box.write('mode', 'manual');
