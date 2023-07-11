@@ -190,13 +190,11 @@ jobs:
       - name: Create zip for apk
         run: |
           pwd
-          ls $APK_FILE_PATH
+          ls 
           mkdir ./apk
-          cp $APK_FILE_PATH ./apk
+          cp ./watchtower.*.apk ./apk
           ls ./apk
-          zip -j ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip ./apk/watchtower.*.apk
-        env:
-          APK_FILE_PATH: ./watchtower.*.apk
+          zip -j ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip ./apk/*
        
       - name: APK send to Telegram chat
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
@@ -218,7 +216,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: watchtower.${{ needs.build_aab.outputs.version_number }}.${{ needs.build_aab.outputs.incremented_build_number }}.aab
+          releaseFiles: ./*.aab
           track: internal
           status: draft
 #           status: completed
