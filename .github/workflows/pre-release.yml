@@ -101,16 +101,25 @@ jobs:
       - name: Flutter build apk
         run: |
           flutter build apk ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
-          cp $APK_FILE_PATH $ARTIFACTS_APK_DIRECTORY_PATH
+          cp $APK_FILE_PATH $ARTIFACTS_APK_PATH
+$          cp $APK_FILE_PATH $ARTIFACTS_APK_DIRECTORY_PATH
         env:
           APK_FILE_PATH: ./build/app/outputs/apk/release/app-release.apk
-          ARTIFACTS_APK_DIRECTORY_PATH: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
+          ARTIFACTS_APK_PATH: ./artifacts/app-release.apk
+#          APK_FILE_PATH: ./build/app/outputs/apk/release/app-release.apk
+#          ARTIFACTS_APK_DIRECTORY_PATH: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
          
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v3.1.2
+#      - name: Upload APK Artifact
+#        uses: actions/upload-artifact@v3.1.2
+#        with:
+#         name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
+#          path: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
+ 
+       - name: Artifacts APK Upload
+        uses: actions/upload-artifact@v3.1.1
         with:
-          name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
-          path: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
+          name: apps-artifacts
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
           
   build_aab:
     runs-on: ubuntu-latest
@@ -173,12 +182,17 @@ jobs:
           AAB_FILE_PATH: ./build/app/outputs/bundle/release/app-release.aab
           ARTIFACTS_AAB_DIRECTORY_PATH: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
          
-      - name: Upload AAB Artifact
-        uses: actions/upload-artifact@v3.1.2
+#      - name: Upload AAB Artifact
+#        uses: actions/upload-artifact@v3.1.2
+#        with:
+#          name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
+#          path: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
+      - name: Artifacts AAB Upload
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
-          path: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
-     
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          
   deploy_android_apk:
     runs-on: ubuntu-latest
     environment: github-actions-release
@@ -192,10 +206,13 @@ jobs:
           pwd
           ls 
           mkdir ./apk
-          cp ./watchtower.*.apk ./apk
+#          cp ./watchtower.*.apk ./apk
+          cp $APK_FILE_PATH ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.apk
           ls ./apk
-          zip -j ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip ./apk/*
-       
+          zip -j ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.apk
+       env:
+          APK_FILE_PATH: ./app-release.apk
+          
       - name: APK send to Telegram chat
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
@@ -207,8 +224,9 @@ jobs:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.2
         
-      - name: Create zip for apk
+      - name: ls
         run: |
+            pwd
             ls
               
       - name: Google Play Deploy
