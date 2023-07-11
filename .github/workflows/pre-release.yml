@@ -104,20 +104,15 @@ jobs:
         env:
           APK_FILE_PATH: ./build/app/outputs/apk/release/app-release.apk
           ARTIFACTS_APK_PATH: ./artifacts/app-release.apk
-#          APK_FILE_PATH: ./build/app/outputs/apk/release/app-release.apk
-#          ARTIFACTS_APK_DIRECTORY_PATH: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
-         
-#      - name: Upload APK Artifact
-#        uses: actions/upload-artifact@v3.1.2
-#        with:
-#         name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
-#          path: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
  
       - name: Artifacts APK Upload
         uses: actions/upload-artifact@v3.1.1
         with:
           name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
           path: ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: ls
+        run: ls ${{ env.ARTIFACTS_DIRECTORY }}
           
   build_aab:
     runs-on: ubuntu-latest
@@ -179,16 +174,7 @@ jobs:
         env:
           AAB_FILE_PATH: ./build/app/outputs/bundle/release/app-release.aab
           ARTIFACTS_AAB_PATH: ./artifacts/app-release.aab
-#          cp $AAB_FILE_PATH $ARTIFACTS_AAB_DIRECTORY_PATH
-#        env:
-#          AAB_FILE_PATH: ./build/app/outputs/bundle/release/app-release.aab
-#          ARTIFACTS_AAB_DIRECTORY_PATH: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
-         
-#      - name: Upload AAB Artifact
-#        uses: actions/upload-artifact@v3.1.2
-#        with:
-#          name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
-#          path: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
+
       - name: Artifacts AAB Upload
         uses: actions/upload-artifact@v3.1.1
         with:
@@ -202,6 +188,8 @@ jobs:
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
+        with:
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
                         
       - name: Create zip for apk
         run: |
