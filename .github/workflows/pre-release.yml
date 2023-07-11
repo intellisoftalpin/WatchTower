@@ -43,8 +43,7 @@ jobs:
           pa_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           name: BUILD_NUMBER
           value: ${{ env.APP_BUILD_NUMBER_INCREMENTED }}
-         
-   
+            
   build_apk:
     runs-on: ubuntu-latest
     environment: github-actions-release
@@ -102,7 +101,6 @@ jobs:
         run: |
           flutter build apk ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
           cp $APK_FILE_PATH $ARTIFACTS_APK_PATH
-$          cp $APK_FILE_PATH $ARTIFACTS_APK_DIRECTORY_PATH
         env:
           APK_FILE_PATH: ./build/app/outputs/apk/release/app-release.apk
           ARTIFACTS_APK_PATH: ./artifacts/app-release.apk
@@ -115,10 +113,10 @@ $          cp $APK_FILE_PATH $ARTIFACTS_APK_DIRECTORY_PATH
 #         name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
 #          path: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
  
-       - name: Artifacts APK Upload
+      - name: Artifacts APK Upload
         uses: actions/upload-artifact@v3.1.1
         with:
-          name: apps-artifacts
+          name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
           path: ${{ env.ARTIFACTS_DIRECTORY }}
           
   build_aab:
@@ -177,10 +175,14 @@ $          cp $APK_FILE_PATH $ARTIFACTS_APK_DIRECTORY_PATH
       - name: Flutter build aab
         run: |
           flutter build appbundle ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
-          cp $AAB_FILE_PATH $ARTIFACTS_AAB_DIRECTORY_PATH
+          cp $AAB_FILE_PATH $ARTIFACTS_AAB_PATH
         env:
           AAB_FILE_PATH: ./build/app/outputs/bundle/release/app-release.aab
-          ARTIFACTS_AAB_DIRECTORY_PATH: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
+          ARTIFACTS_AAB_PATH: ./artifacts/app-release.aab
+#          cp $AAB_FILE_PATH $ARTIFACTS_AAB_DIRECTORY_PATH
+#        env:
+#          AAB_FILE_PATH: ./build/app/outputs/bundle/release/app-release.aab
+#          ARTIFACTS_AAB_DIRECTORY_PATH: ${{ env.ARTIFACTS_DIRECTORY }}/watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
          
 #      - name: Upload AAB Artifact
 #        uses: actions/upload-artifact@v3.1.2
@@ -206,11 +208,10 @@ $          cp $APK_FILE_PATH $ARTIFACTS_APK_DIRECTORY_PATH
           pwd
           ls 
           mkdir ./apk
-#          cp ./watchtower.*.apk ./apk
           cp $APK_FILE_PATH ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.apk
           ls ./apk
           zip -j ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip ./apk/watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.apk
-       env:
+        env:
           APK_FILE_PATH: ./app-release.apk
           
       - name: APK send to Telegram chat
