@@ -111,8 +111,9 @@ jobs:
           name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
           path: ${{ env.ARTIFACTS_DIRECTORY }}
           
-      - name: ls
-        run: ls ${{ env.ARTIFACTS_DIRECTORY }}
+      - name: Display structure of Uploaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
           
   build_aab:
     runs-on: ubuntu-latest
@@ -181,6 +182,10 @@ jobs:
           name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
           path: ${{ env.ARTIFACTS_DIRECTORY }}
           
+      - name: Display structure of Uploaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}   
+          
   deploy_android_apk:
     runs-on: ubuntu-latest
     environment: github-actions-release
@@ -190,6 +195,10 @@ jobs:
         uses: actions/download-artifact@v3.0.1
         with:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Display structure of Downloaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
                         
       - name: Create zip for apk
         run: |
@@ -208,11 +217,12 @@ jobs:
       steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.2
+        with:
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
         
-      - name: ls
-        run: |
-            pwd
-            ls
+      - name: Display structure of Downloaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
               
       - name: Google Play Deploy
         uses: r0adkll/upload-google-play@v1.0.19
