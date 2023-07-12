@@ -103,8 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
             // if (token != null) {
             //   if (token!.length > 2) {
                 ScaffoldMessenger.of(context).clearSnackBars();
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                    builder: (context) => const NodeOverviewScreen()), (route) => false);
                 _preferences.setController('controller', serverController.text);
                 _preferences.setUsername('username', userController.text);
                 _preferences.setNotShowStartScreen('startScreen', true);
@@ -112,6 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 _preferences.setSuggestion('suggestions_username', userController.text);
                 _preferences.setJwtToken('token', tokenJWT!);
                 box.write('isTokenExpired', false);
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                    builder: (context) => const NodeOverviewScreen()), (route) => false);
                 //box.write('notShowStartScreen', true);
                 //box.write('token', '$token');
                 //box.write('username', userController.text);
