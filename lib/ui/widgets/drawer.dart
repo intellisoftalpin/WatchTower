@@ -49,7 +49,7 @@ Widget drawer(BuildContext context) {
                                 style: GoogleFonts.montserrat(
                                   textStyle: TextStyle(
                                       color: Theme.of(context).brightness ==
-                                          Brightness.dark
+                                              Brightness.dark
                                           ? Colors.white
                                           : Colors.grey.shade700,
                                       fontWeight: FontWeight.w300,
@@ -62,7 +62,7 @@ Widget drawer(BuildContext context) {
                                 style: GoogleFonts.montserrat(
                                   textStyle: TextStyle(
                                       color: Theme.of(context).brightness ==
-                                          Brightness.dark
+                                              Brightness.dark
                                           ? Colors.white
                                           : Colors.grey.shade700,
                                       fontWeight: FontWeight.w300,
@@ -83,6 +83,7 @@ Widget drawer(BuildContext context) {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 50),
+
                           ///Row(
                           ///  children: [
                           ///    SvgPicture.asset('assets/add_node.svg',
@@ -100,87 +101,99 @@ Widget drawer(BuildContext context) {
                           ///  ],
                           ///),
                           const SizedBox(height: 20),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (BuildContext context) {
-                                return const SettingsScreen();
-                              }));
-                            },
-                            child: Row(
-                              children: [
-                                SvgPicture.asset('assets/settings.svg',
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey.shade700),
-                                const SizedBox(width: 15),
-                                Text(
-                                  'Settings',
-                                  style: GoogleFonts.montserrat(
-                                    textStyle: const TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 16),
-                                  ),
+                          SizedBox(
+                              height: 25.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(
+                                      builder: (BuildContext context) {
+                                    return const SettingsScreen();
+                                  }));
+                                },
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/settings.svg',
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey.shade700,
+                                      height: 25.0,
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Text(
+                                      'Settings',
+                                      style: GoogleFonts.montserrat(
+                                        textStyle: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 19),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
+                              )),
                           const SizedBox(height: 20),
-                          GestureDetector(
-                            onTap: (){
-                              if (Platform.isAndroid || Platform.isIOS) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const PrivacyPolicyScreen()),
-                                );
-                              } else {
-                                openPrivacyPolicy();
-                              }
-                            },
-                            child: Row(
-                              children: [
-                                SvgPicture.asset('assets/privacy.svg',
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey.shade700),
-                                const SizedBox(width: 15),
-                                Text('Privacy policy',
-                                    style: GoogleFonts.montserrat(
-                                      textStyle: const TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 16),
-                                    )),
-                              ],
-                            ),
-                          ),
+                          SizedBox(
+                              height: 25.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (Platform.isAndroid || Platform.isIOS) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const PrivacyPolicyScreen()),
+                                    );
+                                  } else {
+                                    openPrivacyPolicy();
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset('assets/privacy.svg',
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.grey.shade700,
+                                        height: 25.0),
+                                    const SizedBox(width: 15),
+                                    Text('Privacy policy',
+                                        style: GoogleFonts.montserrat(
+                                          textStyle: const TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 19),
+                                        )),
+                                  ],
+                                ),
+                              )),
                           const SizedBox(height: 20),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (BuildContext context) {
-                                return const AboutScreen();
-                              }));
-                            },
-                            child: Row(
-                              children: [
-                                SvgPicture.asset('assets/about.svg',
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey.shade700),
-                                const SizedBox(width: 15),
-                                Text('About',
-                                    style: GoogleFonts.montserrat(
-                                      textStyle: const TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 16),
-                                    )),
-                              ],
-                            ),
-                          ),
+                          SizedBox(
+                              height: 25.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(
+                                      builder: (BuildContext context) {
+                                    return const AboutScreen();
+                                  }));
+                                },
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset('assets/about.svg',
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.grey.shade700,
+                                        height: 25.0),
+                                    const SizedBox(width: 15),
+                                    Text('About',
+                                        style: GoogleFonts.montserrat(
+                                          textStyle: const TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 19),
+                                        )),
+                                  ],
+                                ),
+                              )),
                         ],
                       ),
                       SizedBox(
@@ -209,7 +222,7 @@ Widget drawer(BuildContext context) {
         ],
       ),
       Positioned(
-       left: 238,
+        left: 238,
         height: 100,
         child: GestureDetector(
           child: Container(
@@ -244,7 +257,7 @@ Stack customButtonStack(BuildContext context) {
           child: Icon(
             Icons.clear,
             color: Colors.white,
-            size: 18,
+            size: 25,
           ),
         ),
         decoration: const BoxDecoration(
@@ -259,6 +272,7 @@ Stack customButtonStack(BuildContext context) {
 class DrawerMenu extends StatefulWidget {
   final NodeGroupModel? clickedNode;
   final String? uuid;
+
   const DrawerMenu({Key? key, this.clickedNode, this.uuid}) : super(key: key);
 
   @override
@@ -273,7 +287,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
   }
 }
 
-Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uuid) {
+Widget drawerNodes(
+    BuildContext context, NodeGroupModel? clickedNode, String? uuid) {
   return Stack(
     children: [
       Row(
@@ -309,7 +324,7 @@ Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uu
                                   style: GoogleFonts.montserrat(
                                     textStyle: TextStyle(
                                         color: Theme.of(context).brightness ==
-                                            Brightness.dark
+                                                Brightness.dark
                                             ? Colors.white
                                             : Colors.grey.shade700,
                                         fontWeight: FontWeight.w300,
@@ -322,7 +337,7 @@ Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uu
                                   style: GoogleFonts.montserrat(
                                     textStyle: TextStyle(
                                         color: Theme.of(context).brightness ==
-                                            Brightness.dark
+                                                Brightness.dark
                                             ? Colors.white
                                             : Colors.grey.shade700,
                                         fontWeight: FontWeight.w300,
@@ -343,6 +358,7 @@ Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uu
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             nodesSideMenu(context),
+
                             ///Row(
                             ///  children: [
                             ///    SvgPicture.asset('assets/add_node.svg',
@@ -364,7 +380,8 @@ Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uu
                               onTap: () {
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (BuildContext context) {
-                                  return SettingsScreen(clickedNode: clickedNode, uuid: uuid);
+                                  return SettingsScreen(
+                                      clickedNode: clickedNode, uuid: uuid);
                                 }));
                               },
                               child: Row(
@@ -388,12 +405,15 @@ Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uu
                             ),
                             const SizedBox(height: 20),
                             GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 if (Platform.isAndroid || Platform.isIOS) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => PrivacyPolicyScreen(clickedNode: clickedNode, uuid: uuid)),
+                                        builder: (context) =>
+                                            PrivacyPolicyScreen(
+                                                clickedNode: clickedNode,
+                                                uuid: uuid)),
                                   );
                                 } else {
                                   openPrivacyPolicy();
@@ -421,7 +441,8 @@ Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uu
                               onTap: () {
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (BuildContext context) {
-                                  return AboutScreen(clickedNode: clickedNode, uuid: uuid);
+                                  return AboutScreen(
+                                      clickedNode: clickedNode, uuid: uuid);
                                 }));
                               },
                               child: Row(
@@ -443,7 +464,9 @@ Widget drawerNodes(BuildContext context, NodeGroupModel? clickedNode, String? uu
                                 ],
                               ),
                             ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                            SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05),
                           ],
                         ),
                       ],
@@ -496,12 +519,12 @@ Widget nodesSideMenu(BuildContext context) {
             GestureDetector(
               onTap: () {
                 Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ServersOverviewScreen(
-                            clickedNode: nodesList[i],
-                          )),
-                        (route) => false);
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ServersOverviewScreen(
+                              clickedNode: nodesList[i],
+                            )),
+                    (route) => false);
                 Scaffold.of(context).closeDrawer();
               },
               child: Text(
@@ -515,12 +538,13 @@ Widget nodesSideMenu(BuildContext context) {
             GestureDetector(
               onTap: () {
                 clearUserData();
-               // clearTextControllers();
+                // clearTextControllers();
                 timer?.cancel();
                 Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        (route) => false);
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                    (route) => false);
               },
               child: Container(
                 child: const Padding(
@@ -547,13 +571,13 @@ Widget nodesSideMenu(BuildContext context) {
         nodesListSideMenu.add(InkWell(
           onTap: () {
             Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ServerDetailsScreen(
-                        clickedNode: nodesList[i],
-                    uuid: nodesList[i].servers![k].uuid!,
-                      )),
-                    (route) => false);
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ServerDetailsScreen(
+                          clickedNode: nodesList[i],
+                          uuid: nodesList[i].servers![k].uuid!,
+                        )),
+                (route) => false);
             Scaffold.of(context).closeDrawer();
           },
           child: Padding(
@@ -596,19 +620,21 @@ Widget nodesSideMenu(BuildContext context) {
 }
 
 class CustomShapeCurve extends CustomPainter {
-
   final BuildContext context;
+
   CustomShapeCurve(this.context);
 
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint();
-    paint.color = Theme.of(context).brightness == Brightness.dark ? Colors.black :  Colors.grey.shade400;
+    paint.color = Theme.of(context).brightness == Brightness.dark
+        ? Colors.black
+        : Colors.grey.shade400;
     paint.style = PaintingStyle.fill;
     final path = Path();
     path.moveTo(12, -3);
-    path.arcToPoint(const Offset(12, 29),
-        radius: const Radius.circular(15), clockwise: false);
+    path.arcToPoint(const Offset(12, 36),
+        radius: const Radius.circular(12), clockwise: false);
     canvas.drawPath(path, paint);
   }
 

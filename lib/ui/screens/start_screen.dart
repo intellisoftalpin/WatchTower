@@ -174,9 +174,10 @@ class _StartScreenState extends State<StartScreen> {
           kBackgroundColorDark : kBackgroundColorLight,
         ),
         leading: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(8.0),
           child: Builder(builder: (context) {
             return Container(
+              height: 25.0,
               child: InkWell(
                 onTap: () {
                   Scaffold.of(context).openDrawer();
@@ -184,6 +185,7 @@ class _StartScreenState extends State<StartScreen> {
                 child: const Icon(
                   Icons.menu,
                   color: Color(0xFF5690FF),
+                  size: 35.0,
                 ),
               ),
               decoration: BoxDecoration(

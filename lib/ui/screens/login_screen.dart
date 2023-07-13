@@ -565,14 +565,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Text(
                                     '*',
                                     style:
-                                        TextStyle(color: Colors.red, fontSize: 14),
+                                        TextStyle(color: Colors.red, fontSize: 15),
                                   ),
                                 ],
                               ),
                             ),
                             const SizedBox(height: 5),
                             SizedBox(
-                              height: 45,
+                              height: 50,
                               child: TextFormField(
                                 controller: serverController,
                                 onChanged: (serverString) {
@@ -607,14 +607,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Text(
                                     '*',
                                     style:
-                                        TextStyle(color: Colors.red, fontSize: 14),
+                                        TextStyle(color: Colors.red, fontSize: 15),
                                   ),
                                 ],
                               ),
                             ),
                             const SizedBox(height: 5),
                             SizedBox(
-                              height: 45,
+                              height: 50,
                               child: TextFormField(
                                 controller: userController,
                                 onChanged: (userString) {
@@ -646,14 +646,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Text(
                                     '*',
                                     style:
-                                        TextStyle(color: Colors.red, fontSize: 14),
+                                        TextStyle(color: Colors.red, fontSize: 15),
                                   ),
                                 ],
                               ),
                             ),
                             const SizedBox(height: 5),
                             SizedBox(
-                              height: 45,
+                              height: 50,
                               child: TextFormField(
                                 controller: passwordController,
                                 onChanged: (passwordString) {
@@ -806,13 +806,14 @@ class _LoginScreenState extends State<LoginScreen> {
       filled: true,
       hintText: hintText,
       fillColor: fillColor,
-      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
       suffixIcon: fieldType == FieldType.password
           ? GestureDetector(
               child: Icon(
                 obscureText == true ? Icons.visibility_off : Icons.visibility,
                 color: Colors.grey.shade400,
+                size: 28,
               ),
               onTap: () {
                 setState(() {
