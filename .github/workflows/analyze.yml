@@ -1,0 +1,66 @@
+name: analyze
+
+on: [ workflow_dispatch, push ]
+
+env:
+  ARTIFACTS_DIRECTORY: ./artifacts
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+      - run: ls
+      
+      - name: Install Flutter
+        id: flutter_install
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+          architecture: x64
+        
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        
+      - name: Cache apt-install
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: ninja-build libgtk-3-dev
+        
+      - name: Cache dependencies
+        uses: actions/cache@v3.2.2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.OS }}-pub-cache-${{ hashFiles('./pubspec.lock') }}
+          restore-keys: ${{ runner.OS }}-pub-cache-
+            
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Artifacts Directory Setup
+        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Analyze code 
+        run: |
+          flutter analyze --no-fatal-infos --no-fatal-warnings --write=analyzer-output.txt
+          ls -R
+          cp $APK_FILE_PATH $ARTIFACTS_APK_PATH
+        env:
+          APK_FILE_PATH: ./analyzer-output.txt
+          ARTIFACTS_APK_PATH: ./artifacts/analyzer-output.txt
+          
+      - name: Artifacts Analyze
+        uses: actions/upload-artifact@v3.1.1
+        if: success() || failure()
+        with:
+          name: analyzer-output.txt
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Display structure of Uploaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
