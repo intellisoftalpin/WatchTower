@@ -371,7 +371,7 @@ jobs:
         working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
         
       - name: Create zip for desktop windows
-        run: zip -r * watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip
+        run: zip -r watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip *
           
       - name: Desktop windows build send to Telegram chat
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
