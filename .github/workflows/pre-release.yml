@@ -220,7 +220,7 @@ jobs:
       - name: Flutter Build
         run: |
           flutter build linux ./lib/main.dart --release
-          ldd build/linux/release/bundle/watch_tower
+          ldd ./build/linux/x64/release/bundle/watch_tower
           ls $LINUX_OUTPUT_DIRECTORY_PATH
           cp -r $LINUX_OUTPUT_DIRECTORY_PATH $ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH
         env:
