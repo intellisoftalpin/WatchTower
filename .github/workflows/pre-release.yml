@@ -281,10 +281,15 @@ jobs:
         uses: actions/download-artifact@v3.0.1
         with:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
-                        
+          name: watchtower-linux.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+     
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
+        
       - name: Create zip for desktop linux
         run: zip -r watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -i ${{ env.ARTIFACTS_DIRECTORY }}/*
           
-      - name: Desktop linux build send to Telegram chat
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#      - name: Desktop linux build send to Telegram chat
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
