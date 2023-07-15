@@ -283,7 +283,7 @@ jobs:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
                         
       - name: Create zip for desktop linux
-        run: zip -r watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/bundle/*
+        run: zip -r watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -i ${{ env.ARTIFACTS_DIRECTORY }}/bundle/*
           
       - name: Desktop linux build send to Telegram chat
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
