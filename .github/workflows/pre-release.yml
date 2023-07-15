@@ -274,8 +274,8 @@ jobs:
         run: |
           flutter build windows
           ls $WINDOWS_OUTPUT_DIRECTORY_PATH          
-          Copy-Item -Path $WINDOWS_OUTPUT_DIRECTORY_PATH -Destination $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
-          Copy-Item -Path $DLL_FILES_PATH -Destination $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
+          cp $WINDOWS_OUTPUT_DIRECTORY_PATH $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
+          cp $DLL_FILES_PATH $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
         env:
           WINDOWS_OUTPUT_DIRECTORY_PATH: ./build/windows/runner/Release/watch_tower.exe
           DLL_FILES_PATH: ./windows/libs/*.dll
