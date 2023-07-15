@@ -274,11 +274,11 @@ jobs:
         run: |
           flutter build windows
           ls $WINDOWS_OUTPUT_DIRECTORY_PATH          
-          Copy-Item $WINDOWS_OUTPUT_DIRECTORY_PATH -Destination $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
-          Copy-Item $DLL_FILES_PATH -Destination $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
+          Copy-Item -Path $WINDOWS_OUTPUT_DIRECTORY_PATH -Destination $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
+          Copy-Item -Path $DLL_FILES_PATH -Destination $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
         env:
-          WINDOWS_OUTPUT_DIRECTORY_PATH: ./build/windows/runner/Release/*
-          DLL_FILES_PATH: ./windows/libs/*
+          WINDOWS_OUTPUT_DIRECTORY_PATH: ./build/windows/runner/Release/watch_tower.exe
+          DLL_FILES_PATH: ./windows/libs/*.dll
           ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH: ./artifacts/
 
       - name: Artifacts Windows Upload
