@@ -231,7 +231,64 @@ jobs:
         uses: actions/upload-artifact@v3.1.1
         with:
           name: watchtower-linux.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
-          path: ${{ env.ARTIFACTS_DIRECTORY }}    
+          path: ${{ env.ARTIFACTS_DIRECTORY }}  
+          
+  build_desktop_windows:
+    runs-on: windows-latest
+    environment: github-actions-release
+    needs: prepare_build
+    outputs:
+      incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      version_number: ${{ needs.prepare_build.outputs.version_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+      
+      - name: Install Flutter
+        id: flutter_install
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+          architecture: x64
+        
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        
+      - name: Cache apt-install
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: ninja-build libgtk-3-dev
+        
+      - name: Cache dependencies
+        uses: actions/cache@v3.2.2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.OS }}-pub-cache-${{ hashFiles('./pubspec.lock') }}
+          restore-keys: ${{ runner.OS }}-pub-cache-
+            
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Artifacts Directory Setup
+        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Flutter Build
+        run: |
+          flutter build windows
+          ls $WINDOWS_OUTPUT_DIRECTORY_PATH          
+          cp -r $WINDOWS_OUTPUT_DIRECTORY_PATH $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
+        env:
+          WINDOWS_OUTPUT_DIRECTORY_PATH: ./build/windows/runner/Release/*
+          ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH: ./artifacts/
+
+      - name: Artifacts Linux Upload
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: watchtower-windows.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
           
   deploy_android_apk:
     runs-on: ubuntu-latest
@@ -292,4 +349,25 @@ jobs:
           
 #      - name: Desktop linux build send to Telegram chat
 #        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      
+  deploy_desktop_windows:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: build_desktop_windows
+    steps:
+      - name: Artifacts Download
+        uses: actions/download-artifact@v3.0.1
+        with:
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: watchtower-windows.${{ needs.build_desktop_windows.outputs.version_number }}.${{ needs.build_desktop_windows.outputs.incremented_build_number }}
+     
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
+        
+      - name: Create zip for desktop windows
+        run: Compress-Archive -Path ${{ env.ARTIFACTS_DIRECTORY }}/* -DestinationPath watchtower-windows.${{ needs.build_desktop_windows.outputs.version_number }}.${{ needs.build_desktop_windows.outputs.incremented_build_number }}.zip
+          
+#      - name: Desktop windows build send to Telegram chat
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ needs.build_desktop_windows.outputs.version_number }}.${{ needs.build_desktop_windows.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
