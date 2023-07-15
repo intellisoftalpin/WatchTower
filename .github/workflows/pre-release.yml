@@ -14,8 +14,8 @@ jobs:
       incremented_build_number: ${{ steps.build_version_bump.outputs.app_build_number }}
       version_number: ${{ steps.version_number_get.outputs.app_version_number }}
     steps:
-      - run: Checkout
-      - uses: actions/checkout@v3.2.0
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
       
       - name: App Version Number Get
         id: version_number_get
@@ -51,8 +51,8 @@ jobs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
     steps:
-      - run: Checkout
-      - uses: actions/checkout@v3.2.0
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
       
       - name: Install Flutter
         id: flutter_install
@@ -117,8 +117,8 @@ jobs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
     steps:
-      - run: Checkout
-      - uses: actions/checkout@v3.2.0
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
       
       - name: Install Flutter
         id: flutter_install
@@ -183,8 +183,8 @@ jobs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
     steps:
-      - run: Checkout
-      - uses: actions/checkout@v3.2.0
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
       
       - name: Install Flutter
         id: flutter_install
@@ -284,6 +284,6 @@ jobs:
       - name: Create zip for desktop linux
         run: zip -j watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/bundle/*
           
-      - name: APK send to Telegram chat
+      - name: Desktop linux build send to Telegram chat
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
