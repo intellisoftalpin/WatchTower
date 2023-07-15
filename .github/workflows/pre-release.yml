@@ -220,8 +220,9 @@ jobs:
       - name: Flutter Build
         run: |
           flutter build linux ./lib/main.dart --release
+          ldd build/linux/release/bundle/watch_tower
           ls $LINUX_OUTPUT_DIRECTORY_PATH
-          cp $LINUX_OUTPUT_DIRECTORY_PATH $ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH
+          cp -r $LINUX_OUTPUT_DIRECTORY_PATH $ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH
         env:
           LINUX_OUTPUT_DIRECTORY_PATH: ./build/linux/x64/release/bundle
           ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH: ./artifacts/bundle
@@ -245,8 +246,8 @@ jobs:
       - name: Create zip for apk
         run: zip -j watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/*.apk/*
           
-      - name: APK send to Telegram chat
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#      - name: APK send to Telegram chat
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_google_play:
       runs-on: ubuntu-latest
@@ -282,7 +283,7 @@ jobs:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
                         
       - name: Create zip for desktop linux
-        run: zip -j watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/bundle/*
+        run: zip -r watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/bundle/*
           
       - name: Desktop linux build send to Telegram chat
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
