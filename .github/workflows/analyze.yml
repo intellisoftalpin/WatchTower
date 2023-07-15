@@ -46,12 +46,9 @@ jobs:
           
       - name: Analyze code 
         run: |
-          flutter analyze --no-fatal-infos --no-fatal-warnings --write=analyzer-output.txt
-          ls -R
-          cp $APK_FILE_PATH $ARTIFACTS_APK_PATH
+          flutter analyze --write=$ARTIFACTS_ANALYZE_FILE_PATH
         env:
-          APK_FILE_PATH: ./analyzer-output.txt
-          ARTIFACTS_APK_PATH: ./artifacts/analyzer-output.txt
+          ARTIFACTS_ANALYZE_FILE_PATH: ./artifacts/analyzer-output.txt
           
       - name: Artifacts Analyze
         uses: actions/upload-artifact@v3.1.1
@@ -59,7 +56,3 @@ jobs:
         with:
           name: analyzer-output.txt
           path: ${{ env.ARTIFACTS_DIRECTORY }}
-          
-      - name: Display structure of Uploaded files
-        run: ls -R
-        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
