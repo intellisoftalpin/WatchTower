@@ -14,9 +14,8 @@ jobs:
       incremented_build_number: ${{ steps.build_version_bump.outputs.app_build_number }}
       version_number: ${{ steps.version_number_get.outputs.app_version_number }}
     steps:
-      - run: ls
+      - run: Checkout
       - uses: actions/checkout@v3.2.0
-      - run: ls
       
       - name: App Version Number Get
         id: version_number_get
@@ -52,9 +51,8 @@ jobs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
     steps:
-      - run: ls
+      - run: Checkout
       - uses: actions/checkout@v3.2.0
-      - run: ls
       
       - name: Install Flutter
         id: flutter_install
@@ -84,12 +82,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
         
-      - name: Copy keystore.jks
+      - name: Copy keystore.jks file
         run: (echo ${{ secrets.KEYSTORE_JKS_BASE64 }} | base64 --decode) > $KEYSTORE_JKS
         env:
           KEYSTORE_JKS: ./android/app/watchtower.jks
 
-      - name: Copy key.properties
+      - name: Copy key.properties file
         run: (echo ${{ secrets.KEY_PROPERTIES_BASE64 }} | base64 --decode) > $KEY_PROPERTIES
         env:
           KEY_PROPERTIES: ./android/key.properties
@@ -111,10 +109,6 @@ jobs:
           name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
           path: ${{ env.ARTIFACTS_DIRECTORY }}
           
-      - name: Display structure of Uploaded files
-        run: ls -R
-        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
-          
   build_aab:
     runs-on: ubuntu-latest
     environment: github-actions-release
@@ -123,9 +117,8 @@ jobs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
     steps:
-      - run: ls
+      - run: Checkout
       - uses: actions/checkout@v3.2.0
-      - run: ls
       
       - name: Install Flutter
         id: flutter_install
@@ -155,12 +148,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
         
-      - name: Copy keystore.jks
+      - name: Copy keystore.jks file
         run: (echo ${{ secrets.KEYSTORE_JKS_BASE64 }} | base64 --decode) > $KEYSTORE_JKS
         env:
           KEYSTORE_JKS: ./android/app/watchtower.jks
 
-      - name: Copy key.properties
+      - name: Copy key.properties file
         run: (echo ${{ secrets.KEY_PROPERTIES_BASE64 }} | base64 --decode) > $KEY_PROPERTIES
         env:
           KEY_PROPERTIES: ./android/key.properties
@@ -168,7 +161,7 @@ jobs:
       - name: Artifacts Directory Setup
         run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
           
-      - name: Flutter build aab
+      - name: Flutter Build
         run: |
           flutter build appbundle ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
           cp $AAB_FILE_PATH $ARTIFACTS_AAB_PATH
@@ -182,9 +175,62 @@ jobs:
           name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
           path: ${{ env.ARTIFACTS_DIRECTORY }}
           
-      - name: Display structure of Uploaded files
-        run: ls -R
-        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}   
+  build_desktop_linux:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: prepare_build
+    outputs:
+      incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      version_number: ${{ needs.prepare_build.outputs.version_number }}
+    steps:
+      - run: Checkout
+      - uses: actions/checkout@v3.2.0
+      
+      - name: Install Flutter
+        id: flutter_install
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+          architecture: x64
+        
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        
+      - name: Cache apt-install
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: ninja-build libgtk-3-dev
+        
+      - name: Cache dependencies
+        uses: actions/cache@v3.2.2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.OS }}-pub-cache-${{ hashFiles('./pubspec.lock') }}
+          restore-keys: ${{ runner.OS }}-pub-cache-
+            
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Artifacts Directory Setup
+        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Flutter Build
+        run: |
+          flutter build linux ./lib/main.dart --release
+          ls $LINUX_OUTPUT_DIRECTORY_PATH
+          cp $LINUX_OUTPUT_DIRECTORY_PATH $ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH
+        env:
+          LINUX_OUTPUT_DIRECTORY_PATH: ./build/linux/x64/release/bundle
+          ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH: ./artifacts/bundle
+
+      - name: Artifacts Linux Upload
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: watchtower-linux.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          path: ${{ env.ARTIFACTS_DIRECTORY }}    
           
   deploy_android_apk:
     runs-on: ubuntu-latest
@@ -195,10 +241,6 @@ jobs:
         uses: actions/download-artifact@v3.0.1
         with:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
-          
-      - name: Display structure of Downloaded files
-        run: ls -R
-        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
                         
       - name: Create zip for apk
         run: zip -j watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/*.apk/*
@@ -215,10 +257,6 @@ jobs:
         uses: actions/download-artifact@v3.0.2
         with:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
-        
-      - name: Display structure of Downloaded files
-        run: ls -R
-        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
               
       - name: Google Play Deploy
         uses: r0adkll/upload-google-play@v1.0.19
@@ -233,3 +271,19 @@ jobs:
       - name: Message send to Telegram chat after deployed to Google Play Deploy
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "caption=WatchTower build ${{ needs.build_aab.outputs.version_number }} (${{ needs.build_aab.outputs.incremented_build_number }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
     
+  deploy_desktop_linux:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: build_desktop_linux
+    steps:
+      - name: Artifacts Download
+        uses: actions/download-artifact@v3.0.1
+        with:
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+                        
+      - name: Create zip for desktop linux
+        run: zip -j watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/bundle/*
+          
+      - name: APK send to Telegram chat
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      
