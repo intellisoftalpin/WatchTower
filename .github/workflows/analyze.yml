@@ -8,7 +8,6 @@ env:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v3.5.2
@@ -56,7 +55,7 @@ jobs:
           
       - name: Artifacts Analyze
         uses: actions/upload-artifact@v3.1.1
-        if: success() || failure()
+        if: failure()
         with:
           name: analyzer-output.txt
           path: ${{ env.ARTIFACTS_DIRECTORY }}
