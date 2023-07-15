@@ -43,7 +43,7 @@ jobs:
           name: BUILD_NUMBER
           value: ${{ env.APP_BUILD_NUMBER_INCREMENTED }}
             
-  build_apk:
+  build_android_apk:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: prepare_build
@@ -109,7 +109,7 @@ jobs:
           name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
           path: ${{ env.ARTIFACTS_DIRECTORY }}
           
-  build_aab:
+  build_android_aab:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: prepare_build
@@ -175,7 +175,7 @@ jobs:
           name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
           path: ${{ env.ARTIFACTS_DIRECTORY }}
           
-  build_desktop_linux:
+  build_linux:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: prepare_build
@@ -233,7 +233,7 @@ jobs:
           name: watchtower-linux.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
           path: ${{ env.ARTIFACTS_DIRECTORY }}  
           
-  build_desktop_windows:
+  build_windows:
     runs-on: windows-latest
     environment: github-actions-release
     needs: prepare_build
@@ -266,7 +266,7 @@ jobs:
             
       - name: Install dependencies
         run: flutter pub get
-        
+              
       - name: Artifacts Directory Setup
         run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
           
@@ -274,12 +274,14 @@ jobs:
         run: |
           flutter build windows
           ls $WINDOWS_OUTPUT_DIRECTORY_PATH          
-          cp -r $WINDOWS_OUTPUT_DIRECTORY_PATH $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
+          Copy-Item $WINDOWS_OUTPUT_DIRECTORY_PATH -Destination $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
+          Copy-Item $DLL_FILES_PATH -Destination $ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH
         env:
           WINDOWS_OUTPUT_DIRECTORY_PATH: ./build/windows/runner/Release/*
+          DLL_FILES_PATH: ./windows/libs/*
           ARTIFACTS_WINDOWS_OUTPUT_DIRECTORY_PATH: ./artifacts/
 
-      - name: Artifacts Linux Upload
+      - name: Artifacts Windows Upload
         uses: actions/upload-artifact@v3.1.1
         with:
           name: watchtower-windows.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
@@ -288,7 +290,7 @@ jobs:
   deploy_android_apk:
     runs-on: ubuntu-latest
     environment: github-actions-release
-    needs: build_apk
+    needs: build_android_apk
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
@@ -296,15 +298,15 @@ jobs:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
                         
       - name: Create zip for apk
-        run: zip -j watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/*.apk/*
+        run: zip -j watchtower.${{ needs.build_android_apk.outputs.version_number }}.${{ needs.build_android_apk.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/*.apk/*
           
 #      - name: APK send to Telegram chat
-#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_apk.outputs.version_number }}.${{ needs.build_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_android_apk.outputs.version_number }}.${{ needs.build_android_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_google_play:
       runs-on: ubuntu-latest
       environment: github-actions-release
-      needs:  build_aab
+      needs:  build_android_aab
       steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.2
@@ -322,47 +324,47 @@ jobs:
 #           status: completed
         
       - name: Message send to Telegram chat after deployed to Google Play Deploy
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "caption=WatchTower build ${{ needs.build_aab.outputs.version_number }} (${{ needs.build_aab.outputs.incremented_build_number }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "caption=WatchTower build ${{ needs.build_android_aab.outputs.version_number }} (${{ needs.build_android_aab.outputs.incremented_build_number }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
     
   deploy_desktop_linux:
     runs-on: ubuntu-latest
     environment: github-actions-release
-    needs: build_desktop_linux
+    needs: build_linux
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
         with:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
-          name: watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}
+          name: watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}
      
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
         
       - name: Create zip for desktop linux
-        run: zip -r watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/*
+        run: zip -r watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/*
           
 #      - name: Desktop linux build send to Telegram chat
-#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_desktop_linux.outputs.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_desktop_windows:
     runs-on: ubuntu-latest
     environment: github-actions-release
-    needs: build_desktop_windows
+    needs: build_windows
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
         with:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
-          name: watchtower-windows.${{ needs.build_desktop_windows.outputs.version_number }}.${{ needs.build_desktop_windows.outputs.incremented_build_number }}
+          name: watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}
      
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
         
       - name: Create zip for desktop windows
-        run: Compress-Archive -Path ${{ env.ARTIFACTS_DIRECTORY }}/* -DestinationPath watchtower-windows.${{ needs.build_desktop_windows.outputs.version_number }}.${{ needs.build_desktop_windows.outputs.incremented_build_number }}.zip
+        run: Compress-Archive -Path ${{ env.ARTIFACTS_DIRECTORY }}/* -DestinationPath watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip
           
 #      - name: Desktop windows build send to Telegram chat
-#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ needs.build_desktop_windows.outputs.version_number }}.${{ needs.build_desktop_windows.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
