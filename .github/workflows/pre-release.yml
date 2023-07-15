@@ -281,7 +281,7 @@ jobs:
         uses: actions/download-artifact@v3.0.1
         with:
           path: ${{ env.ARTIFACTS_DIRECTORY }}
-          name: watchtower-linux.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          name: watchtower-linux.${{ needs.build_desktop_linux.version_number }}.${{ needs.build_desktop_linux.outputs.incremented_build_number }}
      
       - name: Display structure of downloaded files
         run: ls -R
