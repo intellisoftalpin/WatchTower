@@ -1,6 +1,6 @@
 name: analyze
 
-on: [ workflow_dispatch, push ]
+on: workflow_dispatch
 
 env:
   ARTIFACTS_DIRECTORY: ./artifacts
