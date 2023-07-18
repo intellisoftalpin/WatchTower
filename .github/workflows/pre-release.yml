@@ -1,0 +1,378 @@
+name: pre-release
+
+on: workflow_dispatch
+
+env:
+  FILE_APP_VERSION: ./VERSION
+  ARTIFACTS_DIRECTORY: ./artifacts
+
+jobs:
+  prepare_build:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    outputs:
+      incremented_build_number: ${{ steps.build_version_bump.outputs.app_build_number }}
+      version_number: ${{ steps.version_number_get.outputs.app_version_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+      
+      - name: App Version Number Get
+        id: version_number_get
+        run: |
+          VERSION_NUMBER=$(cat $FILE_APP_VERSION)
+          echo "APP_VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
+          cat $GITHUB_ENV
+          echo "app_version_number=$VERSION_NUMBER" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+                
+      - name: App Build Version Bump
+        id: build_version_bump
+        run: |
+          APP_BUILD_NUMBER=$(($BUILD_NUMBER+1))
+          echo "APP_BUILD_NUMBER_INCREMENTED=$APP_BUILD_NUMBER" >> $GITHUB_ENV
+          echo "app_build_number=$APP_BUILD_NUMBER" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+        env:
+          BUILD_NUMBER: ${{ secrets.BUILD_NUMBER }}
+          
+      - name: App Build Secret Update
+        uses: gliech/create-github-secret-action@v1.4.10
+        with:
+          pa_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          name: BUILD_NUMBER
+          value: ${{ env.APP_BUILD_NUMBER_INCREMENTED }}
+            
+  build_android_apk:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: prepare_build
+    outputs:
+      incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      version_number: ${{ needs.prepare_build.outputs.version_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+      
+      - name: Install Flutter
+        id: flutter_install
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+          architecture: x64
+        
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        
+      - name: Cache apt-install
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: ninja-build libgtk-3-dev
+        
+      - name: Cache dependencies
+        uses: actions/cache@v3.2.2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.OS }}-pub-cache-${{ hashFiles('./pubspec.lock') }}
+          restore-keys: ${{ runner.OS }}-pub-cache-
+            
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Copy keystore.jks file
+        run: (echo ${{ secrets.KEYSTORE_JKS_BASE64 }} | base64 --decode) > $KEYSTORE_JKS
+        env:
+          KEYSTORE_JKS: ./android/app/watchtower.jks
+
+      - name: Copy key.properties file
+        run: (echo ${{ secrets.KEY_PROPERTIES_BASE64 }} | base64 --decode) > $KEY_PROPERTIES
+        env:
+          KEY_PROPERTIES: ./android/key.properties
+
+      - name: Artifacts Directory Setup
+        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Flutter Build 
+        run: |
+          flutter build apk ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          cp $APK_FILE_PATH $ARTIFACTS_APK_PATH
+        env:
+          APK_FILE_PATH: ./build/app/outputs/apk/release/app-release.apk
+          ARTIFACTS_APK_PATH: ./artifacts/app-release.apk
+ 
+      - name: Artifacts APK Upload
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          
+  build_android_aab:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: prepare_build
+    outputs:
+      incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      version_number: ${{ needs.prepare_build.outputs.version_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+      
+      - name: Install Flutter
+        id: flutter_install
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+          architecture: x64
+        
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        
+      - name: Cache apt-install
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: ninja-build libgtk-3-dev
+        
+      - name: Cache dependencies
+        uses: actions/cache@v3.2.2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.OS }}-pub-cache-${{ hashFiles('./pubspec.lock') }}
+          restore-keys: ${{ runner.OS }}-pub-cache-
+            
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Copy keystore.jks file
+        run: (echo ${{ secrets.KEYSTORE_JKS_BASE64 }} | base64 --decode) > $KEYSTORE_JKS
+        env:
+          KEYSTORE_JKS: ./android/app/watchtower.jks
+
+      - name: Copy key.properties file
+        run: (echo ${{ secrets.KEY_PROPERTIES_BASE64 }} | base64 --decode) > $KEY_PROPERTIES
+        env:
+          KEY_PROPERTIES: ./android/key.properties
+
+      - name: Artifacts Directory Setup
+        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Flutter Build
+        run: |
+          flutter build appbundle ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          cp $AAB_FILE_PATH $ARTIFACTS_AAB_PATH
+        env:
+          AAB_FILE_PATH: ./build/app/outputs/bundle/release/app-release.aab
+          ARTIFACTS_AAB_PATH: ./artifacts/app-release.aab
+
+      - name: Artifacts AAB Upload
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          
+  build_linux:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: prepare_build
+    outputs:
+      incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      version_number: ${{ needs.prepare_build.outputs.version_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+      
+      - name: Install Flutter
+        id: flutter_install
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+          architecture: x64
+        
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        
+      - name: Cache apt-install
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: ninja-build libgtk-3-dev
+        
+      - name: Cache dependencies
+        uses: actions/cache@v3.2.2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.OS }}-pub-cache-${{ hashFiles('./pubspec.lock') }}
+          restore-keys: ${{ runner.OS }}-pub-cache-
+            
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Artifacts Directory Setup
+        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Flutter Build
+        run: |
+          flutter build linux ./lib/main.dart --release
+          ldd ./build/linux/x64/release/bundle/watch_tower
+          ls $LINUX_OUTPUT_DIRECTORY_PATH
+          cp -r $LINUX_OUTPUT_DIRECTORY_PATH $ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH
+        env:
+          LINUX_OUTPUT_DIRECTORY_PATH: ./build/linux/x64/release/bundle/*
+          ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH: ./artifacts/
+
+      - name: Artifacts Linux Upload
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: watchtower-linux.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          path: ${{ env.ARTIFACTS_DIRECTORY }}  
+          
+  build_windows:
+    runs-on: windows-latest
+    environment: github-actions-release
+    needs: prepare_build
+    outputs:
+      incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      version_number: ${{ needs.prepare_build.outputs.version_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+      
+      - name: Install Flutter
+        id: flutter_install
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+          architecture: x64
+        
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        
+      - name: Cache dependencies
+        uses: actions/cache@v3.2.2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.OS }}-pub-cache-${{ hashFiles('./pubspec.lock') }}
+          restore-keys: ${{ runner.OS }}-pub-cache-
+            
+      - name: Install dependencies
+        run: flutter pub get
+              
+      - name: Artifacts Directory Setup
+        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
+          
+      - name: Flutter Build
+        run: |
+          flutter build windows    
+          cp ./build/windows/runner/Release/watch_tower.exe ${{ env.ARTIFACTS_DIRECTORY }}
+          cp ./windows/libs/*.dll ${{ env.ARTIFACTS_DIRECTORY }}
+
+      - name: Artifacts Windows Upload
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: watchtower-windows.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          
+  deploy_android_apk:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: build_android_apk
+    steps:
+      - name: Artifacts Download
+        uses: actions/download-artifact@v3.0.1
+        with:
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+                        
+      - name: Create zip for apk
+        run: zip -j watchtower.${{ needs.build_android_apk.outputs.version_number }}.${{ needs.build_android_apk.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/*.apk/*
+          
+      - name: APK send to Telegram chat
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_android_apk.outputs.version_number }}.${{ needs.build_android_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      
+  deploy_google_play:
+      runs-on: ubuntu-latest
+      environment: github-actions-release
+      needs:  build_android_aab
+      steps:
+      - name: Artifacts Download
+        uses: actions/download-artifact@v3.0.2
+        with:
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+              
+      - name: Google Play Deploy
+        id: google_play_deploy
+        continue-on-error: true
+        uses: r0adkll/upload-google-play@v1.0.19
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
+          packageName: com.intellisoftalpin.watchtower
+          releaseFiles: ${{ env.ARTIFACTS_DIRECTORY }}/*.aab/*
+          track: internal
+          changesNotSentForReview: true
+          status: draft
+#           status: completed
+
+      - name: Google Play Deploy On Failure
+        uses: r0adkll/upload-google-play@v1.0.19
+        if: always() && steps.google_play_deploy.outcome == 'failure'
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
+          packageName: com.intellisoftalpin.watchtower
+          releaseFiles: ${{ env.ARTIFACTS_DIRECTORY }}/*.aab/*
+          track: internal
+          status: draft
+        
+      - name: Message send to Telegram chat after deployed to Google Play Deploy
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower build ${{ needs.build_android_aab.outputs.version_number }} (${{ needs.build_android_aab.outputs.incremented_build_number }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
+    
+  deploy_desktop_linux:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: build_linux
+    steps:
+      - name: Artifacts Download
+        uses: actions/download-artifact@v3.0.1
+        with:
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}
+     
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
+        
+      - name: Create zip for desktop linux
+        run: zip -r watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}.zip *
+          
+      - name: Desktop linux build send to Telegram chat
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      
+  deploy_desktop_windows:
+    runs-on: ubuntu-latest
+    environment: github-actions-release
+    needs: build_windows
+    steps:
+      - name: Artifacts Download
+        uses: actions/download-artifact@v3.0.1
+        with:
+          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}
+     
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
+        
+      - name: Create zip for desktop windows
+        run: zip -r watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip *
+          
+      - name: Desktop windows build send to Telegram chat
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      
