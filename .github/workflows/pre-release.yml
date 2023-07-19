@@ -12,11 +12,12 @@ env:
   ARTIFACTS_DIRECTORY: ./artifacts
   
 jobs:
-  pre_release:
+  analyze:
     uses: ./.github/workflows/test.yml
     
   prepare_build:
     runs-on: ubuntu-latest
+    needs: analyze
     environment: github-actions-release
     outputs:
       incremented_build_number: ${{ steps.build_version_bump.outputs.app_build_number }}
