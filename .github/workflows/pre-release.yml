@@ -17,7 +17,6 @@ on:
 
 env:
   FILE_APP_VERSION: ./VERSION
-#  ARTIFACTS_DIRECTORY: ./artifacts
   
 jobs:
   test:
@@ -344,7 +343,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: ./*.aab
+          releaseFiles: ./watchtower.*.aab
           track: internal
           changesNotSentForReview: true
           status: draft
@@ -356,7 +355,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: ./*.aab
+          releaseFiles: ./watchtower.*.aab
           track: internal
           status: draft
         
