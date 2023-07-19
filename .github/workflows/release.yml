@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - feature/ARC-205-github-actions
+      - main
 
 env:
   ARTIFACTS_DIRECTORY: ./artifacts
@@ -27,16 +27,12 @@ jobs:
         
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
-
-      - name: Display structure of Uploaded files
-        run: ls -R
         
       - name: Release Tag
         uses: tvdias/github-tagger@v0.0.2
         with:
          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
          tag: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
-#         message: Release ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
           
       - name: Github Release
         id: github_release
@@ -60,5 +56,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           
-      - name: Send message to Telegram after creating Release
+      - name: Send message to Telegram 
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower release ${{ env.VERSION }} (${{ env.BUILD_NUMBER }}) has been finished! 🚀" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
