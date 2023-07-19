@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - feature/ARC-205-github-actions
 
 env:
   ARTIFACTS_DIRECTORY: ./artifacts
