@@ -13,7 +13,6 @@ on:
   push:
     branches:
       - develop
-  pull_request:
 
 env:
   FILE_APP_VERSION: ./VERSION
