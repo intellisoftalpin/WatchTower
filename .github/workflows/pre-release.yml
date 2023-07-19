@@ -12,12 +12,12 @@ env:
   ARTIFACTS_DIRECTORY: ./artifacts
   
 jobs:
-  analyze:
+  tests:
     uses: ./.github/workflows/test.yml
     
   prepare_build:
     runs-on: ubuntu-latest
-    needs: analyze
+    needs: tests
     environment: github-actions-release
     outputs:
       incremented_build_number: ${{ steps.build_version_bump.outputs.app_build_number }}
@@ -118,8 +118,8 @@ jobs:
       - name: Artifacts APK Upload
         uses: actions/upload-artifact@v3.1.1
         with:
-          name: watchtower.$VERSION.$INCREMENTED_BUILD_NUMBER.apk
-          path: ./watchtower.$VERSION.$INCREMENTED_BUILD_NUMBER.apk
+          name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
+          path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
           
   build_android_aab:
     runs-on: ubuntu-latest
