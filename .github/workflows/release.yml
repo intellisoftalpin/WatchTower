@@ -1,0 +1,60 @@
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  ARTIFACTS_DIRECTORY: ./artifacts
+
+jobs:
+  pre_release:
+    uses: ./.github/workflows/pre-release.yml
+    secrets: inherit
+
+  create_release_tag:
+    runs-on: macos-latest
+    needs: pre_release
+    environment: github-actions-release
+    env:
+      BUILD_NUMBER: ${{ needs.pre_release.outputs.app_build_number }}
+      VERSION: ${{ needs.pre_release.outputs.app_version_number }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.5.3
+        
+      - name: Artifacts Download
+        uses: actions/download-artifact@v3.0.1
+        
+      - name: Release Tag
+        uses: tvdias/github-tagger@v0.0.2
+        with:
+         repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+         tag: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+          
+      - name: Github Release
+        id: github_release
+        uses: release-drafter/release-drafter@v5.21.1
+        with:
+          name: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+          tag: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          
+      - name: Github Release Artifacts Upload
+        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.8
+        with:
+          path: |
+            ./watchtower.*.aab/watchtower.*.aab
+            ./watchtower.*.apk/watchtower.*.apk
+            ./watchtower-windows.*/*
+            ./watchtower-linux.*/*
+          upload-release-files: true
+          release-upload-url: ${{ steps.github_release.outputs.upload_url }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          
+      - name: Send message to Telegram 
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower release ${{ env.VERSION }} (${{ env.BUILD_NUMBER }}) has been finished! 🚀" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1

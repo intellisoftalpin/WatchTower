@@ -1,9 +1,15 @@
-name: analyze
+name: test
 
-on: workflow_dispatch
+on: 
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+  pull_request:
 
 env:
-  ARTIFACTS_DIRECTORY: ./artifacts
+  ANALYZER_OUTPUT_FILE_NAME: analyze_output.txt
 
 jobs:
   analyze:
@@ -39,19 +45,13 @@ jobs:
             
       - name: Install dependencies
         run: flutter pub get
-        
-      - name: Artifacts Directory Setup
-        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
           
       - name: Analyze code 
-        run: |
-          flutter analyze --write=$ARTIFACTS_ANALYZE_FILE_PATH
-        env:
-          ARTIFACTS_ANALYZE_FILE_PATH: ./artifacts/analyzer-output.txt
+        run: flutter analyze --write=./${{ env.ANALYZER_OUTPUT_FILE_NAME }}
           
       - name: Artifacts analyze
         uses: actions/upload-artifact@v3.1.1
         if: failure()
         with:
-          name: analyzer-output.txt
-          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: ${{ env.ANALYZER_OUTPUT_FILE_NAME }}
+          path: ./${{ env.ANALYZER_OUTPUT_FILE_NAME }}

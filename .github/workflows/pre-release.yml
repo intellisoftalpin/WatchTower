@@ -1,14 +1,30 @@
 name: pre-release
 
-on: workflow_dispatch
+on: 
+  workflow_call:
+    outputs:
+      app_version_number:
+        description: "The application version number"
+        value: ${{ jobs.prepare_build.outputs.version_number }}
+      app_build_number:
+        description: "The application build number"
+        value: ${{ jobs.prepare_build.outputs.incremented_build_number }}
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+  pull_request:
 
 env:
   FILE_APP_VERSION: ./VERSION
-  ARTIFACTS_DIRECTORY: ./artifacts
-
+  
 jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    
   prepare_build:
     runs-on: ubuntu-latest
+    needs: test
     environment: github-actions-release
     outputs:
       incremented_build_number: ${{ steps.build_version_bump.outputs.app_build_number }}
@@ -47,6 +63,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: prepare_build
+    env:
+      INCREMENTED_BUILD_NUMBER: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      VERSION: ${{ needs.prepare_build.outputs.version_number }}
     outputs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
@@ -91,28 +110,28 @@ jobs:
         run: (echo ${{ secrets.KEY_PROPERTIES_BASE64 }} | base64 --decode) > $KEY_PROPERTIES
         env:
           KEY_PROPERTIES: ./android/key.properties
-
-      - name: Artifacts Directory Setup
-        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
           
       - name: Flutter Build 
         run: |
-          flutter build apk ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          flutter build apk ./lib/main.dart --release --build-number=${{ env.INCREMENTED_BUILD_NUMBER }} --build-name=${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           cp $APK_FILE_PATH $ARTIFACTS_APK_PATH
         env:
           APK_FILE_PATH: ./build/app/outputs/apk/release/app-release.apk
-          ARTIFACTS_APK_PATH: ./artifacts/app-release.apk
+          ARTIFACTS_APK_PATH: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
  
       - name: Artifacts APK Upload
         uses: actions/upload-artifact@v3.1.1
         with:
-          name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.apk
-          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
+          path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
           
   build_android_aab:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: prepare_build
+    env:
+      INCREMENTED_BUILD_NUMBER: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      VERSION: ${{ needs.prepare_build.outputs.version_number }}
     outputs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
@@ -157,28 +176,28 @@ jobs:
         run: (echo ${{ secrets.KEY_PROPERTIES_BASE64 }} | base64 --decode) > $KEY_PROPERTIES
         env:
           KEY_PROPERTIES: ./android/key.properties
-
-      - name: Artifacts Directory Setup
-        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
-          
+        
       - name: Flutter Build
         run: |
-          flutter build appbundle ./lib/main.dart --release --build-number=${{ needs.prepare_build.outputs.incremented_build_number }} --build-name=${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
+          flutter build appbundle ./lib/main.dart --release --build-number=${{ env.INCREMENTED_BUILD_NUMBER }} --build-name=${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           cp $AAB_FILE_PATH $ARTIFACTS_AAB_PATH
         env:
           AAB_FILE_PATH: ./build/app/outputs/bundle/release/app-release.aab
-          ARTIFACTS_AAB_PATH: ./artifacts/app-release.aab
+          ARTIFACTS_AAB_PATH: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
 
       - name: Artifacts AAB Upload
         uses: actions/upload-artifact@v3.1.1
         with:
-          name: watchtower.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}.aab
-          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
+          path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
           
   build_linux:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: prepare_build
+    env:
+      INCREMENTED_BUILD_NUMBER: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      VERSION: ${{ needs.prepare_build.outputs.version_number }}
     outputs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
@@ -213,30 +232,30 @@ jobs:
             
       - name: Install dependencies
         run: flutter pub get
-        
-      - name: Artifacts Directory Setup
-        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
           
       - name: Flutter Build
         run: |
           flutter build linux ./lib/main.dart --release
           ldd ./build/linux/x64/release/bundle/watch_tower
-          ls $LINUX_OUTPUT_DIRECTORY_PATH
+          mkdir watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           cp -r $LINUX_OUTPUT_DIRECTORY_PATH $ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH
         env:
           LINUX_OUTPUT_DIRECTORY_PATH: ./build/linux/x64/release/bundle/*
-          ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH: ./artifacts/
+          ARTIFACTS_LINUX_OUTPUT_DIRECTORY_PATH: ./watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
 
       - name: Artifacts Linux Upload
         uses: actions/upload-artifact@v3.1.1
         with:
-          name: watchtower-linux.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
-          path: ${{ env.ARTIFACTS_DIRECTORY }}  
+          name: watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          path: ./watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }} 
           
   build_windows:
     runs-on: windows-latest
     environment: github-actions-release
     needs: prepare_build
+    env:
+      INCREMENTED_BUILD_NUMBER: ${{ needs.prepare_build.outputs.incremented_build_number }}
+      VERSION: ${{ needs.prepare_build.outputs.version_number }}
     outputs:
       incremented_build_number: ${{ needs.prepare_build.outputs.incremented_build_number }}
       version_number: ${{ needs.prepare_build.outputs.version_number }}
@@ -266,47 +285,53 @@ jobs:
             
       - name: Install dependencies
         run: flutter pub get
-              
-      - name: Artifacts Directory Setup
-        run: mkdir ${{ env.ARTIFACTS_DIRECTORY }}
           
       - name: Flutter Build
         run: |
-          flutter build windows    
-          cp ./build/windows/runner/Release/watch_tower.exe ${{ env.ARTIFACTS_DIRECTORY }}
-          cp ./windows/libs/*.dll ${{ env.ARTIFACTS_DIRECTORY }}
+          flutter build windows
+          mkdir watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          cp ./build/windows/runner/Release/watch_tower.exe ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          cp ./windows/libs/*.dll ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
 
       - name: Artifacts Windows Upload
         uses: actions/upload-artifact@v3.1.1
         with:
-          name: watchtower-windows.${{ needs.prepare_build.outputs.version_number }}.${{ needs.prepare_build.outputs.incremented_build_number }}
-          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          path: ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           
   deploy_android_apk:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: build_android_apk
+    env:
+      INCREMENTED_BUILD_NUMBER: ${{ needs.build_android_apk.outputs.incremented_build_number }}
+      VERSION: ${{ needs.build_android_apk.outputs.version_number }}
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
         with:
-          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
+          path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
                         
       - name: Create zip for apk
-        run: zip -j watchtower.${{ needs.build_android_apk.outputs.version_number }}.${{ needs.build_android_apk.outputs.incremented_build_number }}.zip ${{ env.ARTIFACTS_DIRECTORY }}/*.apk/*
+        run: zip watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./*.apk
           
-      - name: APK send to Telegram chat
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_android_apk.outputs.version_number }}.${{ needs.build_android_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      - name: Send APK to Telegram
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_google_play:
       runs-on: ubuntu-latest
       environment: github-actions-release
       needs:  build_android_aab
+      env:
+        INCREMENTED_BUILD_NUMBER: ${{ needs.build_android_aab.outputs.incremented_build_number }}
+        VERSION: ${{ needs.build_android_aab.outputs.version_number }}
       steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.2
         with:
-          path: ${{ env.ARTIFACTS_DIRECTORY }}
+          name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
+          path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
               
       - name: Google Play Deploy
         id: google_play_deploy
@@ -315,7 +340,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: ${{ env.ARTIFACTS_DIRECTORY }}/*.aab/*
+          releaseFiles: ./watchtower.*.aab/watchtower.*.aab
           track: internal
           changesNotSentForReview: true
           status: draft
@@ -327,52 +352,56 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: ${{ env.ARTIFACTS_DIRECTORY }}/*.aab/*
+          releaseFiles: ./watchtower.*.aab/watchtower.*.aab
           track: internal
           status: draft
         
-      - name: Message send to Telegram chat after deployed to Google Play Deploy
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower build ${{ needs.build_android_aab.outputs.version_number }} (${{ needs.build_android_aab.outputs.incremented_build_number }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
+      - name: Send message to Telegram after deployed to Google Play Deploy
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower build ${{ env.VERSION }} (${{ env.INCREMENTED_BUILD_NUMBER }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
     
   deploy_desktop_linux:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: build_linux
+    env:
+        INCREMENTED_BUILD_NUMBER: ${{ needs.build_linux.outputs.incremented_build_number }}
+        VERSION: ${{ needs.build_linux.outputs.version_number }}
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
         with:
-          path: ${{ env.ARTIFACTS_DIRECTORY }}
-          name: watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}
+          name: watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          path: ./watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
      
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
         
       - name: Create zip for desktop linux
-        run: zip -r watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}.zip *
+        run: zip -r watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-linux.*/*
           
-      - name: Desktop linux build send to Telegram chat
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ needs.build_linux.outputs.version_number }}.${{ needs.build_linux.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      - name: Send desktop linux build to Telegram
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_desktop_windows:
     runs-on: ubuntu-latest
     environment: github-actions-release
     needs: build_windows
+    env:
+        INCREMENTED_BUILD_NUMBER: ${{ needs.build_windows.outputs.incremented_build_number }}
+        VERSION: ${{ needs.build_windows.outputs.version_number }}
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
         with:
-          path: ${{ env.ARTIFACTS_DIRECTORY }}
-          name: watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}
+          name: watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          path: ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
      
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: ${{ env.ARTIFACTS_DIRECTORY }}
         
       - name: Create zip for desktop windows
-        run: zip -r watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip *
+        run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-windows.*/*
           
-      - name: Desktop windows build send to Telegram chat
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ needs.build_windows.outputs.version_number }}.${{ needs.build_windows.outputs.incremented_build_number }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      - name: Send desktop windows build to Telegram chat
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
