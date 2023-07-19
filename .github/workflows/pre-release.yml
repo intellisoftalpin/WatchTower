@@ -12,12 +12,12 @@ env:
   ARTIFACTS_DIRECTORY: ./artifacts
   
 jobs:
-  tests:
+  test:
     uses: ./.github/workflows/test.yml
     
   prepare_build:
     runs-on: ubuntu-latest
-    needs: tests
+    needs: test
     environment: github-actions-release
     outputs:
       incremented_build_number: ${{ steps.build_version_bump.outputs.app_build_number }}
@@ -306,9 +306,12 @@ jobs:
         uses: actions/download-artifact@v3.0.1
 #        with:
 #          path: ${{ env.ARTIFACTS_DIRECTORY }}
+
+      - name: Display structure of Uploaded files
+        run: ls -R
                         
       - name: Create zip for apk
-        run: zip -j watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./*.apk
+        run: zip -j watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower.*.apk
           
 #      - name: APK send to Telegram chat
 #        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_android_apk.outputs.version_number }}.${{ needs.build_android_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
