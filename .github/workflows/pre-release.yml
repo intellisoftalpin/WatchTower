@@ -316,8 +316,8 @@ jobs:
       - name: Create zip for apk
         run: zip watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./*.apk
           
-#      - name: APK send to Telegram chat
-#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      - name: Send APK to Telegram
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_google_play:
       runs-on: ubuntu-latest
@@ -332,9 +332,6 @@ jobs:
         with:
           name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
           path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
-          
-      - name: Display structure of downloaded files
-        run: ls -R
               
       - name: Google Play Deploy
         id: google_play_deploy
@@ -359,8 +356,8 @@ jobs:
           track: internal
           status: draft
         
-#      - name: Message send to Telegram chat after deployed to Google Play Deploy
-#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower build ${{ env.VERSION }} (${{ env.INCREMENTED_BUILD_NUMBER }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
+      - name: Send message to Telegram after deployed to Google Play Deploy
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower build ${{ env.VERSION }} (${{ env.INCREMENTED_BUILD_NUMBER }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
     
   deploy_desktop_linux:
     runs-on: ubuntu-latest
@@ -382,8 +379,8 @@ jobs:
       - name: Create zip for desktop linux
         run: zip -r watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}}.zip ./watchtower-linux.*/*
           
-#      - name: Desktop linux build send to Telegram chat
-#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      - name: Send desktop linux build to Telegram
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_desktop_windows:
     runs-on: ubuntu-latest
@@ -405,6 +402,6 @@ jobs:
       - name: Create zip for desktop windows
         run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-windows.*/*
           
- #     - name: Desktop windows build send to Telegram chat
- #       run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+      - name: Send desktop windows build to Telegram chat
+        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
