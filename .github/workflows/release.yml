@@ -1,0 +1,53 @@
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/ARC-205-github-actions
+
+env:
+  ARTIFACTS_DIRECTORY: ./artifacts
+
+jobs:
+  pre_release:
+    uses: ./.github/workflows/pre-release.yml
+    secrets: inherit
+
+  create_release_tag:
+    runs-on: macos-latest
+    needs: pre_release
+    environment: github-actions-release
+    steps:
+      - name: Artifacts Download
+        uses: actions/download-artifact@v3.0.1
+
+      - name: Display structure of Uploaded files
+        run: ls -R
+        
+#      - name: Release Tag
+#        uses: simpleactions/create-tag@v1.0.0
+#        with:
+#         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+#         tag: ${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}
+#         message: Release ${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}
+          
+#      - name: Github Release
+#        id: github_release
+#        uses: release-drafter/release-drafter@v5.21.1
+#        with:
+#          name: ${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}
+#          tag: ${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          
+#      - name: Github Release Artifacts Upload
+#        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.8
+#        with:
+#          path: |
+#            ./*.aab/*_${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}.aab
+#            ./*.apk/*_${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}.apk
+#          upload-release-files: true
+#          release-upload-url: ${{ steps.github_release.outputs.upload_url }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
