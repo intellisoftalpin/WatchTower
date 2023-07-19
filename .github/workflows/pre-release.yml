@@ -1,6 +1,14 @@
 name: pre-release
 
 on: 
+  workflow_call:
+    outputs:
+      app_version_number:
+        description: "The application version number"
+        value: ${{ jobs.prepare_build.outputs.version_number }}
+      app_build_number:
+        description: "The application build number"
+        value: ${{ jobs.prepare_build.outputs.incremented_build_number }}
   workflow_dispatch:
   push:
     branches:
@@ -312,7 +320,7 @@ jobs:
         run: ls -R
                         
       - name: Create zip for apk
-        run: zip -j watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower.*.apk
+        run: zip watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./*.apk
           
 #      - name: APK send to Telegram chat
 #        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ needs.build_android_apk.outputs.version_number }}.${{ needs.build_android_apk.outputs.incremented_build_number }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
