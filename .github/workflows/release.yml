@@ -18,6 +18,9 @@ jobs:
     runs-on: macos-latest
     needs: pre_release
     environment: github-actions-release
+    env:
+      BUILD_NUMBER: ${{ needs.pre_release.outputs.app_build_number }}
+      VERSION: ${{ needs.pre_release.outputs.app_version_number }}
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
@@ -25,29 +28,31 @@ jobs:
       - name: Display structure of Uploaded files
         run: ls -R
         
-#      - name: Release Tag
-#        uses: simpleactions/create-tag@v1.0.0
-#        with:
-#         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-#         tag: ${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}
-#         message: Release ${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}
+      - name: Release Tag
+        uses: simpleactions/create-tag@v1.0.0
+        with:
+         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+         tag: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+         message: Release ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
           
-#      - name: Github Release
-#        id: github_release
-#        uses: release-drafter/release-drafter@v5.21.1
-#        with:
-#          name: ${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}
-#          tag: ${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Github Release
+        id: github_release
+        uses: release-drafter/release-drafter@v5.21.1
+        with:
+          name: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+          tag: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           
-#      - name: Github Release Artifacts Upload
-#        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.8
-#        with:
-#          path: |
-#            ./*.aab/*_${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}.aab
-#            ./*.apk/*_${{ needs.pre_release.outputs.app_version_number }}.${{ needs.pre_release.outputs.app_build_number }}.apk
-#          upload-release-files: true
-#          release-upload-url: ${{ steps.github_release.outputs.upload_url }}
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Github Release Artifacts Upload
+        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.8
+        with:
+          path: |
+            ./watchtower.*.aab/watchtower.*.aab
+            ./watchtower.*.apk/watchtower.*.apk
+            ./watchtower-windows.*/*
+            ./watchtower-linux.*/*
+          upload-release-files: true
+          release-upload-url: ${{ steps.github_release.outputs.upload_url }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
