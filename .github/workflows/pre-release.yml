@@ -343,7 +343,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: ./watchtower.*.aab
+          releaseFiles: ./watchtower.*.aab/watchtower.*.aab
           track: internal
           changesNotSentForReview: true
           status: draft
@@ -355,7 +355,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: ./watchtower.*.aab
+          releaseFiles: ./watchtower.*.aab/watchtower.*.aab
           track: internal
           status: draft
         
