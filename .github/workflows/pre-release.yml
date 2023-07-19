@@ -304,8 +304,9 @@ jobs:
     steps:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
-#        with:
-#          path: ${{ env.ARTIFACTS_DIRECTORY }}
+        with:
+          name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
+          path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
 
       - name: Display structure of Uploaded files
         run: ls -R
