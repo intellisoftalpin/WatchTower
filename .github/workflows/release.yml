@@ -32,11 +32,11 @@ jobs:
         run: ls -R
         
       - name: Release Tag
-        uses: negz/create-tag@v1
+        uses: tvdias/github-tagger@v0.0.2
         with:
-         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-         version: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
-         message: Release ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+         repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+         tag: ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+#         message: Release ${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
           
       - name: Github Release
         id: github_release
