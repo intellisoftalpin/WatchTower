@@ -311,9 +311,6 @@ jobs:
         with:
           name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
           path: ./apk
-
-      - name: Display structure of dowloaded files
-        run: ls -R
                         
       - name: Create zip for apk
         run: zip -r watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./apk/*.apk
@@ -334,9 +331,6 @@ jobs:
         with:
           name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
           path: ./aab
-          
-      - name: Display structure of dowloaded files
-        run: ls -R
               
       - name: Google Play Deploy
         id: google_play_deploy
@@ -377,9 +371,6 @@ jobs:
         with:
           name: watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           path: ./watchtower-linux
-     
-      - name: Display structure of downloaded files
-        run: ls -R
         
       - name: Create zip for desktop linux
         run: zip -r watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-linux/*
@@ -400,10 +391,7 @@ jobs:
         with:
           name: watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           path: ./watchtower-windows
-     
-      - name: Display structure of downloaded files
-        run: ls -R
-        
+
       - name: Create zip for desktop windows
         run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-windows/*
           
