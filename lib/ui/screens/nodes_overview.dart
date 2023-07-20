@@ -29,10 +29,13 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
   Future<bool>? errorMessage;
   AppLifecycle isNodesOverviewScreenBackground = AppLifecycle.active;
   var scaffoldKey = GlobalKey<ScaffoldState>();
+  int timeAdd = 1;
+  late Timer _timer;
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _timer.cancel();
     super.dispose();
   }
 
@@ -43,16 +46,16 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
 
   @override
   initState() {
+    showNextUpdateTime = '-${updateSettingsTime.inSeconds - 1}s';
     previousScreenMobile = ScreensMobile.nodesOverview;
     manualUpdateTimer?.cancel();
     autoUpdateTimer?.cancel();
     timer?.cancel();
     errorMessage = errorMessageFuture();
     super.initState();
-    if (mounted) {
-      timer = Timer.periodic(const Duration(milliseconds: 10),
-          (Timer t) => checkTokenExpiration(context));
-    }
+    timer = Timer.periodic(const Duration(milliseconds: 500),
+        (Timer t) => checkTokenExpiration(context));
+
     WidgetsBinding.instance.addObserver(this);
     DateTime now = DateTime.now();
     lastUpdateTime =
@@ -66,22 +69,21 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
       }
     });
 
-    next = now.add(updateSettingsTime);
+    ///next = now.add(updateSettingsTime);
     if (mode == UpdateMode.auto) {
-      autoUpdateTimer = Timer.periodic(
-        const Duration(milliseconds: 30),
-            (Timer t) => timeBeforeAutoUpdate(),);
-    }
-
-    if (mode == UpdateMode.manual) {
+      _timer = Timer.periodic(
+        const Duration(seconds: 1),
+            (Timer t) => timeBeforeAutoUpdate(),
+      );
+    } else if (mode == UpdateMode.manual) {
       showLastUpdateTime = '0s';
       enableRefreshIndicator = true;
-      manualUpdateTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-        timeLastAutoUpdate(manualUpdateTimer?.tick);
-
-      });
+      manualUpdateTimer =
+          Timer.periodic(const Duration(seconds: 1), (Timer t) {
+            timeLastAutoUpdate(manualUpdateTimer?.tick);
+            setState(() {});
+          });
     }
-    setState(() {});
   }
 
   @override
@@ -192,6 +194,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                         : Colors.black,
                   ),
                 )),
+
             ///actions: [
             ///  Padding(
             ///    padding: const EdgeInsets.only(right: 20),
@@ -236,13 +239,17 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                                   enableRefreshIndicator = false;
                                   manualUpdateTimer?.cancel();
                                   next = DateTime.now().add(updateSettingsTime);
-                                  autoUpdateTimer = Timer.periodic(
-                                      const Duration(milliseconds: 50),
-                                      (Timer t) => timeBeforeAutoUpdate(),);
+                                  showNextUpdateTime =
+                                      '-${updateSettingsTime.inSeconds - 1}s';
+                                  timeAdd = 1;
+                                  _timer = Timer.periodic(
+                                    const Duration(seconds: 1),
+                                    (Timer t) => timeBeforeAutoUpdate(),
+                                  );
                                 } else {
                                   box.write('mode', 'manual');
                                   showLastUpdateTime = '0s';
-                                  autoUpdateTimer?.cancel();
+                                  _timer.cancel();
                                   enableRefreshIndicator = true;
                                   manualUpdateTimer = Timer.periodic(
                                       const Duration(seconds: 1), (Timer t) {
@@ -377,9 +384,13 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
 
   Column nodeCardMobile(BuildContext context, AsyncSnapshot snapshotNodes) {
     List<Widget> nodes = [];
+    List<String?> _tickers = [];
     nodes.add(
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
     );
+    for (var data in nodesList) {
+      _tickers.add(data.ticker);
+    }
     for (int i = 0; i < nodesList.length; i++) {
       nodes.add(
         Padding(
@@ -411,7 +422,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${nodeTickers[i]}',
+                              '${_tickers[i]}',
                               //'${snapshotNodes.data[0].ticker}',
                               style: const TextStyle(
                                   color: Colors.black, fontSize: 22),
@@ -708,8 +719,8 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                                   end: Alignment.topCenter),
                               borderRadius: BorderRadius.circular(10)),
                       child: const Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 9),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 4, vertical: 9),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -742,13 +753,17 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                         enableRefreshIndicator = false;
                         manualUpdateTimer?.cancel();
                         next = DateTime.now().add(updateSettingsTime);
-                        autoUpdateTimer = Timer.periodic(
-                            const Duration(milliseconds: 50),
-                            (Timer t) => timeBeforeAutoUpdate(),);
+                        showNextUpdateTime =
+                            '-${updateSettingsTime.inSeconds - 1}s';
+                        timeAdd = 1;
+                        _timer = Timer.periodic(
+                          const Duration(seconds: 1),
+                          (Timer t) => timeBeforeAutoUpdate(),
+                        );
                       } else {
                         box.write('mode', 'manual');
                         showLastUpdateTime = '0s';
-                        autoUpdateTimer?.cancel();
+                        _timer.cancel();
                         enableRefreshIndicator = true;
                         manualUpdateTimer = Timer.periodic(
                             const Duration(seconds: 1), (Timer t) {
@@ -872,6 +887,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
             //   ),
             // ),
             const Spacer(),
+
             ///FloatingActionButton(
             ///  onPressed: () {},
             ///  backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -900,6 +916,10 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
 
   Row nodeCardDesktop(BuildContext context) {
     List<Widget> nodes = [];
+    List<String?> _tickers = [];
+    for (var data in nodesList) {
+      _tickers.add(data.ticker);
+    }
     for (int i = 0; i < nodesList.length; i++) {
       nodes.add(
         Expanded(
@@ -935,7 +955,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${nodeTickers[i]}',
+                                  '${_tickers[i]}',
                                   style: GoogleFonts.montserrat(
                                       textStyle: const TextStyle(
                                           color: Colors.black, fontSize: 20)),
@@ -1175,6 +1195,11 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
     setState(() {});
   }
 
+  Future<List<NodeGroupModel>>? getList() async {
+    List<NodeGroupModel>? nodes = await getNodes(context);
+    return nodes;
+  }
+
   void updateData() {
     _nodes = getNodes(context).whenComplete(() {
       for (int i = 0; i < nodesList.length; i++) {
@@ -1191,23 +1216,34 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
   }
 
   void timeBeforeAutoUpdate() {
-    DateTime now = DateTime.now();
-    Duration difference = now.difference(next);
-    if (difference.inSeconds >= 0) {
-      next = now.add(updateSettingsTime);
-    }
-    int commonTimeSeconds = difference.inSeconds;
-    if (commonTimeSeconds == 0) {
+    timeAdd++;
+    int timeDiff = timeAdd - updateSettingsTime.inSeconds;
+    showNextUpdateTime = '${timeDiff}s';
+    if (timeDiff == 0) {
+      timeAdd = 1;
+      showNextUpdateTime = '-${updateSettingsTime.inSeconds - 1}s';
       updateData();
     }
-    showNextUpdateTime = '${commonTimeSeconds}s';
     setState(() {});
+
+    ///DateTime now = DateTime.now();
+    ///Duration difference = now.difference(next);
+    ///if (difference.inSeconds >= 0) {
+    ///  next = now.add(updateSettingsTime);
+    ///}
+    ///int commonTimeSeconds = difference.inSeconds;
+    ///showNextUpdateTime = '${commonTimeSeconds}s';
+    ///setState(() {});
+    ///if (commonTimeSeconds == 0) {
+    ///  updateData();
+    ///}
   }
 
   @override
   void didChangePlatformBrightness() {
-    platformBritness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
-    runApp( const InitialWidget());
+    platformBritness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    runApp(const InitialWidget());
   }
 
   @override
@@ -1216,7 +1252,7 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
       if (kDebugMode) {
         print('\n\n\n\n\n  PAUSED  \n\n\n\n');
       }
-      autoUpdateTimer?.cancel();
+      _timer.cancel();
       isNodesOverviewScreenBackground = AppLifecycle.paused;
     } else if (state == AppLifecycleState.resumed) {
       if (kDebugMode) {
@@ -1224,12 +1260,16 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
       }
       isNodesOverviewScreenBackground = AppLifecycle.resumed;
       updateData();
-      DateTime now = DateTime.now();
-      next = now.add(updateSettingsTime);
+      timeAdd = 0;
+      showNextUpdateTime = '-${updateSettingsTime.inSeconds - 1}s';
+
+      ///DateTime now = DateTime.now();
+      ///next = now.add(updateSettingsTime);
       if (mode == UpdateMode.auto) {
-        autoUpdateTimer = Timer.periodic(
-            const Duration(milliseconds: 30),
-            (Timer t) => timeBeforeAutoUpdate(),);
+        _timer = Timer.periodic(
+          const Duration(seconds: 1),
+          (Timer t) => timeBeforeAutoUpdate(),
+        );
       }
     }
   }
