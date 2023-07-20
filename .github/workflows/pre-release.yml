@@ -310,10 +310,13 @@ jobs:
         uses: actions/download-artifact@v3.0.1
         with:
           name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
-          path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.apk
+          path: ./apk
+
+      - name: Display structure of dowloaded files
+        run: ls -R
                         
       - name: Create zip for apk
-        run: zip watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./*.apk
+        run: zip -r watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./apk/*.apk
           
       - name: Send APK to Telegram
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
@@ -330,7 +333,10 @@ jobs:
         uses: actions/download-artifact@v3.0.2
         with:
           name: watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
-          path: ./watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.aab
+          path: ./aab
+          
+      - name: Display structure of dowloaded files
+        run: ls -R
               
       - name: Google Play Deploy
         id: google_play_deploy
@@ -339,7 +345,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: ./watchtower.*.aab/watchtower.*.aab
+          releaseFiles: ./aab/watchtower.*.aab
           track: internal
           changesNotSentForReview: true
           status: draft
@@ -351,7 +357,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_API_JSON_PLAIN }}
           packageName: com.intellisoftalpin.watchtower
-          releaseFiles: ./watchtower.*.aab/watchtower.*.aab
+          releaseFiles: ./aab/watchtower.*.aab
           track: internal
           status: draft
         
@@ -370,13 +376,13 @@ jobs:
         uses: actions/download-artifact@v3.0.1
         with:
           name: watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
-          path: ./watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          path: ./watchtower-linux
      
       - name: Display structure of downloaded files
         run: ls -R
         
       - name: Create zip for desktop linux
-        run: zip -r watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-linux.*/*
+        run: zip -r watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-linux/*
           
       - name: Send desktop linux build to Telegram
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
@@ -393,13 +399,13 @@ jobs:
         uses: actions/download-artifact@v3.0.1
         with:
           name: watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
-          path: ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          path: ./watchtower-windows
      
       - name: Display structure of downloaded files
         run: ls -R
         
       - name: Create zip for desktop windows
-        run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-windows.*/*
+        run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-windows/*
           
       - name: Send desktop windows build to Telegram chat
         run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
