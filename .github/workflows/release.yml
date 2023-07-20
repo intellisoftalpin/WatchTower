@@ -25,9 +25,6 @@ jobs:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
         
-      - name: Display structure of dowloaded files
-        run: ls -R
-        
       - name: Create zip for desktop windows
         run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.BUILD_NUMBER }}.zip ./watchtower-windows.*/*
         
