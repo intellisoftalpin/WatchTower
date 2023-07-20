@@ -28,6 +28,12 @@ jobs:
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
         
+      - name: Create zip for desktop windows
+        run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.BUILD_NUMBER }}.zip ./watchtower-windows.*/*
+        
+      - name: Create zip for desktop linux
+        run: zip -r watchtower-linux.${{ env.VERSION }}.${{ env._BUILD_NUMBER }}.zip ./watchtower-linux.*/*
+        
       - name: Release Tag
         uses: tvdias/github-tagger@v0.0.2
         with:
@@ -49,8 +55,8 @@ jobs:
           path: |
             ./watchtower.*.aab/watchtower.*.aab
             ./watchtower.*.apk/watchtower.*.apk
-            ./watchtower-windows.*/*
-            ./watchtower-linux.*/*
+            ./watchtower-windows.*.zip
+            ./watchtower-linux.*.zip
           upload-release-files: true
           release-upload-url: ${{ steps.github_release.outputs.upload_url }}
         env:
