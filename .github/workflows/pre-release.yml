@@ -289,6 +289,8 @@ jobs:
         run: |
           flutter build windows
           mkdir watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          ls -R ./build/windows/runner/Release
+          cp ./build/windows/runner/Release/data ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           cp ./build/windows/runner/Release/watch_tower.exe ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           cp ./windows/libs/*.dll ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
 
@@ -315,8 +317,8 @@ jobs:
       - name: Create zip for apk
         run: zip -r watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./apk/*.apk
           
-      - name: Send APK to Telegram
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#      - name: Send APK to Telegram
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower APK build is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_google_play:
       runs-on: ubuntu-latest
@@ -355,8 +357,8 @@ jobs:
           track: internal
           status: draft
         
-      - name: Send message to Telegram after deployed to Google Play Deploy
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower build ${{ env.VERSION }} (${{ env.INCREMENTED_BUILD_NUMBER }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
+#      - name: Send message to Telegram after deployed to Google Play Deploy
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "text=WatchTower build ${{ env.VERSION }} (${{ env.INCREMENTED_BUILD_NUMBER }}) has been sent to Google Play!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage --http1.1
     
   deploy_desktop_linux:
     runs-on: ubuntu-latest
@@ -375,8 +377,8 @@ jobs:
       - name: Create zip for desktop linux
         run: zip -r watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-linux/*
           
-      - name: Send desktop linux build to Telegram
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#      - name: Send desktop linux build to Telegram
+#        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-linux.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Linux is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
   deploy_desktop_windows:
     runs-on: ubuntu-latest
@@ -395,6 +397,6 @@ jobs:
       - name: Create zip for desktop windows
         run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip ./watchtower-windows/*
           
-      - name: Send desktop windows build to Telegram chat
-        run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
+#      - name: Send desktop windows build to Telegram chat
+ #       run: curl -v -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F document=@watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}.zip -F "caption=WatchTower build for Windows is ready!" https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument --http1.1
       
