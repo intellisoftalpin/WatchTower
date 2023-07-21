@@ -290,9 +290,11 @@ jobs:
           flutter build windows
           mkdir watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           ls -R ./build/windows/runner/Release
-          cp ./build/windows/runner/Release/data ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
-          cp ./build/windows/runner/Release/watch_tower.exe ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          cp -r ./build/windows/runner/Release/* ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           cp ./windows/libs/*.dll ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+#          cp ./build/windows/runner/Release/*.dll ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+#          cp ./build/windows/runner/Release/watch_tower.exe ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+#          cp ./windows/libs/*.dll ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
 
       - name: Artifacts Windows Upload
         uses: actions/upload-artifact@v3.1.1
