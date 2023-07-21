@@ -289,7 +289,6 @@ jobs:
         run: |
           flutter build windows
           mkdir watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
-          ls -R ./build/windows/runner/Release
           cp -r ./build/windows/runner/Release/* ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           cp ./windows/libs/*.dll ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
 
