@@ -289,7 +289,7 @@ jobs:
         run: |
           flutter build windows
           mkdir watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
-          cp ./build/windows/runner/Release/watch_tower.exe ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
+          cp -r ./build/windows/runner/Release/* ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
           cp ./windows/libs/*.dll ./watchtower-windows.${{ env.VERSION }}.${{ env.INCREMENTED_BUILD_NUMBER }}
 
       - name: Artifacts Windows Upload
