@@ -22,11 +22,14 @@ jobs:
       BUILD_NUMBER: ${{ needs.pre_release.outputs.app_build_number }}
       VERSION: ${{ needs.pre_release.outputs.app_version_number }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3.5.3
-        
       - name: Artifacts Download
         uses: actions/download-artifact@v3.0.1
+        
+      - name: Create zip for desktop windows
+        run: zip -r watchtower-windows.${{ env.VERSION }}.${{ env.BUILD_NUMBER }}.zip ./watchtower-windows.*/*
+        
+      - name: Create zip for desktop linux
+        run: zip -r watchtower-linux.${{ env.VERSION }}.${{ env.BUILD_NUMBER }}.zip ./watchtower-linux.*/*
         
       - name: Release Tag
         uses: tvdias/github-tagger@v0.0.2
@@ -47,10 +50,10 @@ jobs:
         uses: nanoufo/action-upload-artifacts-and-release-assets@v1.8
         with:
           path: |
-            ./watchtower.*.aab/watchtower.*.aab
-            ./watchtower.*.apk/watchtower.*.apk
-            ./watchtower-windows.*/*
-            ./watchtower-linux.*/*
+            ./watchtower.*/watchtower.*.aab
+            ./watchtower.*/watchtower.*.apk
+            ./watchtower-windows.*.zip
+            ./watchtower-linux.*.zip
           upload-release-files: true
           release-upload-url: ${{ steps.github_release.outputs.upload_url }}
         env:
