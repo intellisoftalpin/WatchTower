@@ -210,7 +210,7 @@ class _InitialWidgetState extends State<InitialWidget>
 
   @override
   void didChangePlatformBrightness() {
-    platformBritness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    platformBritness = MediaQuery.of(context).platformBrightness;
     runApp(InitialWidget());
   }
 
@@ -241,8 +241,6 @@ class _InitialWidgetState extends State<InitialWidget>
     }
     return MaterialApp(
       theme: theme,
-      darkTheme: darkTheme,
-      themeMode: themeManager.theme,
       debugShowCheckedModeBanner: false,
       home: const App(),
     );

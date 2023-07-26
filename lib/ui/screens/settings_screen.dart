@@ -705,7 +705,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // box.write('themeMode', 'system');
       }
     });
-    setState(() {});
     _preferences.setThemeMode('themeMode', themeMode);
+    setState(() {});
   }
 }
