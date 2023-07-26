@@ -49,13 +49,14 @@ Color kTimeUpdateBarNumberDark = const Color(0xFFA6A6A6);
 Color kTimeUpdateBarNumberLight = const Color(0xFF595959);
 //Color(0xFF1C2039)
 
+//margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.02, bottom: MediaQuery.of(context).size.height * 0.02),
 Padding desktopHeader(BuildContext context, DesktopPage page,
     GlobalKey<ScaffoldState> scaffoldKey) {
   return Padding(
       padding: EdgeInsets.symmetric(
               vertical: MediaQuery.of(context).size.height * 0.02)
           .copyWith(
-              left: MediaQuery.of(context).size.width * 0.05,
+              left: MediaQuery.of(context).size.width * 0.015,
               right: MediaQuery.of(context).size.width * 0.045),
       child: Stack(
         children: [

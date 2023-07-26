@@ -290,7 +290,7 @@ class _AboutScreenState extends State<AboutScreen> {
                           color: Theme.of(context).brightness ==
                               Brightness.dark
                               ? Colors.white
-                              : Colors.grey.shade700,
+                              : Colors.black,
                           fontWeight: FontWeight.w300,
                           fontSize: 14),
                     ),
@@ -303,7 +303,7 @@ class _AboutScreenState extends State<AboutScreen> {
                           color: Theme.of(context).brightness ==
                               Brightness.dark
                               ? Colors.white
-                              : Colors.grey.shade700,
+                              : Colors.black,
                           fontWeight: FontWeight.w300,
                           fontSize: 14),
                     ),
