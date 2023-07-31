@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tower/ui/screens/nodes_overview.dart';
+import 'package:tower/ui/screens/nodes_overview.dart' as overview;
 import 'package:tower/ui/screens/start_screen.dart';
+import '../../data/models/node_model.dart';
 import '../../data/repository/client.dart';
 import '../../data/shared_preferences/shared_preferences_repository.dart';
 import '../../main.dart';
@@ -23,38 +25,48 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool obscureText = true;
   bool connectButtonActive = true;
-  final SharedPreferencesRepository _preferences = SharedPreferencesRepository();
+  final SharedPreferencesRepository _preferences =
+      SharedPreferencesRepository();
   List<String> suggestionsListController = [];
   List<String> suggestionsListUsername = [];
   bool autocompleteController = false;
   bool autocompleteUsername = false;
 
-
-  void getSharedPreferences() async{
+  void getSharedPreferences() async {
     serverController.text = await _preferences.getController('controller');
     userController.text = await _preferences.getUsername('username');
-    if(kDebugMode){
+    if (kDebugMode) {
       print('USER CONTROLLER: ${userController.text}');
       print('SERVER CONTROLLER: ${serverController.text}');
     }
   }
 
-  void getShPrefSuggestionsController() async{
-    try{
-      suggestionsListController = await _preferences.getSuggestionsList('suggestions_server');
-    }catch(e){
-      if(kDebugMode){print(e);}
+  void getShPrefSuggestionsController() async {
+    try {
+      suggestionsListController =
+          await _preferences.getSuggestionsList('suggestions_server');
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
-   if(kDebugMode){print('SUGGESTIONS LIST CONTROLLER: $suggestionsListController');}
+    if (kDebugMode) {
+      print('SUGGESTIONS LIST CONTROLLER: $suggestionsListController');
+    }
   }
 
-  void getShPrefSuggestionsUsername() async{
-    try{
-      suggestionsListUsername = await _preferences.getSuggestionsList('suggestions_username');
-    }catch(e){
-      if(kDebugMode){print(e);}
+  void getShPrefSuggestionsUsername() async {
+    try {
+      suggestionsListUsername =
+          await _preferences.getSuggestionsList('suggestions_username');
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
-    if(kDebugMode){print('SUGGESTIONS LIST USERNAME: $suggestionsListUsername');}
+    if (kDebugMode) {
+      print('SUGGESTIONS LIST USERNAME: $suggestionsListUsername');
+    }
   }
 
   @override
@@ -71,8 +83,21 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  Future<List<NodeGroupModel>> getNodesLocal(BuildContext context) {
+    Future<List<NodeGroupModel>>? nodes = getNodes(context).whenComplete(() {
+      for (int i = 0; i < nodesList.length; i++) {
+        for (int k = 0; k < nodesList[i].servers!.length; k++) {
+          serversOverview = getStatistics(
+              nodesList[i].servers![k].uuid!, context, nodesList[i]);
+        }
+      }
+    });
+    overview.nodes = nodes;
+    return nodes;
+  }
+
   void _login() {
-    if(connectButtonActive == false) return;
+    if (connectButtonActive == false) return;
     if (passwordController.text.isEmpty ||
         userController.text.isEmpty ||
         serverController.text.isEmpty) {
@@ -86,8 +111,10 @@ class _LoginScreenState extends State<LoginScreen> {
         content: Text("One or more fields are incorrect"),
       ));
     } else {
-      setState(() { connectButtonActive = false;});
-     // String? token;
+      setState(() {
+        connectButtonActive = false;
+      });
+      // String? token;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         logIn(
           password: passwordController.text,
@@ -100,29 +127,46 @@ class _LoginScreenState extends State<LoginScreen> {
             tokenJWT = value;
             if (tokenJWT != null) {
               //if (tokenJWT!.length > 2) {
-            // if (token != null) {
-            //   if (token!.length > 2) {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                _preferences.setController('controller', serverController.text);
-                _preferences.setUsername('username', userController.text);
-                _preferences.setNotShowStartScreen('startScreen', true);
-                _preferences.setSuggestion('suggestions_server', serverController.text);
-                _preferences.setSuggestion('suggestions_username', userController.text);
-                _preferences.setJwtToken('token', tokenJWT!);
-                box.write('isTokenExpired', false);
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                    builder: (context) => const NodeOverviewScreen()), (route) => false);
-                //box.write('notShowStartScreen', true);
-                //box.write('token', '$token');
-                //box.write('username', userController.text);
-               // box.write('server', serverController.text);
-            //   }
-            // else {
-            //     ScaffoldMessenger.of(context).clearSnackBars();
-            //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            //       content: Text("One or more fields are incorrect"),
-            //     ));
-            //   }
+              // if (token != null) {
+              //   if (token!.length > 2) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              _preferences.setController('controller', serverController.text);
+              _preferences.setUsername('username', userController.text);
+              _preferences.setNotShowStartScreen('startScreen', true);
+              _preferences.setSuggestion(
+                  'suggestions_server', serverController.text);
+              _preferences.setSuggestion(
+                  'suggestions_username', userController.text);
+              _preferences.setJwtToken('token', tokenJWT!);
+              box.write('isTokenExpired', false);
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FutureBuilder<dynamic>(
+                            future: getNodesLocal(context),
+                            builder:
+                                (context, AsyncSnapshot<dynamic> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                return const NodeOverviewScreen();
+                              } else {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                            },
+                          )),
+                  (route) => false);
+              //box.write('notShowStartScreen', true);
+              //box.write('token', '$token');
+              //box.write('username', userController.text);
+              // box.write('server', serverController.text);
+              //   }
+              // else {
+              //     ScaffoldMessenger.of(context).clearSnackBars();
+              //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              //       content: Text("One or more fields are incorrect"),
+              //     ));
+              //   }
             } else {
               ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -216,14 +260,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             Padding(
                               padding: EdgeInsets.symmetric(
                                       horizontal:
-                                          MediaQuery.of(context).size.width * 0.05)
+                                          MediaQuery.of(context).size.width *
+                                              0.05)
                                   .copyWith(
                                       top: MediaQuery.of(context).size.height *
                                           0.02),
                               child: Column(
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Padding(
                                         padding: EdgeInsets.only(left: 20.0),
@@ -231,12 +277,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                           children: [
                                             Text(
                                               'Controller server',
-                                              style: TextStyle(color: Colors.black),
+                                              style: TextStyle(
+                                                  color: Colors.black),
                                             ),
                                             Text(
                                               '*',
                                               style: TextStyle(
-                                                  color: Colors.red, fontSize: 14),
+                                                  color: Colors.red,
+                                                  fontSize: 14),
                                             ),
                                           ],
                                         ),
@@ -251,37 +299,41 @@ class _LoginScreenState extends State<LoginScreen> {
                                               print('server: $serverString');
                                             }
                                           },
-                                            onTap: (){
-                                              autocompleteController = !autocompleteController;
-                                              autocompleteUsername = false;
-                                              setState(() {});
-                                        },
-                                          decoration: loginPageTextFormDecoration(
-                                              context,
-                                              'Controller server',
-                                              DeviceType.desktop,
-                                              FieldType.controller),
-                                          style:
-                                              const TextStyle(color: Colors.black),
+                                          onTap: () {
+                                            autocompleteController =
+                                                !autocompleteController;
+                                            autocompleteUsername = false;
+                                            setState(() {});
+                                          },
+                                          decoration:
+                                              loginPageTextFormDecoration(
+                                                  context,
+                                                  'Controller server',
+                                                  DeviceType.desktop,
+                                                  FieldType.controller),
+                                          style: const TextStyle(
+                                              color: Colors.black),
                                         ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 15),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Padding(
                                         padding: EdgeInsets.only(left: 20.0),
                                         child: Row(
                                           children: [
                                             Text('User',
-                                                style:
-                                                    TextStyle(color: Colors.black)),
+                                                style: TextStyle(
+                                                    color: Colors.black)),
                                             Text(
                                               '*',
                                               style: TextStyle(
-                                                  color: Colors.red, fontSize: 14),
+                                                  color: Colors.red,
+                                                  fontSize: 14),
                                             ),
                                           ],
                                         ),
@@ -296,25 +348,28 @@ class _LoginScreenState extends State<LoginScreen> {
                                               print('user: $userString');
                                             }
                                           },
-                                          onTap: (){
-                                            autocompleteUsername = !autocompleteUsername;
+                                          onTap: () {
+                                            autocompleteUsername =
+                                                !autocompleteUsername;
                                             autocompleteController = false;
                                             setState(() {});
                                           },
-                                          decoration: loginPageTextFormDecoration(
-                                              context,
-                                              'User',
-                                              DeviceType.desktop,
-                                              FieldType.username),
-                                          style:
-                                              const TextStyle(color: Colors.black),
+                                          decoration:
+                                              loginPageTextFormDecoration(
+                                                  context,
+                                                  'User',
+                                                  DeviceType.desktop,
+                                                  FieldType.username),
+                                          style: const TextStyle(
+                                              color: Colors.black),
                                         ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 15),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Padding(
                                         padding: EdgeInsets.only(left: 20.0),
@@ -322,12 +377,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                           children: [
                                             Text(
                                               'Password',
-                                              style: TextStyle(color: Colors.black),
+                                              style: TextStyle(
+                                                  color: Colors.black),
                                             ),
                                             Text(
                                               '*',
                                               style: TextStyle(
-                                                  color: Colors.red, fontSize: 14),
+                                                  color: Colors.red,
+                                                  fontSize: 14),
                                             ),
                                           ],
                                         ),
@@ -339,22 +396,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                           controller: passwordController,
                                           onChanged: (passwordString) {
                                             if (kDebugMode) {
-                                              print('password: $passwordString');
+                                              print(
+                                                  'password: $passwordString');
                                             }
                                           },
-                                          onTap: (){
+                                          onTap: () {
                                             autocompleteController = false;
                                             autocompleteUsername = false;
                                             setState(() {});
                                           },
-                                          decoration: loginPageTextFormDecoration(
-                                              context,
-                                              'Password',
-                                              DeviceType.desktop,
-                                              FieldType.password),
+                                          decoration:
+                                              loginPageTextFormDecoration(
+                                                  context,
+                                                  'Password',
+                                                  DeviceType.desktop,
+                                                  FieldType.password),
                                           obscureText: obscureText,
-                                          style:
-                                              const TextStyle(color: Colors.black),
+                                          style: const TextStyle(
+                                              color: Colors.black),
                                         ),
                                       ),
                                     ],
@@ -363,33 +422,37 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             Visibility(
-                                visible: autocompleteController && suggestionsListController.isNotEmpty,
+                                visible: autocompleteController &&
+                                    suggestionsListController.isNotEmpty,
                                 child: Positioned(
                                   top: 70,
-                                  left: windowWidth < 1000 ? MediaQuery.of(context).size.width / 6 : MediaQuery.of(context).size.width / 5,
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          color:  Colors.grey.shade200,
-                                          borderRadius: const BorderRadius.all(Radius.circular(8))
-                                      ),
-                                      child: suggestionsCardDesktopController(),
-                                  ),
-                                )
-                            ),
-                            Visibility(
-                                visible: autocompleteUsername && suggestionsListUsername.isNotEmpty,
-                                child: Positioned(
-                                  top: 150,
-                                  left: windowWidth < 1000 ? MediaQuery.of(context).size.width / 6 : MediaQuery.of(context).size.width / 5,
+                                  left: windowWidth < 1000
+                                      ? MediaQuery.of(context).size.width / 6
+                                      : MediaQuery.of(context).size.width / 5,
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        color:  Colors.grey.shade200,
-                                        borderRadius: const BorderRadius.all(Radius.circular(8))
-                                    ),
+                                        color: Colors.grey.shade200,
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(8))),
+                                    child: suggestionsCardDesktopController(),
+                                  ),
+                                )),
+                            Visibility(
+                                visible: autocompleteUsername &&
+                                    suggestionsListUsername.isNotEmpty,
+                                child: Positioned(
+                                  top: 150,
+                                  left: windowWidth < 1000
+                                      ? MediaQuery.of(context).size.width / 6
+                                      : MediaQuery.of(context).size.width / 5,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(8))),
                                     child: suggestionsCardDesktopUsername(),
                                   ),
-                                )
-                            ),
+                                )),
                           ],
                         ),
                         SizedBox(
@@ -410,23 +473,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                         borderRadius:
                                             BorderRadius.circular(10))),
                                 child: Ink(
-                                  decoration: connectButtonActive ?  BoxDecoration(
-                                      gradient: const LinearGradient(
-                                          colors: [
-                                            Color(0xFF3A7EFF),
-                                            Color(0xFF5690FF),
-                                          ],
-                                          begin: Alignment.bottomCenter,
-                                          end: Alignment.topCenter),
-                                      borderRadius: BorderRadius.circular(10)): BoxDecoration(
-                                      gradient: LinearGradient(
-                                          colors: [
-                                            Colors.grey.shade400,
-                                            Colors.grey.shade400
-                                          ],
-                                          begin: Alignment.bottomCenter,
-                                          end: Alignment.topCenter),
-                                      borderRadius: BorderRadius.circular(10)),
+                                  decoration: connectButtonActive
+                                      ? BoxDecoration(
+                                          gradient: const LinearGradient(
+                                              colors: [
+                                                Color(0xFF3A7EFF),
+                                                Color(0xFF5690FF),
+                                              ],
+                                              begin: Alignment.bottomCenter,
+                                              end: Alignment.topCenter),
+                                          borderRadius:
+                                              BorderRadius.circular(10))
+                                      : BoxDecoration(
+                                          gradient: LinearGradient(
+                                              colors: [
+                                                Colors.grey.shade400,
+                                                Colors.grey.shade400
+                                              ],
+                                              begin: Alignment.bottomCenter,
+                                              end: Alignment.topCenter),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
                                   child: Container(
                                     height: 55,
                                     alignment: Alignment.center,
@@ -474,8 +541,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const StartScreen()), (Route<dynamic> route) => false);
+            context,
+            MaterialPageRoute(builder: (context) => const StartScreen()),
+            (Route<dynamic> route) => false);
         passwordController.clear();
         userController.clear();
         serverController.clear();
@@ -501,47 +569,71 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   Positioned(
-                    child:
-                        SvgPicture.asset('assets/login_decoration/spot_1.svg', color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF172954) : null),
+                    child: SvgPicture.asset(
+                        'assets/login_decoration/spot_1.svg',
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF172954)
+                            : null),
                     top: MediaQuery.of(context).size.height * 0.05,
                     left: MediaQuery.of(context).size.width * 0.6,
                   ),
                   Positioned(
-                    child:
-                        SvgPicture.asset('assets/login_decoration/spot_2.svg', color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF172954) : null),
+                    child: SvgPicture.asset(
+                        'assets/login_decoration/spot_2.svg',
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF172954)
+                            : null),
                     top: MediaQuery.of(context).size.height * 0.08,
                     left: MediaQuery.of(context).size.width * 0.4,
                   ),
                   Positioned(
                       child: SvgPicture.asset(
-                          'assets/login_decoration/spot_3.svg', color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF214DA8) : null),
+                          'assets/login_decoration/spot_3.svg',
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF214DA8)
+                              : null),
                       top: MediaQuery.of(context).size.height * 0.15,
                       left: MediaQuery.of(context).size.width * 0.15),
                   Positioned(
-                    child:
-                        SvgPicture.asset('assets/login_decoration/spot_4.svg', color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF214DA8) : null),
+                    child: SvgPicture.asset(
+                        'assets/login_decoration/spot_4.svg',
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF214DA8)
+                            : null),
                     top: MediaQuery.of(context).size.height * 0.13,
                     right: MediaQuery.of(context).size.width * 0.2,
                   ),
                   Positioned(
-                    child:
-                        SvgPicture.asset('assets/login_decoration/spot_5.svg', color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF172954) : null),
+                    child: SvgPicture.asset(
+                        'assets/login_decoration/spot_5.svg',
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF172954)
+                            : null),
                     top: MediaQuery.of(context).size.height * 0.22,
                     left: MediaQuery.of(context).size.width * 0.3,
                   ),
                   Positioned(
                       child: SvgPicture.asset(
-                          'assets/login_decoration/spot_6.svg', color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF172954) : null),
+                          'assets/login_decoration/spot_6.svg',
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF172954)
+                              : null),
                       top: MediaQuery.of(context).size.height * 0.3,
                       left: MediaQuery.of(context).size.width * 0.2),
                   Positioned(
                       child: SvgPicture.asset(
-                          'assets/login_decoration/spot_7.svg', color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF172954) : null),
+                          'assets/login_decoration/spot_7.svg',
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF172954)
+                              : null),
                       top: MediaQuery.of(context).size.height * 0.3,
                       left: MediaQuery.of(context).size.width * 0.8),
                   Positioned(
                       child: SvgPicture.asset(
-                          'assets/login_decoration/spot_8.svg', color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF172954) : null),
+                          'assets/login_decoration/spot_8.svg',
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF172954)
+                              : null),
                       top: MediaQuery.of(context).size.height * 0.35,
                       left: MediaQuery.of(context).size.width * 0.45),
                 ],
@@ -550,8 +642,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   Padding(
                     padding: EdgeInsets.symmetric(
-                            horizontal: MediaQuery.of(context).size.height * 0.03)
-                        .copyWith(top: MediaQuery.of(context).size.height * 0.05),
+                            horizontal:
+                                MediaQuery.of(context).size.height * 0.03)
+                        .copyWith(
+                            top: MediaQuery.of(context).size.height * 0.05),
                     child: Column(
                       children: [
                         Column(
@@ -564,8 +658,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Text('Controller server'),
                                   Text(
                                     '*',
-                                    style:
-                                        TextStyle(color: Colors.red, fontSize: 15),
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 15),
                                   ),
                                 ],
                               ),
@@ -580,10 +674,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                     print('server: $serverString');
                                   }
                                 },
-                                onTap: (){
-                                    autocompleteController = !autocompleteController;
-                                    autocompleteUsername = false;
-                                    setState(() {});
+                                onTap: () {
+                                  autocompleteController =
+                                      !autocompleteController;
+                                  autocompleteUsername = false;
+                                  setState(() {});
                                 },
                                 keyboardType: TextInputType.text,
                                 decoration: loginPageTextFormDecoration(
@@ -606,8 +701,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Text('User'),
                                   Text(
                                     '*',
-                                    style:
-                                        TextStyle(color: Colors.red, fontSize: 15),
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 15),
                                   ),
                                 ],
                               ),
@@ -622,14 +717,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                     print('user: $userString');
                                   }
                                 },
-                                onTap: (){
-                                  autocompleteUsername = !autocompleteUsername ;
+                                onTap: () {
+                                  autocompleteUsername = !autocompleteUsername;
                                   autocompleteController = false;
                                   setState(() {});
                                 },
                                 keyboardType: TextInputType.text,
-                                decoration: loginPageTextFormDecoration(context,
-                                    'User', DeviceType.mobile, FieldType.username),
+                                decoration: loginPageTextFormDecoration(
+                                    context,
+                                    'User',
+                                    DeviceType.mobile,
+                                    FieldType.username),
                               ),
                             ),
                           ],
@@ -645,8 +743,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Text('Password'),
                                   Text(
                                     '*',
-                                    style:
-                                        TextStyle(color: Colors.red, fontSize: 15),
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 15),
                                   ),
                                 ],
                               ),
@@ -661,7 +759,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     print('password: $passwordString');
                                   }
                                 },
-                                onTap: (){
+                                onTap: () {
                                   autocompleteController = false;
                                   autocompleteUsername = false;
                                   setState(() {});
@@ -681,35 +779,38 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   Visibility(
-                      visible: autocompleteController && suggestionsListController.isNotEmpty,
+                      visible: autocompleteController &&
+                          suggestionsListController.isNotEmpty,
                       child: Positioned(
                         top: 100,
-                       left: MediaQuery.of(context).size.width / 3,
+                        left: MediaQuery.of(context).size.width / 3,
                         child: Container(
                             decoration: BoxDecoration(
-                                color:  Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white: Colors.grey.shade200,
-                                borderRadius: const BorderRadius.all(Radius.circular(8))
-                            ),
-                            child: suggestionsCardMobileController()
-                        ),
-                      )
-                  ),
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey.shade200,
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(8))),
+                            child: suggestionsCardMobileController()),
+                      )),
                   Visibility(
-                      visible: autocompleteUsername && suggestionsListUsername.isNotEmpty,
+                      visible: autocompleteUsername &&
+                          suggestionsListUsername.isNotEmpty,
                       child: Positioned(
                         top: 180,
                         left: MediaQuery.of(context).size.width / 3,
                         child: Container(
-                            decoration: BoxDecoration(
-                                color:  Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white: Colors.grey.shade200,
-                                borderRadius: const BorderRadius.all(Radius.circular(8))
-                            ),
-                            child: suggestionsCardMobileUsername(),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey.shade200,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(8))),
+                          child: suggestionsCardMobileUsername(),
                         ),
-                      )
-                  ),
+                      )),
                 ],
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.1),
@@ -727,23 +828,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30))),
                       child: Ink(
-                        decoration: connectButtonActive ?  BoxDecoration(
-                            gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF3A7EFF),
-                                  Color(0xFF5690FF),
-                                ],
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter),
-                            borderRadius: BorderRadius.circular(30)):
-                        BoxDecoration(gradient: LinearGradient(
-                            colors: [
-                              Colors.grey.shade400,
-                              Colors.grey.shade400
-                            ],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter),
-                            borderRadius: BorderRadius.circular(30)),
+                        decoration: connectButtonActive
+                            ? BoxDecoration(
+                                gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF3A7EFF),
+                                      Color(0xFF5690FF),
+                                    ],
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter),
+                                borderRadius: BorderRadius.circular(30))
+                            : BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: [
+                                      Colors.grey.shade400,
+                                      Colors.grey.shade400
+                                    ],
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter),
+                                borderRadius: BorderRadius.circular(30)),
                         child: Container(
                           height: 55,
                           alignment: Alignment.center,
@@ -830,71 +933,90 @@ class _LoginScreenState extends State<LoginScreen> {
     int maxLength = 0;
     List<Widget> suggestions = [];
 
-    if(suggestionsListController.isNotEmpty){
+    if (suggestionsListController.isNotEmpty) {
       maxLength = suggestionsListController.first.length;
     }
-    for(int i = 0; i <  suggestionsListController.length; i++){
+    for (int i = 0; i < suggestionsListController.length; i++) {
       int amountOfSymbols = suggestionsListController[i].length;
-      if(amountOfSymbols > maxLength){
+      if (amountOfSymbols > maxLength) {
         maxLength = amountOfSymbols;
       }
     }
-    for(int i = 0; i <  suggestionsListController.length; i++){
-      suggestions.add(InkWell(
-        onTap: (){
-          autocompleteController = !autocompleteController;
-          setState(() {
-            String text = suggestionsListController[i];
-            serverController.text = text;
-          });
-        },
-        child: SizedBox(
-          width: maxLength * 9,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        i == 0 ? const SizedBox(height: 8): const SizedBox.shrink(),
-                        Text(suggestionsListController[i], style: const TextStyle(color: Colors.black),),
-                        i < suggestionsListController.length ? const SizedBox(height: 8): const SizedBox.shrink(),
-                      ],
-                    ),
-                    InkWell(
-                      onTap: (){
-                        deleteSuggestionController(suggestionsListController, i);
-                      },
-                      child: Column(
+    for (int i = 0; i < suggestionsListController.length; i++) {
+      suggestions.add(
+        InkWell(
+          onTap: () {
+            autocompleteController = !autocompleteController;
+            setState(() {
+              String text = suggestionsListController[i];
+              serverController.text = text;
+            });
+          },
+          child: SizedBox(
+            width: maxLength * 9,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          i == 0 ? const SizedBox(height: 8): const SizedBox.shrink(),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: Icon(Icons.close, size: 18, color: Colors.black),
+                          i == 0
+                              ? const SizedBox(height: 8)
+                              : const SizedBox.shrink(),
+                          Text(
+                            suggestionsListController[i],
+                            style: const TextStyle(color: Colors.black),
                           ),
-                          i < suggestionsListController.length ? const SizedBox(height: 8): const SizedBox.shrink(),
+                          i < suggestionsListController.length
+                              ? const SizedBox(height: 8)
+                              : const SizedBox.shrink(),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                i + 1 != suggestionsListController.length ? Padding(
-                  padding:  const EdgeInsets.only(right: 8),
-                  child: Container(color: Colors.grey.shade300,
-                      width: double.infinity ,
-                      height: 2),
-                ): const SizedBox.shrink(),
-                i + 1 != suggestionsListController.length ? const SizedBox(height: 8): const SizedBox.shrink(),
-              ],
+                      InkWell(
+                        onTap: () {
+                          deleteSuggestionController(
+                              suggestionsListController, i);
+                        },
+                        child: Column(
+                          children: [
+                            i == 0
+                                ? const SizedBox(height: 8)
+                                : const SizedBox.shrink(),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Icon(Icons.close,
+                                  size: 18, color: Colors.black),
+                            ),
+                            i < suggestionsListController.length
+                                ? const SizedBox(height: 8)
+                                : const SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  i + 1 != suggestionsListController.length
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              color: Colors.grey.shade300,
+                              width: double.infinity,
+                              height: 2),
+                        )
+                      : const SizedBox.shrink(),
+                  i + 1 != suggestionsListController.length
+                      ? const SizedBox(height: 8)
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       );
     }
     return Column(children: suggestions);
@@ -904,71 +1026,89 @@ class _LoginScreenState extends State<LoginScreen> {
     int maxLength = 0;
     List<Widget> suggestions = [];
 
-    if(suggestionsListUsername.isNotEmpty){
+    if (suggestionsListUsername.isNotEmpty) {
       maxLength = suggestionsListUsername.first.length;
     }
-    for(int i = 0; i <  suggestionsListUsername.length; i++){
+    for (int i = 0; i < suggestionsListUsername.length; i++) {
       int amountOfSymbols = suggestionsListUsername[i].length;
-      if(amountOfSymbols > maxLength){
+      if (amountOfSymbols > maxLength) {
         maxLength = amountOfSymbols;
       }
     }
-    for(int i = 0; i <  suggestionsListUsername.length; i++){
-      suggestions.add(InkWell(
-        onTap: (){
-          autocompleteUsername = !autocompleteUsername;
-          setState(() {
-            String text = suggestionsListUsername[i];
-            userController.text = text;
-          });
-        },
-        child: SizedBox(
-          width: maxLength * 24,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        i == 0 ? const SizedBox(height: 8): const SizedBox.shrink(),
-                        Text(suggestionsListUsername[i], style: const TextStyle(color: Colors.black),),
-                        i < suggestionsListUsername.length ? const SizedBox(height: 8): const SizedBox.shrink(),
-                      ],
-                    ),
-                    InkWell(
-                      onTap: (){
-                        deleteSuggestionUsername(suggestionsListUsername, i);
-                      },
-                      child: Column(
+    for (int i = 0; i < suggestionsListUsername.length; i++) {
+      suggestions.add(
+        InkWell(
+          onTap: () {
+            autocompleteUsername = !autocompleteUsername;
+            setState(() {
+              String text = suggestionsListUsername[i];
+              userController.text = text;
+            });
+          },
+          child: SizedBox(
+            width: maxLength * 24,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          i == 0 ? const SizedBox(height: 8): const SizedBox.shrink(),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: Icon(Icons.close, size: 18, color: Colors.black),
+                          i == 0
+                              ? const SizedBox(height: 8)
+                              : const SizedBox.shrink(),
+                          Text(
+                            suggestionsListUsername[i],
+                            style: const TextStyle(color: Colors.black),
                           ),
-                          i < suggestionsListUsername.length ? const SizedBox(height: 8): const SizedBox.shrink(),
+                          i < suggestionsListUsername.length
+                              ? const SizedBox(height: 8)
+                              : const SizedBox.shrink(),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                i + 1 != suggestionsListUsername.length ? Padding(
-                  padding:  const EdgeInsets.only(right: 8),
-                  child: Container(color: Colors.grey.shade300,
-                      width: double.infinity ,
-                      height: 2),
-                ): const SizedBox.shrink(),
-                i + 1 != suggestionsListUsername.length ? const SizedBox(height: 8): const SizedBox.shrink(),
-              ],
+                      InkWell(
+                        onTap: () {
+                          deleteSuggestionUsername(suggestionsListUsername, i);
+                        },
+                        child: Column(
+                          children: [
+                            i == 0
+                                ? const SizedBox(height: 8)
+                                : const SizedBox.shrink(),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Icon(Icons.close,
+                                  size: 18, color: Colors.black),
+                            ),
+                            i < suggestionsListUsername.length
+                                ? const SizedBox(height: 8)
+                                : const SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  i + 1 != suggestionsListUsername.length
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              color: Colors.grey.shade300,
+                              width: double.infinity,
+                              height: 2),
+                        )
+                      : const SizedBox.shrink(),
+                  i + 1 != suggestionsListUsername.length
+                      ? const SizedBox(height: 8)
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       );
     }
     return Column(children: suggestions);
@@ -978,71 +1118,90 @@ class _LoginScreenState extends State<LoginScreen> {
     int maxLength = 0;
     List<Widget> suggestions = [];
 
-    if(suggestionsListController.isNotEmpty){
+    if (suggestionsListController.isNotEmpty) {
       maxLength = suggestionsListController.first.length;
     }
-    for(int i = 0; i <  suggestionsListController.length; i++){
+    for (int i = 0; i < suggestionsListController.length; i++) {
       int amountOfSymbols = suggestionsListController[i].length;
-      if(amountOfSymbols > maxLength){
+      if (amountOfSymbols > maxLength) {
         maxLength = amountOfSymbols;
       }
     }
-    for(int i = 0; i <  suggestionsListController.length; i++){
-      suggestions.add(InkWell(
-        onTap: (){
-          autocompleteController = !autocompleteController;
-          setState(() {
-            String text = suggestionsListController[i];
-          serverController.text = text;
-          });
-        },
-        child: SizedBox(
-          width: maxLength * 11,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        i == 0 ? const SizedBox(height: 8): const SizedBox.shrink(),
-                        Text(suggestionsListController[i], style: const TextStyle(color: Colors.black),),
-                         i < suggestionsListController.length ? const SizedBox(height: 8): const SizedBox.shrink(),
-                      ],
-                    ),
-                    InkWell(
-                      onTap: (){
-                        deleteSuggestionController(suggestionsListController, i);
-                      },
-                      child: Column(
+    for (int i = 0; i < suggestionsListController.length; i++) {
+      suggestions.add(
+        InkWell(
+          onTap: () {
+            autocompleteController = !autocompleteController;
+            setState(() {
+              String text = suggestionsListController[i];
+              serverController.text = text;
+            });
+          },
+          child: SizedBox(
+            width: maxLength * 11,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          i == 0 ? const SizedBox(height: 8): const SizedBox.shrink(),
-                         const Padding(
-                           padding: EdgeInsets.only(right: 8),
-                           child: Icon(Icons.close, size: 18, color: Colors.black),
-                         ),
-                          i < suggestionsListController.length ? const SizedBox(height: 8): const SizedBox.shrink(),
+                          i == 0
+                              ? const SizedBox(height: 8)
+                              : const SizedBox.shrink(),
+                          Text(
+                            suggestionsListController[i],
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                          i < suggestionsListController.length
+                              ? const SizedBox(height: 8)
+                              : const SizedBox.shrink(),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                i + 1 != suggestionsListController.length ? Padding(
-                  padding:  const EdgeInsets.only(right: 8),
-                  child: Container(color: Colors.grey.shade300,
-                      width: double.infinity ,
-                      height: 2),
-                ): const SizedBox.shrink(),
-                i + 1 != suggestionsListController.length ? const SizedBox(height: 8): const SizedBox.shrink(),
-              ],
+                      InkWell(
+                        onTap: () {
+                          deleteSuggestionController(
+                              suggestionsListController, i);
+                        },
+                        child: Column(
+                          children: [
+                            i == 0
+                                ? const SizedBox(height: 8)
+                                : const SizedBox.shrink(),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Icon(Icons.close,
+                                  size: 18, color: Colors.black),
+                            ),
+                            i < suggestionsListController.length
+                                ? const SizedBox(height: 8)
+                                : const SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  i + 1 != suggestionsListController.length
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              color: Colors.grey.shade300,
+                              width: double.infinity,
+                              height: 2),
+                        )
+                      : const SizedBox.shrink(),
+                  i + 1 != suggestionsListController.length
+                      ? const SizedBox(height: 8)
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       );
     }
     return Column(children: suggestions);
@@ -1052,122 +1211,154 @@ class _LoginScreenState extends State<LoginScreen> {
     int maxLength = 0;
     List<Widget> suggestions = [];
 
-    if(suggestionsListUsername.isNotEmpty){
+    if (suggestionsListUsername.isNotEmpty) {
       maxLength = suggestionsListUsername.first.length;
     }
-    for(int i = 0; i <  suggestionsListUsername.length; i++){
+    for (int i = 0; i < suggestionsListUsername.length; i++) {
       int amountOfSymbols = suggestionsListUsername[i].length;
-      if(amountOfSymbols > maxLength){
+      if (amountOfSymbols > maxLength) {
         maxLength = amountOfSymbols;
       }
     }
-    for(int i = 0; i <  suggestionsListUsername.length; i++){
-      suggestions.add(InkWell(
-        onTap: (){
-          autocompleteUsername = !autocompleteUsername;
-          setState(() {
-            String text = suggestionsListUsername[i];
-            userController.text = text;
-          });
-        },
-        child: SizedBox(
-          width: maxLength * 24,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        i == 0 ? const SizedBox(height: 8): const SizedBox.shrink(),
-                        Text(suggestionsListUsername[i], style: const TextStyle(color: Colors.black),),
-                        i < suggestionsListUsername.length ? const SizedBox(height: 8): const SizedBox.shrink(),
-                      ],
-                    ),
-                    InkWell(
-                      onTap: (){
-                        deleteSuggestionUsername(suggestionsListUsername, i);
-                      },
-                      child: Column(
+    for (int i = 0; i < suggestionsListUsername.length; i++) {
+      suggestions.add(
+        InkWell(
+          onTap: () {
+            autocompleteUsername = !autocompleteUsername;
+            setState(() {
+              String text = suggestionsListUsername[i];
+              userController.text = text;
+            });
+          },
+          child: SizedBox(
+            width: maxLength * 24,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          i == 0 ? const SizedBox(height: 8): const SizedBox.shrink(),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: Icon(Icons.close, size: 18, color: Colors.black),
+                          i == 0
+                              ? const SizedBox(height: 8)
+                              : const SizedBox.shrink(),
+                          Text(
+                            suggestionsListUsername[i],
+                            style: const TextStyle(color: Colors.black),
                           ),
-                          i < suggestionsListUsername.length ? const SizedBox(height: 8): const SizedBox.shrink(),
+                          i < suggestionsListUsername.length
+                              ? const SizedBox(height: 8)
+                              : const SizedBox.shrink(),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                i + 1 != suggestionsListUsername.length ? Padding(
-                  padding:  const EdgeInsets.only(right: 8),
-                  child: Container(color: Colors.grey.shade300,
-                      width: double.infinity ,
-                      height: 2),
-                ): const SizedBox.shrink(),
-                i + 1 != suggestionsListUsername.length ? const SizedBox(height: 8): const SizedBox.shrink(),
-              ],
+                      InkWell(
+                        onTap: () {
+                          deleteSuggestionUsername(suggestionsListUsername, i);
+                        },
+                        child: Column(
+                          children: [
+                            i == 0
+                                ? const SizedBox(height: 8)
+                                : const SizedBox.shrink(),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Icon(Icons.close,
+                                  size: 18, color: Colors.black),
+                            ),
+                            i < suggestionsListUsername.length
+                                ? const SizedBox(height: 8)
+                                : const SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  i + 1 != suggestionsListUsername.length
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              color: Colors.grey.shade300,
+                              width: double.infinity,
+                              height: 2),
+                        )
+                      : const SizedBox.shrink(),
+                  i + 1 != suggestionsListUsername.length
+                      ? const SizedBox(height: 8)
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       );
     }
     return Column(children: suggestions);
   }
 
-  void deleteSuggestionController(List<String> currentList, int index)async{
+  void deleteSuggestionController(List<String> currentList, int index) async {
     List<String> list = [];
     suggestionsListController.removeAt(index);
     setState(() {});
-    try{
+    try {
       list = await _preferences.getSuggestionsList('suggestions_server');
-    }catch(e){
-      if(kDebugMode){print(e);}
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
-    if(kDebugMode){print('SUGGESTIONS LIST BEFORE CLEARING: $list');}
+    if (kDebugMode) {
+      print('SUGGESTIONS LIST BEFORE CLEARING: $list');
+    }
     _preferences.removeShPrefByKey('suggestions_server');
-    var listAfterClearing = await _preferences.getSuggestionsList('suggestions_server');
+    var listAfterClearing =
+        await _preferences.getSuggestionsList('suggestions_server');
     /*
     listAfterClearing can be null in two cases:
     - first log in
     - delete all suggestions
     */
-    if(kDebugMode){print('SUGGESTIONS LIST AFTER CLEARING: $listAfterClearing');}
-    for(int i = 0; i < currentList.length; i++){
-      if(kDebugMode){
+    if (kDebugMode) {
+      print('SUGGESTIONS LIST AFTER CLEARING: $listAfterClearing');
+    }
+    for (int i = 0; i < currentList.length; i++) {
+      if (kDebugMode) {
         print('NEW SUGGESTIONS LIST ITEMS:  ${currentList[i]}');
       }
       _preferences.setSuggestion('suggestions_server', currentList[i]);
     }
   }
 
-  void deleteSuggestionUsername(List<String> currentList, int index)async{
+  void deleteSuggestionUsername(List<String> currentList, int index) async {
     List<String> list = [];
     suggestionsListUsername.removeAt(index);
     setState(() {});
-    try{
+    try {
       list = await _preferences.getSuggestionsList('suggestions_username');
-    }catch(e){
-      if(kDebugMode){print(e);}
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
-    if(kDebugMode){print('SUGGESTIONS USERNAME LIST BEFORE CLEARING: $list');}
+    if (kDebugMode) {
+      print('SUGGESTIONS USERNAME LIST BEFORE CLEARING: $list');
+    }
     _preferences.removeShPrefByKey('suggestions_username');
-    var listAfterClearing = await _preferences.getSuggestionsList('suggestions_username');
+    var listAfterClearing =
+        await _preferences.getSuggestionsList('suggestions_username');
     /*
     listAfterClearing can be null in two cases:
     - first log in
     - delete all suggestions
     */
-    if(kDebugMode){print('SUGGESTIONS USERNAME LIST AFTER CLEARING: $listAfterClearing');}
-    for(int i = 0; i < currentList.length; i++){
-      if(kDebugMode){
+    if (kDebugMode) {
+      print('SUGGESTIONS USERNAME LIST AFTER CLEARING: $listAfterClearing');
+    }
+    for (int i = 0; i < currentList.length; i++) {
+      if (kDebugMode) {
         print('NEW SUGGESTIONS USERNAME LIST ITEMS:  ${currentList[i]}');
       }
       _preferences.setSuggestion('suggestions_username', currentList[i]);
