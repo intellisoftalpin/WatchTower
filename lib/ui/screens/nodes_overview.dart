@@ -388,7 +388,6 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
 
   Column nodeCardMobile(BuildContext context, AsyncSnapshot snapshotNodes) {
     List<Widget> nodes = [];
-    List<String?> nodeTickers = [];
     nodes.add(
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
     );
@@ -927,7 +926,6 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
 
   Row nodeCardDesktop(BuildContext context) {
     List<Widget> nodes = [];
-    List<String?> nodeTickers = [];
     nodesList.toSet().toList();
     for (int i = 0; i < nodesList.length; i++) {
       ///if (!nodeTickers.contains(nodesList[i].ticker)) {
