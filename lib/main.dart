@@ -9,11 +9,13 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tower/ui/common.dart';
 import 'package:tower/ui/screens/login_screen.dart';
 import 'package:tower/ui/screens/nodes_overview.dart';
+import 'package:tower/ui/screens/nodes_overview.dart' as overview;
 import 'package:tower/ui/screens/start_screen.dart';
 import 'package:tower/ui/settings_manager.dart';
 import 'package:tower/ui/theme/theme_constants.dart';
 import 'package:tower/ui/theme/theme_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import 'data/models/node_model.dart';
 import 'data/repository/client.dart';
 import 'data/shared_preferences/shared_preferences_repository.dart';
 
@@ -59,15 +61,14 @@ void main() async {
 
   await GetStorage.init();
 
-  if(Platform.isWindows || Platform.isLinux || Platform.isMacOS){
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = WindowOptions(
-      size: Size(1000, 680),
-      minimumSize: Size(850, 630),
-      center: true,
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false
-    );
+        size: Size(1000, 680),
+        minimumSize: Size(850, 630),
+        center: true,
+        backgroundColor: Colors.transparent,
+        skipTaskbar: false);
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
@@ -134,6 +135,19 @@ class _AppState extends State<App> {
     return defineInitialScreen(context);
   }
 
+  Future<List<NodeGroupModel>> getNodesLocal(BuildContext context) {
+    Future<List<NodeGroupModel>>? nodes = getNodes(context).whenComplete(() {
+      for (int i = 0; i < nodesList.length; i++) {
+        for (int k = 0; k < nodesList[i].servers!.length; k++) {
+          serversOverview = getStatistics(
+              nodesList[i].servers![k].uuid!, context, nodesList[i]);
+        }
+      }
+    });
+    overview.nodes = nodes;
+    return nodes;
+  }
+
   Widget defineInitialScreen(BuildContext context) {
     //  String? token = box.read('token');
     if (kDebugMode) {
@@ -145,7 +159,16 @@ class _AppState extends State<App> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             if (tokenJWT is String) {
-              return const NodeOverviewScreen();
+              return FutureBuilder<dynamic>(
+                future: getNodesLocal(context),
+                builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return const NodeOverviewScreen();
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              );
             } else if (notShowStartScreen == true) {
               return const LoginScreen();
             } else if (notShowStartScreen == false) {
@@ -193,7 +216,8 @@ class _InitialWidgetState extends State<InitialWidget>
     // if(token is String){
     //   getDataFromLocStorage();
     // }
-    platformBritness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    platformBritness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     themeManager.addListener(() {
       if (mounted) {
         setState(() {});
