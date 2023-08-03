@@ -16,7 +16,7 @@ int _serverPort = 0;
 //String? _accessToken;
 String? tokenJWT;
 List<String> _uuid = [];
-late GetStatisticResponse _response;
+GetStatisticResponse? _response;
 late ClientChannel _channel;
 late CardanoClient cardanoClient;
 List<NodeGroupModel> nodesList = [];

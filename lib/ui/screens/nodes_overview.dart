@@ -391,47 +391,141 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
     nodes.add(
       SizedBox(height: MediaQuery.of(context).size.height * 0.02),
     );
-    nodesList.toSet().toList();
-    for (int i = 0; i < nodesList.length; i++) {
-      ///if (!nodeTickers.contains(nodesList[i].ticker)) {
-        nodes.add(
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.05,
-                vertical: MediaQuery.of(context).size.height * 0.02),
-            child: InkWell(
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ServersOverviewScreen(
-                              clickedNode: nodesList[i],
-                            )),
-                    (route) => false);
-              },
-              child: Container(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width * 0.05,
-                      vertical: MediaQuery.of(context).size.height * 0.02),
-                  child: Column(
-                    children: [
-                      Container(
+    List<String> nodeNames = [];
+    for (var data in nodesList) {
+      if (data.ticker != null) {
+        nodeNames.add(data.ticker!);
+      }
+    }
+    nodeNames = nodeNames.asMap().values.toSet().toList();
+    for (int i = 0; i < nodeNames.length; i++) {
+      nodes.add(
+        Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.05,
+              vertical: MediaQuery.of(context).size.height * 0.02),
+          child: InkWell(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ServersOverviewScreen(
+                            clickedNode: nodesList[i],
+                          )),
+                  (route) => false);
+            },
+            child: Container(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.05,
+                    vertical: MediaQuery.of(context).size.height * 0.02),
+                child: Column(
+                  children: [
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${nodesList[i].ticker}',
+                              //'${snapshotNodes.data[0].ticker}',
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 22),
+                            ),
+                            getStatusStyle(
+                                context, '${nodesList[i].nodeStatus}',
+                                textSize: 16),
+                          ],
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.white70,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.transparent
+                                    : Colors.grey.shade300,
+                            offset: const Offset(
+                              0.0,
+                              6.0,
+                            ),
+                            blurRadius: 3.0,
+                            spreadRadius: 0.0,
+                          ),
+                          BoxShadow(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.transparent
+                                    : Colors.grey.shade300,
+                            offset: const Offset(
+                              0.0,
+                              -0.0,
+                            ),
+                            blurRadius: 2.0,
+                            spreadRadius: 0.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.height * 0.02),
+                      child: Container(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 10),
+                              horizontal: 14, vertical: 8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${nodesList[i].ticker}',
-                                //'${snapshotNodes.data[0].ticker}',
-                                style: const TextStyle(
-                                    color: Colors.black, fontSize: 22),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Active Stake: ', style: st2),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text('Delegators: ', style: st2),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text('Minted blocks: ', style: st2),
+                                ],
                               ),
-                              getStatusStyle(
-                                  context, '${nodesList[i].nodeStatus}',
-                                  textSize: 16),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '39.51k',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.95),
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    '29',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.95),
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    '7',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.95),
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -439,138 +533,45 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.white
                               : Colors.white70,
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.transparent
-                                  : Colors.grey.shade300,
-                              offset: const Offset(
-                                0.0,
-                                6.0,
-                              ),
-                              blurRadius: 3.0,
-                              spreadRadius: 0.0,
-                            ),
-                            BoxShadow(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.transparent
-                                  : Colors.grey.shade300,
-                              offset: const Offset(
-                                0.0,
-                                -0.0,
-                              ),
-                              blurRadius: 2.0,
-                              spreadRadius: 0.0,
-                            ),
-                          ],
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical:
-                                MediaQuery.of(context).size.height * 0.02),
-                        child: Container(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Active Stake: ', style: st2),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text('Delegators: ', style: st2),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text('Minted blocks: ', style: st2),
-                                  ],
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '39.51k',
-                                      style: TextStyle(
-                                          color: Colors.black.withOpacity(0.95),
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(
-                                      '29',
-                                      style: TextStyle(
-                                          color: Colors.black.withOpacity(0.95),
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(
-                                      '7',
-                                      style: TextStyle(
-                                          color: Colors.black.withOpacity(0.95),
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.white70,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                      ),
-                      getServersMobile(i, context),
-                    ],
-                  ),
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? kDarkCardColor
-                      : const Color.fromRGBO(250, 250, 255, 0.8),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.transparent
-                          : Colors.grey.shade200,
-                      offset: const Offset(
-                        0.0,
-                        0.0,
-                      ),
-                      blurRadius: 4.0,
-                      spreadRadius: 0.0,
-                    ), //BoxShadow
-                    BoxShadow(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.transparent
-                          : Colors.grey.shade400,
-                      offset: const Offset(0, 6.0),
-                      blurRadius: 5.0,
-                      spreadRadius: 0.0,
                     ),
+                    getServersMobile(i, context),
                   ],
                 ),
               ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? kDarkCardColor
+                    : const Color.fromRGBO(250, 250, 255, 0.8),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.transparent
+                        : Colors.grey.shade200,
+                    offset: const Offset(
+                      0.0,
+                      0.0,
+                    ),
+                    blurRadius: 4.0,
+                    spreadRadius: 0.0,
+                  ), //BoxShadow
+                  BoxShadow(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.transparent
+                        : Colors.grey.shade400,
+                    offset: const Offset(0, 6.0),
+                    blurRadius: 5.0,
+                    spreadRadius: 0.0,
+                  ),
+                ],
+              ),
             ),
           ),
-        );
-      ///}
-     /// nodeTickers.add(nodesList[i].ticker);
+        ),
+      );
     }
     nodes.add(
       SizedBox(height: MediaQuery.of(context).size.height * 0.03),
@@ -926,83 +927,177 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
 
   Row nodeCardDesktop(BuildContext context) {
     List<Widget> nodes = [];
-    nodesList.toSet().toList();
-    for (int i = 0; i < nodesList.length; i++) {
-      ///if (!nodeTickers.contains(nodesList[i].ticker)) {
-        nodes.add(
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ServersOverviewScreen(
-                              clickedNode: nodesList[i],
-                            )),
-                    (route) => false);
-              },
-              child: Container(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width * 0.02,
-                      vertical: MediaQuery.of(context).size.height * 0.02),
-                  child: Column(
-                    children: [
-                      Container(
+    List<String> nodeNames = [];
+    for (var data in nodesList) {
+      if (data.ticker != null) {
+        nodeNames.add(data.ticker!);
+      }
+    }
+    nodeNames = nodeNames.asMap().values.toSet().toList();
+    for (int i = 0; i < nodeNames.length; i++) {
+      nodes.add(
+        Expanded(
+          child: InkWell(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ServersOverviewScreen(
+                            clickedNode: nodesList[i],
+                          )),
+                  (route) => false);
+            },
+            child: Container(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.02,
+                    vertical: MediaQuery.of(context).size.height * 0.02),
+                child: Column(
+                  children: [
+                    Container(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal:
+                                MediaQuery.of(context).size.width * 0.02,
+                            vertical:
+                                MediaQuery.of(context).size.height * 0.02),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${nodesList[i].ticker}',
+                                  style: GoogleFonts.montserrat(
+                                      textStyle: const TextStyle(
+                                          color: Colors.black, fontSize: 20)),
+                                ),
+                                getStatusStyle(
+                                    context, '${nodesList[i].nodeStatus}',
+                                    textSize: 16),
+                              ],
+                            ),
+                            const SizedBox(width: 30),
+                            GestureDetector(
+                              onTap: () {
+                                clearUserData();
+                                //clearTextControllers();
+                                timer?.cancel();
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginScreen()),
+                                    (route) => false);
+                              },
+                              child: Container(
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 3, horizontal: 7),
+                                  child: Text(
+                                    'Log out',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                ),
+                                decoration: const BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0)),
+                                  color: Color(0xFF5690FF),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.transparent
+                                    : Colors.grey.shade400,
+                            offset: const Offset(
+                              0.0,
+                              4.0,
+                            ),
+                            blurRadius: 2.0,
+                            spreadRadius: 0.0,
+                          ),
+                          BoxShadow(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.transparent
+                                    : Colors.grey.shade300,
+                            offset: const Offset(
+                              0.0,
+                              -0.0,
+                            ),
+                            blurRadius: 2.0,
+                            spreadRadius: 0.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.height * 0.03),
+                      child: Container(
                         child: Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal:
                                   MediaQuery.of(context).size.width * 0.02,
-                              vertical:
-                                  MediaQuery.of(context).size.height * 0.02),
+                              vertical: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
                             children: [
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    '${nodesList[i].ticker}',
-                                    style: GoogleFonts.montserrat(
-                                        textStyle: const TextStyle(
-                                            color: Colors.black, fontSize: 20)),
+                                  Text('Active Stake: ', style: st2),
+                                  const SizedBox(
+                                    height: 15,
                                   ),
-                                  getStatusStyle(
-                                      context, '${nodesList[i].nodeStatus}',
-                                      textSize: 16),
+                                  Text('Delegators: ', style: st2),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text('Minted blocks: ', style: st2),
                                 ],
                               ),
-                              const SizedBox(width: 30),
-                              GestureDetector(
-                                onTap: () {
-                                  clearUserData();
-                                  //clearTextControllers();
-                                  timer?.cancel();
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginScreen()),
-                                      (route) => false);
-                                },
-                                child: Container(
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 3, horizontal: 7),
-                                    child: Text(
-                                      'Log out',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w300),
-                                    ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '38.68k',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.95),
+                                        fontWeight: FontWeight.w500),
                                   ),
-                                  decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15.0)),
-                                    color: Color(0xFF5690FF),
+                                  const SizedBox(
+                                    height: 15,
                                   ),
-                                ),
+                                  Text(
+                                    '18',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.95),
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    '7',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.95),
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -1010,118 +1105,23 @@ class _NodeOverviewScreenState extends State<NodeOverviewScreen>
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.transparent
-                                  : Colors.grey.shade400,
-                              offset: const Offset(
-                                0.0,
-                                4.0,
-                              ),
-                              blurRadius: 2.0,
-                              spreadRadius: 0.0,
-                            ),
-                            BoxShadow(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.transparent
-                                  : Colors.grey.shade300,
-                              offset: const Offset(
-                                0.0,
-                                -0.0,
-                              ),
-                              blurRadius: 2.0,
-                              spreadRadius: 0.0,
-                            ),
-                          ],
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical:
-                                MediaQuery.of(context).size.height * 0.03),
-                        child: Container(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    MediaQuery.of(context).size.width * 0.02,
-                                vertical: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Active Stake: ', style: st2),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text('Delegators: ', style: st2),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text('Minted blocks: ', style: st2),
-                                  ],
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '38.68k',
-                                      style: TextStyle(
-                                          color: Colors.black.withOpacity(0.95),
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(
-                                      '18',
-                                      style: TextStyle(
-                                          color: Colors.black.withOpacity(0.95),
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(
-                                      '7',
-                                      style: TextStyle(
-                                          color: Colors.black.withOpacity(0.95),
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                      getServersDesktop(i, context),
-                    ],
-                  ),
+                    ),
+                    getServersDesktop(i, context),
+                  ],
                 ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? kDesktopCardColor
-                      : const Color(0xFFEFEFF3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? kDesktopCardColor
+                    : const Color(0xFFEFEFF3),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),
-        );
-      ///}
-      ///nodeTickers.add(nodesList[i].ticker);
-      ///if (i % 2 == 0 && i != 0) {
-      ///  nodes.add(SizedBox(width: MediaQuery.of(context).size.width * 0.02));
-      ///}
+        ),
+      );
     }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
