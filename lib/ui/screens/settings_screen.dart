@@ -227,7 +227,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Padding clickableStatusBar(double paddingValue, double progressNumberWidth1,
+  Widget clickableStatusBar(double paddingValue, double progressNumberWidth1,
       double progressNumberWidth2) {
     Color colorTenSec = kBlueColorUpdateMode;
     Color colorThirtySec = Theme.of(context).brightness == Brightness.dark
@@ -283,9 +283,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         (MediaQuery.of(context).size.width * 0.08);
     Color firstLine = colorThirtySec;
     Color secondLine = colorSixtySec;
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * paddingValue),
+    double width = MediaQuery.of(context).size.width - 60.0;
+    return Container(
+      alignment: Alignment.center,
+      width: width,
       child: Column(
         children: [
           Stack(
@@ -333,8 +334,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   )),
               Row(
                 children: [
-                  Expanded(
-                    flex: 1,
+                  SizedBox(
+                    width: width * 0.16,
                     child: InkWell(
                       onTap: () {
                         pressTenSec();
@@ -362,8 +363,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
-                  Expanded(
-                    flex: 2,
+                  SizedBox(
+                    width: width * 0.30,
                     child: InkWell(
                       onTap: () {
                         pressThirtySec();
@@ -384,8 +385,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
-                  Expanded(
-                    flex: 3,
+                  SizedBox(
+                    width: width * 0.54,
                     child: InkWell(
                       onTap: () {
                         pressSixtySec();
@@ -417,77 +418,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 10),
           Row(
             children: [
-              InkWell(
-                child: Text(
-                  '0',
-                  style: GoogleFonts.montserrat(
-                    textStyle: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? kTimeUpdateBarNumberDark
-                            : kTimeUpdateBarNumberLight),
+              Container(
+                alignment: Alignment.centerLeft,
+                width: width * 0.15,
+                child: InkWell(
+                  child: Text(
+                    '0',
+                    style: GoogleFonts.montserrat(
+                      textStyle: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? kTimeUpdateBarNumberDark
+                              : kTimeUpdateBarNumberLight),
+                    ),
                   ),
+                  onTap: () {
+                    pressTenSec();
+                  },
                 ),
-                onTap: () {
-                  pressTenSec();
-                },
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * progressNumberWidth1,
-              ),
-              InkWell(
-                child: Text(
-                  '10',
-                  style: GoogleFonts.montserrat(
-                    textStyle: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? kTimeUpdateBarNumberDark
-                            : kTimeUpdateBarNumberLight),
-                  ),
-                ),
-                onTap: () {
-                  pressTenSec();
-                },
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * progressNumberWidth2,
-              ),
-              InkWell(
-                child: Text(
-                  '30',
-                  style: GoogleFonts.montserrat(
-                    textStyle: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? kTimeUpdateBarNumberDark
-                            : kTimeUpdateBarNumberLight),
-                  ),
-                ),
-                onTap: () {
-                  pressThirtySec();
-                },
-              ),
-              const Spacer(),
-              InkWell(
-                child: Text(
-                  '60',
-                  style: GoogleFonts.montserrat(
-                    textStyle: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? kTimeUpdateBarNumberDark
-                            : kTimeUpdateBarNumberLight),
-                  ),
-                ),
-                onTap: () {
-                  pressSixtySec();
-                },
-              ),
+              Container(
+                  alignment: Alignment.centerLeft,
+                  width: width * 0.3,
+                  child: InkWell(
+                    child: Text(
+                      '10',
+                      style: GoogleFonts.montserrat(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? kTimeUpdateBarNumberDark
+                                    : kTimeUpdateBarNumberLight),
+                      ),
+                    ),
+                    onTap: () {
+                      pressTenSec();
+                    },
+                  )),
+              Container(
+                  alignment: Alignment.centerLeft,
+                  width: width * 0.5,
+                  child: InkWell(
+                    child: Text(
+                      '30',
+                      style: GoogleFonts.montserrat(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? kTimeUpdateBarNumberDark
+                                    : kTimeUpdateBarNumberLight),
+                      ),
+                    ),
+                    onTap: () {
+                      pressThirtySec();
+                    },
+                  )),
+              Container(
+                  alignment: Alignment.centerRight,
+                  width: width * 0.05,
+                  child: InkWell(
+                    child: Text(
+                      '60',
+                      style: GoogleFonts.montserrat(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? kTimeUpdateBarNumberDark
+                                    : kTimeUpdateBarNumberLight),
+                      ),
+                    ),
+                    onTap: () {
+                      pressSixtySec();
+                    },
+                  )),
             ],
           ),
         ],
@@ -508,6 +518,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           desktopHeader(context, DesktopPage.settings, scaffoldKey),
           Expanded(
             child: Container(
+              width: MediaQuery.of(context).size.width,
+              alignment: Alignment.center,
               child: Padding(
                 padding: EdgeInsets.symmetric(
                     vertical: MediaQuery.of(context).size.height * 0.04),
@@ -565,10 +577,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     //         .of(context)
                     //         .size
                     //         .height * 0.04),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width * 0.04,
-                          right: MediaQuery.of(context).size.width * 0.03),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width - 60.0,
                       child: Stack(
                         children: [
                           Row(
@@ -602,9 +613,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * 0.04),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width - 60.0,
                       child: Container(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? kDarkDividerColor
@@ -614,28 +625,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal:
-                                MediaQuery.of(context).size.width * 0.04),
-                        child: Column(
-                          children: [
-                            Align(
-                              child: Text(
-                                'Data updates (sec)',
-                                style: GoogleFonts.montserrat(
-                                  textStyle: const TextStyle(
-                                    fontSize: 16,
-                                  ),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width - 60.0,
+                      child: Column(
+                        children: [
+                          Align(
+                            child: Text(
+                              'Data updates (sec)',
+                              style: GoogleFonts.montserrat(
+                                textStyle: const TextStyle(
+                                  fontSize: 16,
                                 ),
                               ),
-                              alignment: Alignment.centerLeft,
                             ),
-                            const SizedBox(height: 15),
-                            clickableStatusBar(0, 0.08, 0.18),
-                          ],
-                        ),
+                            alignment: Alignment.centerLeft,
+                          ),
+                          const SizedBox(height: 15),
+                          clickableStatusBar(0, 0.08, 0.18),
+                        ],
                       ),
                     ),
                   ],

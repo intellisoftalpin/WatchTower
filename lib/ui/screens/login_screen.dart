@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tower/ui/screens/nodes_overview.dart';
 import 'package:tower/ui/screens/nodes_overview.dart' as overview;
@@ -294,6 +295,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 45,
                                         child: TextFormField(
                                           controller: serverController,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.allow(RegExp("[0-9.:]")),
+                                          ],
                                           onChanged: (serverString) {
                                             if (kDebugMode) {
                                               print('server: $serverString');
@@ -343,6 +347,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 45,
                                         child: TextFormField(
                                           controller: userController,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                                          ],
                                           onChanged: (userString) {
                                             if (kDebugMode) {
                                               print('user: $userString');
@@ -394,6 +401,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 45,
                                         child: TextFormField(
                                           controller: passwordController,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                                          ],
                                           onChanged: (passwordString) {
                                             if (kDebugMode) {
                                               print(
@@ -669,6 +679,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 50,
                               child: TextFormField(
                                 controller: serverController,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(RegExp("[0-9.:]")),
+                                ],
                                 onChanged: (serverString) {
                                   if (kDebugMode) {
                                     print('server: $serverString');
@@ -712,6 +725,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 50,
                               child: TextFormField(
                                 controller: userController,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                                ],
                                 onChanged: (userString) {
                                   if (kDebugMode) {
                                     print('user: $userString');
@@ -754,6 +770,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 50,
                               child: TextFormField(
                                 controller: passwordController,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                                ],
                                 onChanged: (passwordString) {
                                   if (kDebugMode) {
                                     print('password: $passwordString');
