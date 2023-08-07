@@ -49,8 +49,9 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
       next = now.add(updateSettingsTime);
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
-            const Duration(milliseconds: 30),
-            (Timer t) => timeBeforeAutoUpdate(),);
+          const Duration(milliseconds: 30),
+          (Timer t) => timeBeforeAutoUpdate(),
+        );
       }
     }
   }
@@ -87,8 +88,9 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
     if (mounted) {
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
-            const Duration(milliseconds: 30),
-            (Timer t) => timeBeforeAutoUpdate(),);
+          const Duration(milliseconds: 30),
+          (Timer t) => timeBeforeAutoUpdate(),
+        );
       }
 
       if (mode == UpdateMode.manual) {
@@ -151,15 +153,9 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
 
   @override
   Widget build(BuildContext context) {
-    windowHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    windowWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    if(kDebugMode){
+    windowHeight = MediaQuery.of(context).size.height;
+    windowWidth = MediaQuery.of(context).size.width;
+    if (kDebugMode) {
       print('Window height: $windowHeight');
       print('Window width: $windowWidth');
     }
@@ -318,8 +314,9 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                 manualUpdateTimer?.cancel();
                                 next = DateTime.now().add(updateSettingsTime);
                                 autoUpdateTimer = Timer.periodic(
-                                    const Duration(milliseconds: 30),
-                                    (Timer t) => timeBeforeAutoUpdate(),);
+                                  const Duration(milliseconds: 30),
+                                  (Timer t) => timeBeforeAutoUpdate(),
+                                );
                               } else {
                                 box.write('mode', 'manual');
                                 showLastUpdateTime = '0s';
@@ -620,7 +617,8 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                   fontWeight: FontWeight.w300),
                             ),
                             const Spacer(),
-                            getStatusStyle(context, '${serversList1[i].serverStatus}',
+                            getStatusStyle(
+                                context, '${serversList1[i].serverStatus}',
                                 textSize: 16)
                             // getStatusStyle('${widget.clickedNode.servers![i].serverStatus}', textSize: 16)
                           ],
@@ -677,71 +675,57 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
   Padding statuses(BuildContext context, int i) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      child: Stack(
+      child: Column(
         children: [
-          Column(
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
             children: [
+              Text(
+                // '${widget.clickedNode.servers![i].firstParam}: ',
+                '${serversList1[i].firstParam}: ',
+                style: st1,
+              ),
+              const Spacer(),
+              getStatusStyle(context, '${serversList1[i].firstParamStatus}'),
+              //  getStatusStyle('${widget.clickedNode.servers![i].firstParamStatus}'),
               const SizedBox(
-                height: 8,
-              ),
-              Row(
-                children: [
-                  Text(
-                    // '${widget.clickedNode.servers![i].firstParam}: ',
-                    '${serversList1[i].firstParam}: ',
-                    style: st1,
-                  ),
-                  const Spacer(),
-                  getStatusStyle(context, '${serversList1[i].firstParamStatus}'),
-                  //  getStatusStyle('${widget.clickedNode.servers![i].firstParamStatus}'),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Row(
-                children: [
-                  Text(
-                    '${serversList1[i].secondParam}: ',
-                    style: st1,
-                  ),
-                  const Spacer(),
-                  getStatusStyle(context, '${serversList1[i].secondParamStatus}'),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Row(
-                children: [
-                  Text(
-                    '${serversList1[i].thirdParam}: ',
-                    style: st1,
-                  ),
-                  const Spacer(),
-                  getStatusStyle(context, '${serversList1[i].thirdParamStatus}'),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                ],
+                height: 15,
               ),
             ],
           ),
-          Positioned(
-            right: MediaQuery.of(context).size.width * 0.35,
-            child: Container(
-              width: 2,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? kDarkDividerColor
-                  : Colors.white,
-              height: 70,
-            ),
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
+            children: [
+              Text(
+                '${serversList1[i].secondParam}: ',
+                style: st1,
+              ),
+              const Spacer(),
+              getStatusStyle(context, '${serversList1[i].secondParamStatus}'),
+              const SizedBox(
+                height: 15,
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
+            children: [
+              Text(
+                '${serversList1[i].thirdParam}: ',
+                style: st1,
+              ),
+              const Spacer(),
+              getStatusStyle(context, '${serversList1[i].thirdParamStatus}'),
+              const SizedBox(
+                height: 15,
+              ),
+            ],
           ),
         ],
       ),
@@ -749,7 +733,11 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
   }
 
   Scaffold desktopMarkup(BuildContext context) {
-    double widthBetweenContainers = windowWidth < 1000 ? MediaQuery.of(context).size.width * 0.1 :  windowWidth < 1200 ?  MediaQuery.of(context).size.width * 0.15 :  MediaQuery.of(context).size.width * 0.2;
+    double widthBetweenContainers = windowWidth < 1000
+        ? MediaQuery.of(context).size.width * 0.1
+        : windowWidth < 1200
+            ? MediaQuery.of(context).size.width * 0.15
+            : MediaQuery.of(context).size.width * 0.2;
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -764,7 +752,8 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
             children: [
               Column(
                 children: [
-                  desktopHeader(context, DesktopPage.serversOverview, scaffoldKey),
+                  desktopHeader(
+                      context, DesktopPage.serversOverview, scaffoldKey),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Padding(
                     padding: EdgeInsets.symmetric(
@@ -809,8 +798,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                     Radius.circular(10))),
                           ),
                         ),
-                        SizedBox(
-                            width: widthBetweenContainers),
+                        SizedBox(width: widthBetweenContainers),
                         Expanded(
                           child: Container(
                             child: Padding(
@@ -848,8 +836,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                     Radius.circular(10))),
                           ),
                         ),
-                        SizedBox(
-                            width: widthBetweenContainers),
+                        SizedBox(width: widthBetweenContainers),
                         Expanded(
                           child: Container(
                             child: Padding(
@@ -1026,8 +1013,9 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                                     next =
                                         DateTime.now().add(updateSettingsTime);
                                     autoUpdateTimer = Timer.periodic(
-                                        const Duration(milliseconds: 30),
-                                        (Timer t) => timeBeforeAutoUpdate(),);
+                                      const Duration(milliseconds: 30),
+                                      (Timer t) => timeBeforeAutoUpdate(),
+                                    );
                                   } else {
                                     box.write('mode', 'manual');
                                     showLastUpdateTime = '0s';
@@ -1209,47 +1197,52 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
                             const SizedBox(
                               width: 10,
                             ),
-                            windowWidth < 1000 ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                   '${serversList1[i].name}',
-                                  style: const TextStyle(
-                                      fontSize: 14, color: Colors.black),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  '${serversList1[i].type}',
-                                  style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w300),
-                                ),
-                              ],
-                            ): Row(children: [
-                              Text(
-                                '${serversList1[i].name}',
-                                style: const TextStyle(
-                                    fontSize: 14, color: Colors.black),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                '${serversList1[i].type}',
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w300),
-                              ),
-                            ],
-                            ),
+                            windowWidth < 1000
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${serversList1[i].name}',
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.black),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        '${serversList1[i].type}',
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    children: [
+                                      Text(
+                                        '${serversList1[i].name}',
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.black),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        '${serversList1[i].type}',
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                    ],
+                                  ),
                             const Spacer(),
-                            getStatusStyle(context, '${serversList1[i].serverStatus}',
+                            getStatusStyle(
+                                context, '${serversList1[i].serverStatus}',
                                 textSize: 16),
                             // getStatusStyle(nodeStatus, textSize: 16),
                           ],
@@ -1310,8 +1303,7 @@ class _ServersOverviewScreenState extends State<ServersOverviewScreen>
         child: Padding(
           padding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width * 0.015,
-              vertical:
-              MediaQuery.of(context).size.height * 0.016),
+              vertical: MediaQuery.of(context).size.height * 0.016),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
