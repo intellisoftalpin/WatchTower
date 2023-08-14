@@ -296,7 +296,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: TextFormField(
                                           controller: serverController,
                                           inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter.allow(RegExp("[0-9.:]")),
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp("[0-9.:]")),
                                           ],
                                           onChanged: (serverString) {
                                             if (kDebugMode) {
@@ -348,7 +349,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: TextFormField(
                                           controller: userController,
                                           inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp("[0-9a-zA-Z]")),
                                           ],
                                           onChanged: (userString) {
                                             if (kDebugMode) {
@@ -402,7 +404,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: TextFormField(
                                           controller: passwordController,
                                           inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp("[0-9a-zA-Z]")),
                                           ],
                                           onChanged: (passwordString) {
                                             if (kDebugMode) {
@@ -565,7 +568,7 @@ class _LoginScreenState extends State<LoginScreen> {
             : kBackgroundColorLight,
         body: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Stack(
                 children: [
@@ -680,7 +683,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: TextFormField(
                                 controller: serverController,
                                 inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(RegExp("[0-9.:]")),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp("[0-9.:]")),
                                 ],
                                 onChanged: (serverString) {
                                   if (kDebugMode) {
@@ -726,7 +730,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: TextFormField(
                                 controller: userController,
                                 inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp("[0-9a-zA-Z]")),
                                 ],
                                 onChanged: (userString) {
                                   if (kDebugMode) {
@@ -770,8 +775,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 50,
                               child: TextFormField(
                                 controller: passwordController,
+                                scrollPadding:
+                                    const EdgeInsets.only(bottom: 80),
                                 inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp("[0-9a-zA-Z]")),
                                 ],
                                 onChanged: (passwordString) {
                                   if (kDebugMode) {
@@ -832,7 +840,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       )),
                 ],
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              MediaQuery.of(context).viewInsets.bottom != 0.0
+                  ? const SizedBox(height: 5)
+                  : const SizedBox(height: 60),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
