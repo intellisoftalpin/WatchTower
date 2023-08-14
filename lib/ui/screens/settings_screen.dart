@@ -217,7 +217,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 15),
-            clickableStatusBar(0.08, 0.1, 0.25),
+            Container(
+              alignment: Alignment.center,
+              child: clickableStatusBar(0.08, 0.1, 0.25),
+            )
           ],
         ),
         backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -278,9 +281,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() {});
     }
 
-    double barWidth = MediaQuery.of(context).size.width -
-        (MediaQuery.of(context).size.width * paddingValue) -
-        (MediaQuery.of(context).size.width * 0.08);
+    double barWidth = MediaQuery.of(context).size.width - 60.0;
     Color firstLine = colorThirtySec;
     Color secondLine = colorSixtySec;
     double width = MediaQuery.of(context).size.width - 60.0;
@@ -288,6 +289,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       alignment: Alignment.center,
       width: width,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Stack(
             children: [
@@ -416,90 +419,95 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
           const SizedBox(height: 10),
-          Row(
-            children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                width: width * 0.15,
-                child: InkWell(
-                  child: Text(
-                    '0',
-                    style: GoogleFonts.montserrat(
-                      textStyle: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? kTimeUpdateBarNumberDark
-                              : kTimeUpdateBarNumberLight),
+          Container(
+              color: Colors.red,
+              width: width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    width: width * 0.15,
+                    child: InkWell(
+                      child: Text(
+                        '0',
+                        style: GoogleFonts.montserrat(
+                          textStyle: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? kTimeUpdateBarNumberDark
+                                  : kTimeUpdateBarNumberLight),
+                        ),
+                      ),
+                      onTap: () {
+                        pressTenSec();
+                      },
                     ),
                   ),
-                  onTap: () {
-                    pressTenSec();
-                  },
-                ),
-              ),
-              Container(
-                  alignment: Alignment.centerLeft,
-                  width: width * 0.3,
-                  child: InkWell(
-                    child: Text(
-                      '10',
-                      style: GoogleFonts.montserrat(
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
+                  Container(
+                      alignment: Alignment.centerLeft,
+                      width: width * 0.3,
+                      child: InkWell(
+                        child: Text(
+                          '10',
+                          style: GoogleFonts.montserrat(
+                            textStyle: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
                                     ? kTimeUpdateBarNumberDark
                                     : kTimeUpdateBarNumberLight),
-                      ),
-                    ),
-                    onTap: () {
-                      pressTenSec();
-                    },
-                  )),
-              Container(
-                  alignment: Alignment.centerLeft,
-                  width: width * 0.5,
-                  child: InkWell(
-                    child: Text(
-                      '30',
-                      style: GoogleFonts.montserrat(
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
+                          ),
+                        ),
+                        onTap: () {
+                          pressTenSec();
+                        },
+                      )),
+                  Container(
+                      alignment: Alignment.centerLeft,
+                      width: width * 0.45,
+                      child: InkWell(
+                        child: Text(
+                          '30',
+                          style: GoogleFonts.montserrat(
+                            textStyle: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
                                     ? kTimeUpdateBarNumberDark
                                     : kTimeUpdateBarNumberLight),
-                      ),
-                    ),
-                    onTap: () {
-                      pressThirtySec();
-                    },
-                  )),
-              Container(
-                  alignment: Alignment.centerRight,
-                  width: width * 0.05,
-                  child: InkWell(
-                    child: Text(
-                      '60',
-                      style: GoogleFonts.montserrat(
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
+                          ),
+                        ),
+                        onTap: () {
+                          pressThirtySec();
+                        },
+                      )),
+                  Container(
+                      alignment: Alignment.centerRight,
+                      width: width * 0.1,
+                      child: InkWell(
+                        child: Text(
+                          '60',
+                          style: GoogleFonts.montserrat(
+                            textStyle: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
                                     ? kTimeUpdateBarNumberDark
                                     : kTimeUpdateBarNumberLight),
-                      ),
-                    ),
-                    onTap: () {
-                      pressSixtySec();
-                    },
-                  )),
-            ],
-          ),
+                          ),
+                        ),
+                        onTap: () {
+                          pressSixtySec();
+                        },
+                      )),
+                ],
+              )),
         ],
       ),
     );
