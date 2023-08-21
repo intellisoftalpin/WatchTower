@@ -419,8 +419,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
           const SizedBox(height: 10),
-          Container(
-              color: Colors.red,
+          SizedBox(
               width: width,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
