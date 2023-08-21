@@ -57,8 +57,9 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
     if (mounted) {
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
-            const Duration(milliseconds: 30),
-            (Timer t) => timeBeforeAutoUpdate(),);
+          const Duration(milliseconds: 30),
+          (Timer t) => timeBeforeAutoUpdate(),
+        );
       }
 
       if (mode == UpdateMode.manual) {
@@ -253,8 +254,9 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                               manualUpdateTimer?.cancel();
                               next = DateTime.now().add(updateSettingsTime);
                               autoUpdateTimer = Timer.periodic(
-                                  const Duration(milliseconds: 30),
-                                  (Timer t) => timeBeforeAutoUpdate(),);
+                                const Duration(milliseconds: 30),
+                                (Timer t) => timeBeforeAutoUpdate(),
+                              );
                             } else {
                               box.write('mode', 'manual');
                               showLastUpdateTime = '0s';
@@ -518,6 +520,9 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.03),
         sortedDataMobile(),
+        const SizedBox(
+          height: 110.0,
+        )
       ],
     );
   }
@@ -561,14 +566,12 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
           : kBackgroundColorLight,
       drawer: const DrawerDesktopMenu(),
       body: ListView(
-          children: [
-            desktopHeader(context, DesktopPage.serverDetails, scaffoldKey),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-            serversList1.isNotEmpty
-                ? desktopFutureBuilder()
-                : Container(),
-          ],
-        ),
+        children: [
+          desktopHeader(context, DesktopPage.serverDetails, scaffoldKey),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+          serversList1.isNotEmpty ? desktopFutureBuilder() : Container(),
+        ],
+      ),
 
       // Positioned(
       //   bottom: MediaQuery.of(context).size.height * 0.15,
@@ -885,8 +888,8 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                                     end: Alignment.topCenter),
                                 borderRadius: BorderRadius.circular(10)),
                         child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 9),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 4, vertical: 9),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -920,8 +923,9 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                           manualUpdateTimer?.cancel();
                           next = DateTime.now().add(updateSettingsTime);
                           autoUpdateTimer = Timer.periodic(
-                              const Duration(milliseconds: 30),
-                              (Timer t) => timeBeforeAutoUpdate(),);
+                            const Duration(milliseconds: 30),
+                            (Timer t) => timeBeforeAutoUpdate(),
+                          );
                         } else {
                           box.write('mode', 'manual');
                           showLastUpdateTime = '0s';
@@ -1212,8 +1216,9 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       next = now.add(updateSettingsTime);
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
-            const Duration(milliseconds: 30),
-            (Timer t) => timeBeforeAutoUpdate(),);
+          const Duration(milliseconds: 30),
+          (Timer t) => timeBeforeAutoUpdate(),
+        );
       }
     }
   }
