@@ -370,6 +370,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
     );
   }
 
+  ///SORTED
   Column sortedDataMobile() {
     List<Widget> blocksList = [];
     Column parameters(int i) {
@@ -404,6 +405,9 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       );
     }
 
+    sortedDataBlocks.sort((a, b) {
+      return a.status.toLowerCase().compareTo(b.status.toLowerCase());
+    });
     for (int i = 0; i < sortedDataBlocks.length; i++) {
       Column dataBlock = Column(
         children: [
@@ -992,6 +996,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
     );
   }
 
+  ///SORTED
   Widget sortedDataDesktop() {
     List<Widget> blocksListLeftColumn = [];
     List<Widget> blocksListRightColumn = [];
@@ -1033,6 +1038,9 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       );
     }
 
+    sortedDataBlocks.sort((a, b) {
+      return a.status.toLowerCase().compareTo(b.status.toLowerCase());
+    });
     for (int i = 0; i < sortedDataBlocks.length; i++) {
       Column dataBlock = Column(
         children: [
