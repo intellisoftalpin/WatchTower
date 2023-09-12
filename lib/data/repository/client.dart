@@ -78,7 +78,8 @@ Future<String?> logIn(
     _serverIP,
     port: _serverPort,
     options: ChannelOptions(
-        credentials: ChannelCredentials.secure(onBadCertificate: (certificate, str)=> true),
+        credentials: ChannelCredentials.secure(
+            onBadCertificate: (certificate, str) => true),
         connectionTimeout: const Duration(seconds: 15)),
   );
 
@@ -115,7 +116,9 @@ void getDataFromLocStorage() {
   _channel = ClientChannel(
     serverIP,
     port: serverPort,
-    options: ChannelOptions(credentials: ChannelCredentials.secure(onBadCertificate: (certificate, str)=> true)),
+    options: ChannelOptions(
+        credentials: ChannelCredentials.secure(
+            onBadCertificate: (certificate, str) => true)),
   );
 }
 
@@ -194,23 +197,23 @@ Future<List<NodeGroupModel>> getNodes(BuildContext context) async {
       }
 
       NodeGroupModel node = NodeGroupModel(ticker: nodeTickers[y], servers: []);
-     // List<String?> serverStatuses = [];
+      // List<String?> serverStatuses = [];
       for (int i = 0; i < resultList[y].length; i++) {
         ServerModel server = ServerModel(
           ticker: resultList[y][i].ticker,
-         name: resultList[y][i].name,
+          name: resultList[y][i].name,
           uuid: resultList[y][i].uuid,
           type: resultList[y][i].type,
           blockchain: resultList[y][i].blockchain,
         );
         // getServerStatuses(server, context);
-         node.servers?.add(server);
+        node.servers?.add(server);
         // serverStatuses.add(server.serverStatus);
         if (kDebugMode) {
           print('node$y: ${resultList[y][i].name}  ${resultList[y][i].type}}');
         }
       }
-     // defineTheNodeStatus(serverStatuses);
+      // defineTheNodeStatus(serverStatuses);
       nodesList.add(node);
     }
 
@@ -232,7 +235,8 @@ Future<List<NodeGroupModel>> getNodes(BuildContext context) async {
       timer?.cancel();
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false);
       clearUserData();
     }
   }
@@ -242,15 +246,16 @@ Future<List<NodeGroupModel>> getNodes(BuildContext context) async {
   return nodesList;
 }
 
-Future<dynamic> getStatistics(String uuid, BuildContext context, [NodeGroupModel? node]) async {
- // String token = box.read('token');
+Future<dynamic> getStatistics(String uuid, BuildContext context,
+    [NodeGroupModel? node]) async {
+  // String token = box.read('token');
   cardanoClient = CardanoClient(_channel,
       options: CallOptions(metadata: {'authorization': tokenJWT!}));
 
   try {
     _response = await cardanoClient
-        .getStatistic(GetStatisticRequest()..uuid = uuid).then((_response) async {
-
+        .getStatistic(GetStatisticRequest()..uuid = uuid)
+        .then((_response) async {
       if (kDebugMode) {
         log(' response statistics log: $_response');
       }
@@ -263,28 +268,31 @@ Future<dynamic> getStatistics(String uuid, BuildContext context, [NodeGroupModel
       serverModel.name = _response.nodeAuthData.name;
       serverModel.uuid = _response.nodeAuthData.uuid;
 
-
-      serverModel.tickerNodeBasicData = _response.statistic.nodeBasicData.data.ticker;
-      serverModel.typeNodeBasicData = _response.statistic.nodeBasicData.data.type;
+      serverModel.tickerNodeBasicData =
+          _response.statistic.nodeBasicData.data.ticker;
+      serverModel.typeNodeBasicData =
+          _response.statistic.nodeBasicData.data.type;
       serverModel.location = _response.statistic.nodeBasicData.data.location;
-      serverModel.nodeVersion = _response.statistic.nodeBasicData.data.nodeVersion;
+      serverModel.nodeVersion =
+          _response.statistic.nodeBasicData.data.nodeVersion;
       serverModel.nodeBasicDataStatus =
           _response.statistic.nodeBasicData.status.status;
 
-
       serverModel.ipv4 = _response.statistic.serverBasicData.data.ipv4;
       serverModel.ipv6 = _response.statistic.serverBasicData.data.ipv6;
-      serverModel.linuxName = _response.statistic.serverBasicData.data.linuxName;
+      serverModel.linuxName =
+          _response.statistic.serverBasicData.data.linuxName;
       serverModel.linuxVersion =
           _response.statistic.serverBasicData.data.linuxVersion;
       serverModel.serverBasicDataStatus =
           _response.statistic.serverBasicData.status.status;
 
-
-      serverModel.informerActual = _response.statistic.updates.data.informerActual;
+      serverModel.informerActual =
+          _response.statistic.updates.data.informerActual;
       serverModel.informerAvailable =
           _response.statistic.updates.data.informerAvailable;
-      serverModel.udapterActual = _response.statistic.updates.data.updaterActual;
+      serverModel.udapterActual =
+          _response.statistic.updates.data.updaterActual;
       serverModel.udapterAvailable =
           _response.statistic.updates.data.updaterAvailable;
       serverModel.packagesAvailable =
@@ -314,7 +322,8 @@ Future<dynamic> getStatistics(String uuid, BuildContext context, [NodeGroupModel
       serverModel.sinceStart = _response.statistic.online.data.sinceStart;
       serverModel.pings = _response.statistic.online.data.pings;
       serverModel.nodeActive = _response.statistic.online.data.nodeActive;
-      serverModel.nodeActivePings = _response.statistic.online.data.nodeActivePings;
+      serverModel.nodeActivePings =
+          _response.statistic.online.data.nodeActivePings;
       serverModel.serverActive = _response.statistic.online.data.serverActive;
       serverModel.onlineStatus = _response.statistic.online.status.status;
 
@@ -332,7 +341,8 @@ Future<dynamic> getStatistics(String uuid, BuildContext context, [NodeGroupModel
       serverModel.swapFree = _response.statistic.memoryState.data.swapFree;
       serverModel.memAvailableEnabled =
           _response.statistic.memoryState.data.memAvailableEnabled;
-      serverModel.memoryStateStatus = _response.statistic.memoryState.status.status;
+      serverModel.memoryStateStatus =
+          _response.statistic.memoryState.status.status;
 
       serverModel.cpuQty = _response.statistic.cpuState.data.cpuQty;
       serverModel.averageWorkload =
@@ -349,7 +359,8 @@ Future<dynamic> getStatistics(String uuid, BuildContext context, [NodeGroupModel
           _response.statistic.security.data.securityPackagesAvailable;
       serverModel.securityStatus = _response.statistic.security.status.status;
 
-      serverModel.proceedTx = _response.statistic.nodePerformance.data.processedTx;
+      serverModel.proceedTx =
+          _response.statistic.nodePerformance.data.processedTx;
       serverModel.peersIn = _response.statistic.nodePerformance.data.peersIn;
       serverModel.peersOut = _response.statistic.nodePerformance.data.peersOut;
       serverModel.nodePerformanceStatus =
@@ -364,7 +375,8 @@ Future<dynamic> getStatistics(String uuid, BuildContext context, [NodeGroupModel
           serverModel.nodeBasicDataStatus!.contains(' ')) {
         serverModel.nodeBasicDataStatus = 'N/A';
       }
-      if (serverModel.location!.isEmpty || serverModel.location!.contains(' ')) {
+      if (serverModel.location!.isEmpty ||
+          serverModel.location!.contains(' ')) {
         serverModel.location = 'N/A';
       }
       if (serverModel.type!.isEmpty || serverModel.type!.contains(' ')) {
@@ -459,15 +471,13 @@ Future<dynamic> getStatistics(String uuid, BuildContext context, [NodeGroupModel
       //TODO: Check all fields of the NodeModel with type String?
 
       serversList1.add(serverModel);
-       defineTheServerStatus(serverModel, node);
-       defineFirstThreeParams(serverModel);
+      defineTheServerStatus(serverModel, node);
+      defineFirstThreeParams(serverModel);
       dataParsingForTheServerDetails(_response);
 
       return _response;
     });
-
-  }
-   catch (e) {
+  } catch (e) {
     if (kDebugMode) {
       print('exception get statistics');
       print(e);
@@ -478,11 +488,12 @@ Future<dynamic> getStatistics(String uuid, BuildContext context, [NodeGroupModel
       timer?.cancel();
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false);
       clearUserData();
     }
   }
-   return _response;
+  return _response;
 }
 
 void defineFirstThreeParams(ServerModel serverModel) {
@@ -491,489 +502,502 @@ void defineFirstThreeParams(ServerModel serverModel) {
   String success = 'ok';
 
   /*DEFINE THE FIRST PARAM*/
-  if (serverModel.nodeBasicDataStatus!.contains(error)){
+  if (serverModel.nodeBasicDataStatus!.contains(error)) {
     serverModel.firstParam = 'Node Basic Data';
     serverModel.firstParamStatus = serverModel.nodeBasicDataStatus;
-  }else if(serverModel.serverBasicDataStatus!.contains(error)){
+  } else if (serverModel.serverBasicDataStatus!.contains(error)) {
     serverModel.firstParam = 'Server Basic Data';
     serverModel.firstParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if(serverModel.updatesStatus!.contains(error)){
+  } else if (serverModel.updatesStatus!.contains(error)) {
     serverModel.firstParam = 'Updates';
     serverModel.firstParamStatus = serverModel.updatesStatus;
-  }
-  else if(serverModel.securityStatus!.contains(error)){
+  } else if (serverModel.securityStatus!.contains(error)) {
     serverModel.firstParam = 'Security';
     serverModel.firstParamStatus = serverModel.securityStatus;
-  }
-  else if(serverModel.epochStatus!.contains(error)){
+  } else if (serverModel.epochStatus!.contains(error)) {
     serverModel.firstParam = 'Epoch';
     serverModel.firstParamStatus = serverModel.epochStatus;
-  }
-  else if(serverModel.kesDataStatus!.contains(error)){
+  } else if (serverModel.kesDataStatus!.contains(error)) {
     serverModel.firstParam = 'Kes Data';
     serverModel.firstParamStatus = serverModel.kesDataStatus;
-  }
-  else if(serverModel.blocksStatus!.contains(error)){
+  } else if (serverModel.blocksStatus!.contains(error)) {
     serverModel.firstParam = 'Blocks';
     serverModel.firstParamStatus = serverModel.blocksStatus;
-  }
-  else if(serverModel.stakeInfoStatus!.contains(error)){
+  } else if (serverModel.stakeInfoStatus!.contains(error)) {
     serverModel.firstParam = 'Stake Info';
     serverModel.firstParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if(serverModel.onlineStatus!.contains(error)){
+  } else if (serverModel.onlineStatus!.contains(error)) {
     serverModel.firstParam = 'Online';
     serverModel.firstParamStatus = serverModel.onlineStatus;
-  }
-  else if(serverModel.memoryStateStatus!.contains(error)){
+  } else if (serverModel.memoryStateStatus!.contains(error)) {
     serverModel.firstParam = 'Memory State';
     serverModel.firstParamStatus = serverModel.memoryStateStatus;
-  }
-  else if(serverModel.cpuQtyStatus!.contains(error)){
+  } else if (serverModel.cpuQtyStatus!.contains(error)) {
     serverModel.firstParam = 'Cpu State';
     serverModel.firstParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if(serverModel.nodeStateStatus!.contains(error)){
+  } else if (serverModel.nodeStateStatus!.contains(error)) {
     serverModel.firstParam = 'Node State';
     serverModel.firstParamStatus = serverModel.nodeStateStatus;
-  }
-  else if(serverModel.nodePerformanceStatus!.contains(error)){
+  } else if (serverModel.nodePerformanceStatus!.contains(error)) {
     serverModel.firstParam = 'Node Performance';
     serverModel.firstParamStatus = serverModel.nodePerformanceStatus;
-  }
-
-
-
-
-  else if (serverModel.nodeBasicDataStatus!.contains(warning)){
+  } else if (serverModel.nodeBasicDataStatus!.contains(warning)) {
     serverModel.firstParam = 'Node Basic Data';
     serverModel.firstParamStatus = serverModel.nodeBasicDataStatus;
-  }else if(serverModel.serverBasicDataStatus!.contains(warning)){
+  } else if (serverModel.serverBasicDataStatus!.contains(warning)) {
     serverModel.firstParam = 'Server Basic Data';
     serverModel.firstParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if(serverModel.updatesStatus!.contains(warning)){
+  } else if (serverModel.updatesStatus!.contains(warning)) {
     serverModel.firstParam = 'Updates';
     serverModel.firstParamStatus = serverModel.updatesStatus;
-  }
-  else if(serverModel.securityStatus!.contains(warning)){
+  } else if (serverModel.securityStatus!.contains(warning)) {
     serverModel.firstParam = 'Security';
     serverModel.firstParamStatus = serverModel.securityStatus;
-  }
-  else if(serverModel.epochStatus!.contains(warning)){
+  } else if (serverModel.epochStatus!.contains(warning)) {
     serverModel.firstParam = 'Epoch';
     serverModel.firstParamStatus = serverModel.epochStatus;
-  }
-  else if(serverModel.kesDataStatus!.contains(warning)){
+  } else if (serverModel.kesDataStatus!.contains(warning)) {
     serverModel.firstParam = 'Kes Data';
     serverModel.firstParamStatus = serverModel.kesDataStatus;
-  }
-  else if(serverModel.blocksStatus!.contains(warning)){
+  } else if (serverModel.blocksStatus!.contains(warning)) {
     serverModel.firstParam = 'Blocks';
     serverModel.firstParamStatus = serverModel.blocksStatus;
-  }
-  else if(serverModel.stakeInfoStatus!.contains(warning)){
+  } else if (serverModel.stakeInfoStatus!.contains(warning)) {
     serverModel.firstParam = 'Stake Info';
     serverModel.firstParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if(serverModel.onlineStatus!.contains(warning)){
+  } else if (serverModel.onlineStatus!.contains(warning)) {
     serverModel.firstParam = 'Online';
     serverModel.firstParamStatus = serverModel.onlineStatus;
-  }
-  else if(serverModel.memoryStateStatus!.contains(warning)){
+  } else if (serverModel.memoryStateStatus!.contains(warning)) {
     serverModel.firstParam = 'Memory State';
     serverModel.firstParamStatus = serverModel.memoryStateStatus;
-  }
-  else if(serverModel.cpuQtyStatus!.contains(warning)){
+  } else if (serverModel.cpuQtyStatus!.contains(warning)) {
     serverModel.firstParam = 'Cpu State';
     serverModel.firstParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if(serverModel.nodeStateStatus!.contains(warning)){
+  } else if (serverModel.nodeStateStatus!.contains(warning)) {
     serverModel.firstParam = 'Node State';
     serverModel.firstParamStatus = serverModel.nodeStateStatus;
-  }
-  else if(serverModel.nodePerformanceStatus!.contains(warning)){
+  } else if (serverModel.nodePerformanceStatus!.contains(warning)) {
     serverModel.firstParam = 'Node Performance';
     serverModel.firstParamStatus = serverModel.nodePerformanceStatus;
-  }
-
-
-  else if (serverModel.nodeBasicDataStatus!.contains(success)){
+  } else if (serverModel.nodeBasicDataStatus!.contains(success)) {
     serverModel.firstParam = 'Node Basic Data';
     serverModel.firstParamStatus = serverModel.nodeBasicDataStatus;
-  }else if(serverModel.serverBasicDataStatus!.contains(success)){
+  } else if (serverModel.serverBasicDataStatus!.contains(success)) {
     serverModel.firstParam = 'Server Basic Data';
     serverModel.firstParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if(serverModel.updatesStatus!.contains(success)){
+  } else if (serverModel.updatesStatus!.contains(success)) {
     serverModel.firstParam = 'Updates';
     serverModel.firstParamStatus = serverModel.updatesStatus;
-  }
-  else if(serverModel.securityStatus!.contains(success)){
+  } else if (serverModel.securityStatus!.contains(success)) {
     serverModel.firstParam = 'Security';
     serverModel.firstParamStatus = serverModel.securityStatus;
-  }
-  else if(serverModel.epochStatus!.contains(success)){
+  } else if (serverModel.epochStatus!.contains(success)) {
     serverModel.firstParam = 'Epoch';
     serverModel.firstParamStatus = serverModel.epochStatus;
-  }
-  else if(serverModel.kesDataStatus!.contains(success)){
+  } else if (serverModel.kesDataStatus!.contains(success)) {
     serverModel.firstParam = 'Kes Data';
     serverModel.firstParamStatus = serverModel.kesDataStatus;
-  }
-  else if(serverModel.blocksStatus!.contains(success)){
+  } else if (serverModel.blocksStatus!.contains(success)) {
     serverModel.firstParam = 'Blocks';
     serverModel.firstParamStatus = serverModel.blocksStatus;
-  }
-  else if(serverModel.stakeInfoStatus!.contains(success)){
+  } else if (serverModel.stakeInfoStatus!.contains(success)) {
     serverModel.firstParam = 'Stake Info';
     serverModel.firstParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if(serverModel.onlineStatus!.contains(success)){
+  } else if (serverModel.onlineStatus!.contains(success)) {
     serverModel.firstParam = 'Online';
     serverModel.firstParamStatus = serverModel.onlineStatus;
-  }
-  else if(serverModel.memoryStateStatus!.contains(success)){
+  } else if (serverModel.memoryStateStatus!.contains(success)) {
     serverModel.firstParam = 'Memory State';
     serverModel.firstParamStatus = serverModel.memoryStateStatus;
-  }
-  else if(serverModel.cpuQtyStatus!.contains(success)){
+  } else if (serverModel.cpuQtyStatus!.contains(success)) {
     serverModel.firstParam = 'Cpu State';
     serverModel.firstParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if(serverModel.nodeStateStatus!.contains(success)){
+  } else if (serverModel.nodeStateStatus!.contains(success)) {
     serverModel.firstParam = 'Node State';
     serverModel.firstParamStatus = serverModel.nodeStateStatus;
-  }
-  else if(serverModel.nodePerformanceStatus!.contains(success)){
+  } else if (serverModel.nodePerformanceStatus!.contains(success)) {
     serverModel.firstParam = 'Node Performance';
     serverModel.firstParamStatus = serverModel.nodePerformanceStatus;
-  }else{
+  } else {
     serverModel.firstParam = 'N/A';
     serverModel.firstParamStatus = 'N/A';
   }
 
   /*DEFINE THE SECOND PARAM*/
 
-  if ((!serverModel.firstParam!.contains('Node Basic Data')) && serverModel.nodeBasicDataStatus!.contains(error)){
+  String nodeBasicData = 'Node Basic Data';
+  String serverBasicData = 'Server Basic Data';
+  String updates = 'Updates';
+  String security = 'Security';
+  String epoch = 'Epoch';
+  String kesData = 'Kes Data';
+  String blocks = 'Blocks';
+  String stakeInfo = 'Stake Info';
+  String online = 'Online';
+  String memoryState = 'Memory State';
+  String cpuState = 'Cpu State';
+  String nodeState = 'Node State';
+  String nodePerformance = 'Node Performance';
+  if ((!serverModel.firstParam!.contains(nodeBasicData)) &&
+      serverModel.nodeBasicDataStatus!.contains(error)) {
     serverModel.secondParam = 'Node Basic Data';
     serverModel.secondParamStatus = serverModel.nodeBasicDataStatus;
-  }else if((!serverModel.firstParam!.contains('Server Basic Data')) && serverModel.serverBasicDataStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(serverBasicData)) &&
+      serverModel.serverBasicDataStatus!.contains(error)) {
     serverModel.secondParam = 'Server Basic Data';
     serverModel.secondParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Updates')) && serverModel.updatesStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(updates)) &&
+      serverModel.updatesStatus!.contains(error)) {
     serverModel.secondParam = 'Updates';
     serverModel.secondParamStatus = serverModel.updatesStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Security')) && serverModel.securityStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(security)) &&
+      serverModel.securityStatus!.contains(error)) {
     serverModel.secondParam = 'Security';
     serverModel.secondParamStatus = serverModel.securityStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Epoch')) && serverModel.epochStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(epoch)) &&
+      serverModel.epochStatus!.contains(error)) {
     serverModel.secondParam = 'Epoch';
     serverModel.secondParamStatus = serverModel.epochStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Kes Data')) && serverModel.kesDataStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(kesData)) &&
+      serverModel.kesDataStatus!.contains(error)) {
     serverModel.secondParam = 'Kes Data';
     serverModel.secondParamStatus = serverModel.kesDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Blocks')) && serverModel.blocksStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(blocks)) &&
+      serverModel.blocksStatus!.contains(error)) {
     serverModel.secondParam = 'Blocks';
     serverModel.secondParamStatus = serverModel.blocksStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Stake Info')) && serverModel.stakeInfoStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(stakeInfo)) &&
+      serverModel.stakeInfoStatus!.contains(error)) {
     serverModel.secondParam = 'Stake Info';
     serverModel.secondParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Online')) && serverModel.onlineStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(online)) &&
+      serverModel.onlineStatus!.contains(error)) {
     serverModel.secondParam = 'Online';
     serverModel.secondParamStatus = serverModel.onlineStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Memory State')) && serverModel.memoryStateStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(memoryState)) &&
+      serverModel.memoryStateStatus!.contains(error)) {
     serverModel.secondParam = 'Memory State';
     serverModel.secondParamStatus = serverModel.memoryStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Cpu State')) && serverModel.cpuQtyStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(cpuState)) &&
+      serverModel.cpuQtyStatus!.contains(error)) {
     serverModel.secondParam = 'Cpu State';
     serverModel.secondParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node State')) && serverModel.nodeStateStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(nodeState)) &&
+      serverModel.nodeStateStatus!.contains(error)) {
     serverModel.secondParam = 'Node State';
     serverModel.secondParamStatus = serverModel.nodeStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node Performance')) && serverModel.nodePerformanceStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(nodePerformance)) &&
+      serverModel.nodePerformanceStatus!.contains(error)) {
     serverModel.secondParam = 'Node Performance';
     serverModel.secondParamStatus = serverModel.nodePerformanceStatus;
-  }
-
-
-
-  else if ((!serverModel.firstParam!.contains('Node Basic Data')) && serverModel.nodeBasicDataStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(nodeBasicData)) &&
+      serverModel.nodeBasicDataStatus!.contains(warning)) {
     serverModel.secondParam = 'Node Basic Data';
     serverModel.secondParamStatus = serverModel.nodeBasicDataStatus;
-  }else if((!serverModel.firstParam!.contains('Server Basic Data')) && serverModel.serverBasicDataStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(serverBasicData)) &&
+      serverModel.serverBasicDataStatus!.contains(warning)) {
     serverModel.secondParam = 'Server Basic Data';
     serverModel.secondParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Updates')) && serverModel.updatesStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(updates)) &&
+      serverModel.updatesStatus!.contains(warning)) {
     serverModel.secondParam = 'Updates';
     serverModel.secondParamStatus = serverModel.updatesStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Security')) && serverModel.securityStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(security)) &&
+      serverModel.securityStatus!.contains(warning)) {
     serverModel.secondParam = 'Security';
     serverModel.secondParamStatus = serverModel.securityStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Epoch')) && serverModel.epochStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(epoch)) &&
+      serverModel.epochStatus!.contains(warning)) {
     serverModel.secondParam = 'Epoch';
     serverModel.secondParamStatus = serverModel.epochStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Kes Data')) && serverModel.kesDataStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(kesData)) &&
+      serverModel.kesDataStatus!.contains(warning)) {
     serverModel.secondParam = 'Kes Data';
     serverModel.secondParamStatus = serverModel.kesDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Blocks')) && serverModel.blocksStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(blocks)) &&
+      serverModel.blocksStatus!.contains(warning)) {
     serverModel.secondParam = 'Blocks';
     serverModel.secondParamStatus = serverModel.blocksStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Stake Info')) && serverModel.stakeInfoStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(stakeInfo)) &&
+      serverModel.stakeInfoStatus!.contains(warning)) {
     serverModel.secondParam = 'Stake Info';
     serverModel.secondParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Online')) && serverModel.onlineStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(online)) &&
+      serverModel.onlineStatus!.contains(warning)) {
     serverModel.secondParam = 'Online';
     serverModel.secondParamStatus = serverModel.onlineStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Memory State')) && serverModel.memoryStateStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(memoryState)) &&
+      serverModel.memoryStateStatus!.contains(warning)) {
     serverModel.secondParam = 'Memory State';
     serverModel.secondParamStatus = serverModel.memoryStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Cpu State')) && serverModel.cpuQtyStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(cpuState)) &&
+      serverModel.cpuQtyStatus!.contains(warning)) {
     serverModel.secondParam = 'Cpu State';
     serverModel.secondParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node State')) && serverModel.nodeStateStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(nodeState)) &&
+      serverModel.nodeStateStatus!.contains(warning)) {
     serverModel.secondParam = 'Node State';
     serverModel.secondParamStatus = serverModel.nodeStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node Performance')) && serverModel.nodePerformanceStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(nodePerformance)) &&
+      serverModel.nodePerformanceStatus!.contains(warning)) {
     serverModel.secondParam = 'Node Performance';
     serverModel.secondParamStatus = serverModel.nodePerformanceStatus;
-  }
-
-
-  else if ((!serverModel.firstParam!.contains('Node Basic Data')) && serverModel.nodeBasicDataStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(nodeBasicData)) &&
+      serverModel.nodeBasicDataStatus!.contains(success)) {
     serverModel.secondParam = 'Node Basic Data';
     serverModel.secondParamStatus = serverModel.nodeBasicDataStatus;
-  }else if((!serverModel.firstParam!.contains('Server Basic Data')) && serverModel.serverBasicDataStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(serverBasicData)) &&
+      serverModel.serverBasicDataStatus!.contains(success)) {
     serverModel.secondParam = 'Server Basic Data';
     serverModel.secondParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Updates')) && serverModel.updatesStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(updates)) &&
+      serverModel.updatesStatus!.contains(success)) {
     serverModel.secondParam = 'Updates';
     serverModel.secondParamStatus = serverModel.updatesStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Security')) && serverModel.securityStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(security)) &&
+      serverModel.securityStatus!.contains(success)) {
     serverModel.secondParam = 'Security';
     serverModel.secondParamStatus = serverModel.securityStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Epoch')) && serverModel.epochStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(epoch)) &&
+      serverModel.epochStatus!.contains(success)) {
     serverModel.secondParam = 'Epoch';
     serverModel.secondParamStatus = serverModel.epochStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Kes Data')) && serverModel.kesDataStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(kesData)) &&
+      serverModel.kesDataStatus!.contains(success)) {
     serverModel.secondParam = 'Kes Data';
     serverModel.secondParamStatus = serverModel.kesDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Blocks')) && serverModel.blocksStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(blocks)) &&
+      serverModel.blocksStatus!.contains(success)) {
     serverModel.secondParam = 'Blocks';
     serverModel.secondParamStatus = serverModel.blocksStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Stake Info')) && serverModel.stakeInfoStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(stakeInfo)) &&
+      serverModel.stakeInfoStatus!.contains(success)) {
     serverModel.secondParam = 'Stake Info';
     serverModel.secondParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Online')) && serverModel.onlineStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(online)) &&
+      serverModel.onlineStatus!.contains(success)) {
     serverModel.secondParam = 'Online';
     serverModel.secondParamStatus = serverModel.onlineStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Memory State')) && serverModel.memoryStateStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(memoryState)) &&
+      serverModel.memoryStateStatus!.contains(success)) {
     serverModel.secondParam = 'Memory State';
     serverModel.secondParamStatus = serverModel.memoryStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Cpu State')) && serverModel.cpuQtyStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(cpuState)) &&
+      serverModel.cpuQtyStatus!.contains(success)) {
     serverModel.secondParam = 'Cpu State';
     serverModel.secondParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node State')) && serverModel.nodeStateStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(nodeState)) &&
+      serverModel.nodeStateStatus!.contains(success)) {
     serverModel.secondParam = 'Node State';
     serverModel.secondParamStatus = serverModel.nodeStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node Performance')) && serverModel.nodePerformanceStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(nodePerformance)) &&
+      serverModel.nodePerformanceStatus!.contains(success)) {
     serverModel.secondParam = 'Node Performance';
     serverModel.secondParamStatus = serverModel.nodePerformanceStatus;
-  }else{
+  } else {
     serverModel.secondParam = 'N/A';
     serverModel.secondParamStatus = 'N/A';
   }
 
   /*DEFINE THE THIRD PARAM*/
 
-  if ((!serverModel.firstParam!.contains('Node Basic Data')) && (!serverModel.secondParam!.contains('Node Basic Data')) && serverModel.nodeBasicDataStatus!.contains(error)){
+  if ((!serverModel.firstParam!.contains(nodeBasicData)) &&
+      (!serverModel.secondParam!.contains(nodeBasicData)) &&
+      serverModel.nodeBasicDataStatus!.contains(error)) {
     serverModel.thirdParam = 'Node Basic Data';
     serverModel.thirdParamStatus = serverModel.nodeBasicDataStatus;
-  }else if((!serverModel.firstParam!.contains('Server Basic Data')) && (!serverModel.secondParam!.contains('Server Basic Data')) && serverModel.serverBasicDataStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(serverBasicData)) &&
+      (!serverModel.secondParam!.contains(serverBasicData)) &&
+      serverModel.serverBasicDataStatus!.contains(error)) {
     serverModel.thirdParam = 'Server Basic Data';
     serverModel.thirdParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Updates')) && (!serverModel.secondParam!.contains('Updates')) && serverModel.updatesStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(updates)) &&
+      (!serverModel.secondParam!.contains(updates)) &&
+      serverModel.updatesStatus!.contains(error)) {
     serverModel.thirdParam = 'Updates';
     serverModel.thirdParamStatus = serverModel.updatesStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Security')) && (!serverModel.secondParam!.contains('Security')) &&serverModel.securityStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(security)) &&
+      (!serverModel.secondParam!.contains(security)) &&
+      serverModel.securityStatus!.contains(error)) {
     serverModel.thirdParam = 'Security';
     serverModel.thirdParamStatus = serverModel.securityStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Epoch')) && (!serverModel.secondParam!.contains('Epoch')) &&  serverModel.epochStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(epoch)) &&
+      (!serverModel.secondParam!.contains(epoch)) &&
+      serverModel.epochStatus!.contains(error)) {
     serverModel.thirdParam = 'Epoch';
     serverModel.thirdParamStatus = serverModel.epochStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Kes Data')) && (!serverModel.secondParam!.contains('Kes Data')) &&  serverModel.kesDataStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(kesData)) &&
+      (!serverModel.secondParam!.contains(kesData)) &&
+      serverModel.kesDataStatus!.contains(error)) {
     serverModel.thirdParam = 'Kes Data';
     serverModel.thirdParamStatus = serverModel.kesDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Blocks')) && (!serverModel.secondParam!.contains('Blocks')) && serverModel.blocksStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(blocks)) &&
+      (!serverModel.secondParam!.contains(blocks)) &&
+      serverModel.blocksStatus!.contains(error)) {
     serverModel.thirdParam = 'Blocks';
     serverModel.thirdParamStatus = serverModel.blocksStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Stake Info')) && (!serverModel.secondParam!.contains('Stake Info')) && serverModel.stakeInfoStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(stakeInfo)) &&
+      (!serverModel.secondParam!.contains(stakeInfo)) &&
+      serverModel.stakeInfoStatus!.contains(error)) {
     serverModel.thirdParam = 'Stake Info';
     serverModel.thirdParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Online')) && (!serverModel.secondParam!.contains('Online')) && serverModel.onlineStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(online)) &&
+      (!serverModel.secondParam!.contains(online)) &&
+      serverModel.onlineStatus!.contains(error)) {
     serverModel.thirdParam = 'Online';
     serverModel.thirdParamStatus = serverModel.onlineStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Memory State')) && (!serverModel.secondParam!.contains('Memory State')) && serverModel.memoryStateStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(memoryState)) &&
+      (!serverModel.secondParam!.contains(memoryState)) &&
+      serverModel.memoryStateStatus!.contains(error)) {
     serverModel.thirdParam = 'Memory State';
     serverModel.thirdParamStatus = serverModel.memoryStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Cpu State')) && (!serverModel.secondParam!.contains('Cpu State')) && serverModel.cpuQtyStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(cpuState)) &&
+      (!serverModel.secondParam!.contains(cpuState)) &&
+      serverModel.cpuQtyStatus!.contains(error)) {
     serverModel.thirdParam = 'Cpu State';
     serverModel.thirdParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node State')) && (!serverModel.secondParam!.contains('Node State')) && serverModel.nodeStateStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(nodeState)) &&
+      (!serverModel.secondParam!.contains(nodeState)) &&
+      serverModel.nodeStateStatus!.contains(error)) {
     serverModel.thirdParam = 'Node State';
     serverModel.thirdParamStatus = serverModel.nodeStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node Performance')) && (!serverModel.secondParam!.contains('Node Performance')) &&serverModel.nodePerformanceStatus!.contains(error)){
+  } else if ((!serverModel.firstParam!.contains(nodePerformance)) &&
+      (!serverModel.secondParam!.contains(nodePerformance)) &&
+      serverModel.nodePerformanceStatus!.contains(error)) {
     serverModel.thirdParam = 'Node Performance';
     serverModel.thirdParamStatus = serverModel.nodePerformanceStatus;
-  }
-  else if ((!serverModel.firstParam!.contains('Node Basic Data')) && (!serverModel.secondParam!.contains('Node Basic Data')) && serverModel.nodeBasicDataStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(nodeBasicData)) &&
+      (!serverModel.secondParam!.contains(nodeBasicData)) &&
+      serverModel.nodeBasicDataStatus!.contains(warning)) {
     serverModel.thirdParam = 'Node Basic Data';
     serverModel.thirdParamStatus = serverModel.nodeBasicDataStatus;
-  }else if((!serverModel.firstParam!.contains('Server Basic Data')) && (!serverModel.secondParam!.contains('Server Basic Data')) && serverModel.serverBasicDataStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(serverBasicData)) &&
+      (!serverModel.secondParam!.contains(serverBasicData)) &&
+      serverModel.serverBasicDataStatus!.contains(warning)) {
     serverModel.thirdParam = 'Server Basic Data';
     serverModel.thirdParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Updates')) && (!serverModel.secondParam!.contains('Updates')) && serverModel.updatesStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(updates)) &&
+      (!serverModel.secondParam!.contains(updates)) &&
+      serverModel.updatesStatus!.contains(warning)) {
     serverModel.thirdParam = 'Updates';
     serverModel.thirdParamStatus = serverModel.updatesStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Security')) && (!serverModel.secondParam!.contains('Security')) && serverModel.securityStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(security)) &&
+      (!serverModel.secondParam!.contains(security)) &&
+      serverModel.securityStatus!.contains(warning)) {
     serverModel.thirdParam = 'Security';
     serverModel.thirdParamStatus = serverModel.securityStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Epoch')) && (!serverModel.secondParam!.contains('Epoch')) && serverModel.epochStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(epoch)) &&
+      (!serverModel.secondParam!.contains(epoch)) &&
+      serverModel.epochStatus!.contains(warning)) {
     serverModel.thirdParam = 'Epoch';
     serverModel.thirdParamStatus = serverModel.epochStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Kes Data')) && (!serverModel.secondParam!.contains('Kes Data')) && serverModel.kesDataStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(kesData)) &&
+      (!serverModel.secondParam!.contains(kesData)) &&
+      serverModel.kesDataStatus!.contains(warning)) {
     serverModel.thirdParam = 'Kes Data';
     serverModel.thirdParamStatus = serverModel.kesDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Blocks')) && (!serverModel.secondParam!.contains('Blocks')) && serverModel.blocksStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(blocks)) &&
+      (!serverModel.secondParam!.contains(blocks)) &&
+      serverModel.blocksStatus!.contains(warning)) {
     serverModel.thirdParam = 'Blocks';
     serverModel.thirdParamStatus = serverModel.blocksStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Stake Info')) && (!serverModel.secondParam!.contains('Stake Info')) && serverModel.stakeInfoStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(stakeInfo)) &&
+      (!serverModel.secondParam!.contains(stakeInfo)) &&
+      serverModel.stakeInfoStatus!.contains(warning)) {
     serverModel.thirdParam = 'Stake Info';
     serverModel.thirdParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Online')) && (!serverModel.secondParam!.contains('Online')) && serverModel.onlineStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(online)) &&
+      (!serverModel.secondParam!.contains(online)) &&
+      serverModel.onlineStatus!.contains(warning)) {
     serverModel.thirdParam = 'Online';
     serverModel.thirdParamStatus = serverModel.onlineStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Memory State')) && (!serverModel.secondParam!.contains('Memory State')) && serverModel.memoryStateStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(memoryState)) &&
+      (!serverModel.secondParam!.contains(memoryState)) &&
+      serverModel.memoryStateStatus!.contains(warning)) {
     serverModel.thirdParam = 'Memory State';
     serverModel.thirdParamStatus = serverModel.memoryStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Cpu State')) && (!serverModel.secondParam!.contains('Cpu State')) && serverModel.cpuQtyStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(cpuState)) &&
+      (!serverModel.secondParam!.contains(cpuState)) &&
+      serverModel.cpuQtyStatus!.contains(warning)) {
     serverModel.thirdParam = 'Cpu State';
     serverModel.thirdParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node State')) && (!serverModel.secondParam!.contains('Node State')) && serverModel.nodeStateStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(nodeState)) &&
+      (!serverModel.secondParam!.contains(nodeState)) &&
+      serverModel.nodeStateStatus!.contains(warning)) {
     serverModel.thirdParam = 'Node State';
     serverModel.thirdParamStatus = serverModel.nodeStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node Performance')) && (!serverModel.secondParam!.contains('Node Performance')) && serverModel.nodePerformanceStatus!.contains(warning)){
+  } else if ((!serverModel.firstParam!.contains(nodePerformance)) &&
+      (!serverModel.secondParam!.contains(nodePerformance)) &&
+      serverModel.nodePerformanceStatus!.contains(warning)) {
     serverModel.thirdParam = 'Node Performance';
     serverModel.thirdParamStatus = serverModel.nodePerformanceStatus;
-  }
-
-  else if ((!serverModel.firstParam!.contains('Node Basic Data')) && (!serverModel.secondParam!.contains('Node Basic Data')) && serverModel.nodeBasicDataStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(nodeBasicData)) &&
+      (!serverModel.secondParam!.contains(nodeBasicData)) &&
+      serverModel.nodeBasicDataStatus!.contains(success)) {
     serverModel.thirdParam = 'Node Basic Data';
     serverModel.thirdParamStatus = serverModel.nodeBasicDataStatus;
-  }else if((!serverModel.firstParam!.contains('Server Basic Data')) && (!serverModel.secondParam!.contains('Server Basic Data')) && serverModel.serverBasicDataStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(serverBasicData)) &&
+      (!serverModel.secondParam!.contains(serverBasicData)) &&
+      serverModel.serverBasicDataStatus!.contains(success)) {
     serverModel.thirdParam = 'Server Basic Data';
     serverModel.thirdParamStatus = serverModel.serverBasicDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Updates')) && (!serverModel.secondParam!.contains('Updates')) && serverModel.updatesStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(updates)) &&
+      (!serverModel.secondParam!.contains(updates)) &&
+      serverModel.updatesStatus!.contains(success)) {
     serverModel.thirdParam = 'Updates';
     serverModel.thirdParamStatus = serverModel.updatesStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Security')) && (!serverModel.secondParam!.contains('Security')) && serverModel.securityStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(security)) &&
+      (!serverModel.secondParam!.contains(security)) &&
+      serverModel.securityStatus!.contains(success)) {
     serverModel.thirdParam = 'Security';
     serverModel.thirdParamStatus = serverModel.securityStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Epoch')) && (!serverModel.secondParam!.contains('Epoch')) && serverModel.epochStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(epoch)) &&
+      (!serverModel.secondParam!.contains(epoch)) &&
+      serverModel.epochStatus!.contains(success)) {
     serverModel.thirdParam = 'Epoch';
     serverModel.thirdParamStatus = serverModel.epochStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Kes Data')) && (!serverModel.secondParam!.contains('Kes Data')) && serverModel.kesDataStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(kesData)) &&
+      (!serverModel.secondParam!.contains(kesData)) &&
+      serverModel.kesDataStatus!.contains(success)) {
     serverModel.thirdParam = 'Kes Data';
     serverModel.thirdParamStatus = serverModel.kesDataStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Blocks')) && (!serverModel.secondParam!.contains('Blocks')) && serverModel.blocksStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(blocks)) &&
+      (!serverModel.secondParam!.contains(blocks)) &&
+      serverModel.blocksStatus!.contains(success)) {
     serverModel.thirdParam = 'Blocks';
     serverModel.thirdParamStatus = serverModel.blocksStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Stake Info')) && (!serverModel.secondParam!.contains('Stake Info')) && serverModel.stakeInfoStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(stakeInfo)) &&
+      (!serverModel.secondParam!.contains(stakeInfo)) &&
+      serverModel.stakeInfoStatus!.contains(success)) {
     serverModel.thirdParam = 'Stake Info';
     serverModel.thirdParamStatus = serverModel.stakeInfoStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Online')) && (!serverModel.secondParam!.contains('Online')) && serverModel.onlineStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(online)) &&
+      (!serverModel.secondParam!.contains(online)) &&
+      serverModel.onlineStatus!.contains(success)) {
     serverModel.thirdParam = 'Online';
     serverModel.thirdParamStatus = serverModel.onlineStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Memory State')) && (!serverModel.secondParam!.contains('Memory State')) && serverModel.memoryStateStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(memoryState)) &&
+      (!serverModel.secondParam!.contains(memoryState)) &&
+      serverModel.memoryStateStatus!.contains(success)) {
     serverModel.thirdParam = 'Memory State';
     serverModel.thirdParamStatus = serverModel.memoryStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Cpu State')) && (!serverModel.secondParam!.contains('Cpu State')) && serverModel.cpuQtyStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(cpuState)) &&
+      (!serverModel.secondParam!.contains(cpuState)) &&
+      serverModel.cpuQtyStatus!.contains(success)) {
     serverModel.thirdParam = 'Cpu State';
     serverModel.thirdParamStatus = serverModel.cpuQtyStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node State')) && (!serverModel.secondParam!.contains('Node State')) && serverModel.nodeStateStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(nodeState)) &&
+      (!serverModel.secondParam!.contains(nodeState)) &&
+      serverModel.nodeStateStatus!.contains(success)) {
     serverModel.thirdParam = 'Node State';
     serverModel.thirdParamStatus = serverModel.nodeStateStatus;
-  }
-  else if((!serverModel.firstParam!.contains('Node Performance')) && (!serverModel.secondParam!.contains('Node Performance')) && serverModel.nodePerformanceStatus!.contains(success)){
+  } else if ((!serverModel.firstParam!.contains(nodePerformance)) &&
+      (!serverModel.secondParam!.contains(nodePerformance)) &&
+      serverModel.nodePerformanceStatus!.contains(success)) {
     serverModel.thirdParam = 'Node Performance';
     serverModel.thirdParamStatus = serverModel.nodePerformanceStatus;
-  }else{
+  } else {
     serverModel.thirdParam = 'N/A';
     serverModel.thirdParamStatus = 'N/A';
   }
@@ -1027,365 +1051,408 @@ void defineTheServerStatus(ServerModel serverModel, NodeGroupModel? node) {
     serverModel.serverStatus = ok;
   }
 
- if(kDebugMode){
-   print('\n\n\n  SERVER STATUS: ${serverModel.serverStatus}   SERVER NAME: ${serverModel.name} \n\n\n');
- }
-   serverStatuses.add(serverModel.serverStatus);
-   node?.nodeStatus = serverModel.serverStatus;
+  if (kDebugMode) {
+    print(
+        '\n\n\n  SERVER STATUS: ${serverModel.serverStatus}   SERVER NAME: ${serverModel.name} \n\n\n');
+  }
+  serverStatuses.add(serverModel.serverStatus);
+  node?.nodeStatus = serverModel.serverStatus;
 }
 
-void dataParsingForTheServerDetails(GetStatisticResponse _response){
+void dataParsingForTheServerDetails(GetStatisticResponse _response) {
   String error = 'error';
   String ok = 'ok';
   String warning = 'warning';
+
   ///TODO: we need to clear sortedDataBlocks in several places because it is file variable
 
   sortedDataBlocks.clear();
 
   NodeBasicDataModel nodeBasicData = NodeBasicDataModel();
-  nodeBasicData.data.add({'Ticker' : _response.statistic.nodeBasicData.data.ticker});
-  nodeBasicData.data.add({'Type' : _response.statistic.nodeBasicData.data.type});
-  nodeBasicData.data.add({'Location' : _response.statistic.nodeBasicData.data.location});
-  nodeBasicData.data.add({'Node Version' : _response.statistic.nodeBasicData.data.nodeVersion});
+  nodeBasicData.data
+      .add({'Ticker': _response.statistic.nodeBasicData.data.ticker});
+  nodeBasicData.data.add({'Type': _response.statistic.nodeBasicData.data.type});
+  nodeBasicData.data
+      .add({'Location': _response.statistic.nodeBasicData.data.location});
+  nodeBasicData.data.add(
+      {'Node Version': _response.statistic.nodeBasicData.data.nodeVersion});
   nodeBasicData.status = _response.statistic.nodeBasicData.status.status;
-  if(_response.statistic.nodeBasicData.status.errors.isNotEmpty){
-    String errorCode = _response.statistic.nodeBasicData.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.nodeBasicData.status.errors[0].errorMessage;
+  if (_response.statistic.nodeBasicData.status.errors.isNotEmpty) {
+    String errorCode =
+        _response.statistic.nodeBasicData.status.errors[0].errorCode;
+    String errorMessage =
+        _response.statistic.nodeBasicData.status.errors[0].errorMessage;
     nodeBasicData.errors = Errors(errorCode, errorMessage);
   }
 
-  if(nodeBasicData.status!.contains(error)){
-    nodeBasicData.rang  = 1;
-  }else if(nodeBasicData.status!.contains(warning)){
-    nodeBasicData.rang  = 2;
-  }else if(nodeBasicData.status !.contains(ok)){
-    nodeBasicData.rang  = 3;
+  if (nodeBasicData.status!.contains(error)) {
+    nodeBasicData.rang = 1;
+  } else if (nodeBasicData.status!.contains(warning)) {
+    nodeBasicData.rang = 2;
+  } else if (nodeBasicData.status!.contains(ok)) {
+    nodeBasicData.rang = 3;
   }
   sortedDataBlocks.add(nodeBasicData);
 
-
   ServerBasicDataModel serverBasicData = ServerBasicDataModel();
   if (_response.statistic.serverBasicData.data.ipv4.isEmpty) {
-    serverBasicData.data.add({'ipv4' : 'N/A'});
-  }else{
-    serverBasicData.data.add({'ipv4' : _response.statistic.serverBasicData.data.ipv4});
+    serverBasicData.data.add({'ipv4': 'N/A'});
+  } else {
+    serverBasicData.data
+        .add({'ipv4': _response.statistic.serverBasicData.data.ipv4});
   }
   if (_response.statistic.serverBasicData.data.ipv6.isEmpty) {
-    serverBasicData.data.add({'ipv6' : 'N/A'});
-  }else{
-    serverBasicData.data.add({'ipv6' : _response.statistic.serverBasicData.data.ipv6});
+    serverBasicData.data.add({'ipv6': 'N/A'});
+  } else {
+    serverBasicData.data
+        .add({'ipv6': _response.statistic.serverBasicData.data.ipv6});
   }
   if (_response.statistic.serverBasicData.data.linuxName.isEmpty) {
-    serverBasicData.data.add({'Linux Name' : 'N/A'});
-  }else{
-    serverBasicData.data.add({'Linux Name' : _response.statistic.serverBasicData.data.linuxName});
+    serverBasicData.data.add({'Linux Name': 'N/A'});
+  } else {
+    serverBasicData.data.add(
+        {'Linux Name': _response.statistic.serverBasicData.data.linuxName});
   }
   if (_response.statistic.serverBasicData.data.linuxVersion.isEmpty) {
-    serverBasicData.data.add({'Linux Version' : 'N/A'});
-  }else{
-    serverBasicData.data.add({'Linux Version' : _response.statistic.serverBasicData.data.linuxVersion});
+    serverBasicData.data.add({'Linux Version': 'N/A'});
+  } else {
+    serverBasicData.data.add({
+      'Linux Version': _response.statistic.serverBasicData.data.linuxVersion
+    });
   }
 
   serverBasicData.status = _response.statistic.serverBasicData.status.status;
 
-  if(_response.statistic.serverBasicData.status.errors.isNotEmpty){
-    String errorCode = _response.statistic.serverBasicData.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.serverBasicData.status.errors[0].errorMessage;
+  if (_response.statistic.serverBasicData.status.errors.isNotEmpty) {
+    String errorCode =
+        _response.statistic.serverBasicData.status.errors[0].errorCode;
+    String errorMessage =
+        _response.statistic.serverBasicData.status.errors[0].errorMessage;
     serverBasicData.errors = Errors(errorCode, errorMessage);
   }
 
-  if(serverBasicData.status!.contains(error)){
-    serverBasicData.rang  = 1;
-  }else if(serverBasicData.status!.contains(warning)){
-    serverBasicData.rang  = 2;
-  }else if(serverBasicData.status!.contains(ok)){
-    serverBasicData.rang  = 3;
+  if (serverBasicData.status!.contains(error)) {
+    serverBasicData.rang = 1;
+  } else if (serverBasicData.status!.contains(warning)) {
+    serverBasicData.rang = 2;
+  } else if (serverBasicData.status!.contains(ok)) {
+    serverBasicData.rang = 3;
   }
-   sortedDataBlocks.add(serverBasicData);
-
+  sortedDataBlocks.add(serverBasicData);
 
   UpdatesModel updates = UpdatesModel();
   if (_response.statistic.updates.data.updaterActual.isEmpty) {
-    updates.data.add({'Updater Actual' : 'N/A'});
-  }else{
-    updates.data.add({'Updater Actual' : _response.statistic.updates.data.updaterActual});
+    updates.data.add({'Updater Actual': 'N/A'});
+  } else {
+    updates.data.add(
+        {'Updater Actual': _response.statistic.updates.data.updaterActual});
   }
   if (_response.statistic.updates.data.updaterAvailable.isEmpty) {
-    updates.data.add({'Updater Available' : 'N/A'});
-  }else{
-    updates.data.add({'Updater Available' : _response.statistic.updates.data.updaterAvailable});
+    updates.data.add({'Updater Available': 'N/A'});
+  } else {
+    updates.data.add({
+      'Updater Available': _response.statistic.updates.data.updaterAvailable
+    });
   }
   if (_response.statistic.updates.data.informerActual.isEmpty) {
-    updates.data.add({'Informer Actual' : 'N/A'});
-  }else{
-    updates.data.add({'Informer Actual' : _response.statistic.updates.data.informerActual});
+    updates.data.add({'Informer Actual': 'N/A'});
+  } else {
+    updates.data.add(
+        {'Informer Actual': _response.statistic.updates.data.informerActual});
   }
   if (_response.statistic.updates.data.informerAvailable.isEmpty) {
-    updates.data.add({'Informer Available' : 'N/A'});
-  }else{
-    updates.data.add({'Informer Available' : _response.statistic.updates.data.informerAvailable});
+    updates.data.add({'Informer Available': 'N/A'});
+  } else {
+    updates.data.add({
+      'Informer Available': _response.statistic.updates.data.informerAvailable
+    });
   }
-  updates.data.add({'Packages Available' : _response.statistic.updates.data.packagesAvailable});
+  updates.data.add({
+    'Packages Available': _response.statistic.updates.data.packagesAvailable
+  });
   updates.status = _response.statistic.updates.status.status;
 
-  if(_response.statistic.updates.status.errors.isNotEmpty){
+  if (_response.statistic.updates.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.updates.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.updates.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.updates.status.errors[0].errorMessage;
     updates.errors = Errors(errorCode, errorMessage);
   }
 
-  if(updates.status!.contains(error)){
-    updates.rang  = 1;
-  }else if(updates.status!.contains(warning)){
-    updates.rang  = 2;
-  }else if(updates.status!.contains(ok)){
-    updates.rang  = 3;
+  if (updates.status!.contains(error)) {
+    updates.rang = 1;
+  } else if (updates.status!.contains(warning)) {
+    updates.rang = 2;
+  } else if (updates.status!.contains(ok)) {
+    updates.rang = 3;
   }
   sortedDataBlocks.add(updates);
 
-
   SecurityModel security = SecurityModel();
-  security.data.add({'ssh Attack Attempts' : _response.statistic.security.data.sshAttackAttempts});
-  security.data.add({'Security Packages Available' : _response.statistic.security.data.securityPackagesAvailable});
+  security.data.add({
+    'ssh Attack Attempts': _response.statistic.security.data.sshAttackAttempts
+  });
+  security.data.add({
+    'Security Packages Available':
+        _response.statistic.security.data.securityPackagesAvailable
+  });
   security.status = _response.statistic.security.status.status;
 
-  if(_response.statistic.security.status.errors.isNotEmpty){
+  if (_response.statistic.security.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.security.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.security.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.security.status.errors[0].errorMessage;
     security.errors = Errors(errorCode, errorMessage);
   }
 
-  if(security.status!.contains(error)){
-    security.rang  = 1;
-  }else if(security.status!.contains(warning)){
-    security.rang  = 2;
-  }else if(security.status!.contains(ok)){
-    security.rang  = 3;
+  if (security.status!.contains(error)) {
+    security.rang = 1;
+  } else if (security.status!.contains(warning)) {
+    security.rang = 2;
+  } else if (security.status!.contains(ok)) {
+    security.rang = 3;
   }
   sortedDataBlocks.add(security);
 
-
-
   EpochModel epoch = EpochModel();
-  epoch.data.add({'Epoch Number' : _response.statistic.epoch.data.epochNumber});
+  epoch.data.add({'Epoch Number': _response.statistic.epoch.data.epochNumber});
   epoch.status = _response.statistic.epoch.status.status;
 
-  if(_response.statistic.epoch.status.errors.isNotEmpty){
+  if (_response.statistic.epoch.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.epoch.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.epoch.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.epoch.status.errors[0].errorMessage;
     epoch.errors = Errors(errorCode, errorMessage);
   }
 
-  if(epoch.status!.contains(error)){
-    epoch.rang  = 1;
-  }else if(epoch.status!.contains(warning)){
-    epoch.rang  = 2;
-  }else if(epoch.status!.contains(ok)){
-    epoch.rang  = 3;
+  if (epoch.status!.contains(error)) {
+    epoch.rang = 1;
+  } else if (epoch.status!.contains(warning)) {
+    epoch.rang = 2;
+  } else if (epoch.status!.contains(ok)) {
+    epoch.rang = 3;
   }
   sortedDataBlocks.add(epoch);
 
-
-
   KesDataModel kesData = KesDataModel();
 
-  List<String> listKesExpDate = _response.statistic.kesData.data.kesExpDate.split('+');
-  kesData.data.add({'Kes Expiration Date' : '${listKesExpDate[0]}(UTC)'});
-  kesData.data.add({'Kes Current' : _response.statistic.kesData.data.kesCurrent});
-  kesData.data.add({'Kes Remaining' : _response.statistic.kesData.data.kesRemaining});
+  List<String> listKesExpDate =
+      _response.statistic.kesData.data.kesExpDate.split('+');
+  kesData.data.add({'Kes Expiration Date': '${listKesExpDate[0]}(UTC)'});
+  kesData.data
+      .add({'Kes Current': _response.statistic.kesData.data.kesCurrent});
+  kesData.data
+      .add({'Kes Remaining': _response.statistic.kesData.data.kesRemaining});
   kesData.status = _response.statistic.kesData.status.status;
 
-  if(_response.statistic.kesData.status.errors.isNotEmpty){
+  if (_response.statistic.kesData.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.kesData.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.kesData.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.kesData.status.errors[0].errorMessage;
     kesData.errors = Errors(errorCode, errorMessage);
   }
 
-  if(kesData.status!.contains(error)){
-    kesData.rang  = 1;
-  }else if(epoch.status!.contains(warning)){
-    kesData.rang  = 2;
-  }else if(epoch.status!.contains(ok)){
-    kesData.rang  = 3;
+  if (kesData.status!.contains(error)) {
+    kesData.rang = 1;
+  } else if (epoch.status!.contains(warning)) {
+    kesData.rang = 2;
+  } else if (epoch.status!.contains(ok)) {
+    kesData.rang = 3;
   }
   sortedDataBlocks.add(kesData);
 
-
-
   BlocksModel blocks = BlocksModel();
-  blocks.data.add({'Block Leader' : _response.statistic.blocks.data.blockLeader});
-  blocks.data.add({'Block Adopted' : _response.statistic.blocks.data.blockAdopted});
-  blocks.data.add({'Block Invalid' : _response.statistic.blocks.data.blockInvalid});
+  blocks.data
+      .add({'Block Leader': _response.statistic.blocks.data.blockLeader});
+  blocks.data
+      .add({'Block Adopted': _response.statistic.blocks.data.blockAdopted});
+  blocks.data
+      .add({'Block Invalid': _response.statistic.blocks.data.blockInvalid});
   blocks.status = _response.statistic.blocks.status.status;
 
-  if(_response.statistic.blocks.status.errors.isNotEmpty){
+  if (_response.statistic.blocks.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.blocks.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.blocks.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.blocks.status.errors[0].errorMessage;
     blocks.errors = Errors(errorCode, errorMessage);
   }
 
-  if(blocks.status!.contains(error)){
-    blocks.rang  = 1;
-  }else if(blocks.status!.contains(warning)){
-    blocks.rang  = 2;
-  }else if(blocks.status!.contains(ok)){
-    blocks.rang  = 3;
+  if (blocks.status!.contains(error)) {
+    blocks.rang = 1;
+  } else if (blocks.status!.contains(warning)) {
+    blocks.rang = 2;
+  } else if (blocks.status!.contains(ok)) {
+    blocks.rang = 3;
   }
   sortedDataBlocks.add(blocks);
 
-
-
   StakeInfoModel stakeInfo = StakeInfoModel();
-  stakeInfo.data.add({'Live Stake' : _response.statistic.stakeInfo.data.liveStake});
-  stakeInfo.data.add({'Active Stake' : _response.statistic.stakeInfo.data.activeStake});
-  stakeInfo.data.add({'Pledge' : _response.statistic.stakeInfo.data.pledge});
+  stakeInfo.data
+      .add({'Live Stake': _response.statistic.stakeInfo.data.liveStake});
+  stakeInfo.data
+      .add({'Active Stake': _response.statistic.stakeInfo.data.activeStake});
+  stakeInfo.data.add({'Pledge': _response.statistic.stakeInfo.data.pledge});
   stakeInfo.status = _response.statistic.stakeInfo.status.status;
 
-  if(_response.statistic.stakeInfo.status.errors.isNotEmpty){
+  if (_response.statistic.stakeInfo.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.stakeInfo.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.stakeInfo.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.stakeInfo.status.errors[0].errorMessage;
     stakeInfo.errors = Errors(errorCode, errorMessage);
   }
 
-  if(stakeInfo.status!.contains(error)){
-    stakeInfo.rang  = 1;
-  }else if(blocks.status!.contains(warning)){
-    stakeInfo.rang  = 2;
-  }else if(blocks.status!.contains(ok)){
-    stakeInfo.rang  = 3;
+  if (stakeInfo.status!.contains(error)) {
+    stakeInfo.rang = 1;
+  } else if (blocks.status!.contains(warning)) {
+    stakeInfo.rang = 2;
+  } else if (blocks.status!.contains(ok)) {
+    stakeInfo.rang = 3;
   }
   sortedDataBlocks.add(stakeInfo);
 
-
-
   OnlineModel online = OnlineModel();
-  online.data.add({'Since Start' : _response.statistic.online.data.sinceStart});
-  online.data.add({'Pings' : _response.statistic.online.data.pings});
-  online.data.add({'Node Active' : _response.statistic.online.data.nodeActive});
-  online.data.add({'Node Active Pings' : _response.statistic.online.data.nodeActivePings});
-  online.data.add({'Server Active' : _response.statistic.online.data.serverActive});
+  online.data.add({'Since Start': _response.statistic.online.data.sinceStart});
+  online.data.add({'Pings': _response.statistic.online.data.pings});
+  online.data.add({'Node Active': _response.statistic.online.data.nodeActive});
+  online.data.add(
+      {'Node Active Pings': _response.statistic.online.data.nodeActivePings});
+  online.data
+      .add({'Server Active': _response.statistic.online.data.serverActive});
   online.status = _response.statistic.online.status.status;
 
-  if(_response.statistic.online.status.errors.isNotEmpty){
+  if (_response.statistic.online.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.online.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.online.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.online.status.errors[0].errorMessage;
     online.errors = Errors(errorCode, errorMessage);
   }
 
-  if(online.status!.contains(error)){
-    online.rang  = 1;
-  }else if(online.status!.contains(warning)){
-    online.rang  = 2;
-  }else if(online.status!.contains(ok)){
-    online.rang  = 3;
+  if (online.status!.contains(error)) {
+    online.rang = 1;
+  } else if (online.status!.contains(warning)) {
+    online.rang = 2;
+  } else if (online.status!.contains(ok)) {
+    online.rang = 3;
   }
   sortedDataBlocks.add(online);
 
-
-
   MemoryStateModel memoryState = MemoryStateModel();
-  memoryState.data.add({'Total' :  _response.statistic.memoryState.data.total});
-  memoryState.data.add({'Used' :  _response.statistic.memoryState.data.used});
-  memoryState.data.add({'Buffers' :  _response.statistic.memoryState.data.buffers});
-  memoryState.data.add({'Cached' :  _response.statistic.memoryState.data.cached});
-  memoryState.data.add({'Free' :  _response.statistic.memoryState.data.free});
-  memoryState.data.add({'Available' :  _response.statistic.memoryState.data.available});
-  memoryState.data.add({'Active' :  _response.statistic.memoryState.data.active});
-  memoryState.data.add({'Inactive' :  _response.statistic.memoryState.data.inactive});
-  memoryState.data.add({'Swap Total' :  _response.statistic.memoryState.data.swapTotal});
-  memoryState.data.add({'Swap Used' :  _response.statistic.memoryState.data.swapUsed});
-  memoryState.data.add({'Swap Cached' :  _response.statistic.memoryState.data.swapCached});
-  memoryState.data.add({'Swap Free' :  _response.statistic.memoryState.data.swapFree});
-  memoryState.data.add({'Mem Available Enabled' :  _response.statistic.memoryState.data.memAvailableEnabled});
+  memoryState.data.add({'Total': _response.statistic.memoryState.data.total});
+  memoryState.data.add({'Used': _response.statistic.memoryState.data.used});
+  memoryState.data
+      .add({'Buffers': _response.statistic.memoryState.data.buffers});
+  memoryState.data.add({'Cached': _response.statistic.memoryState.data.cached});
+  memoryState.data.add({'Free': _response.statistic.memoryState.data.free});
+  memoryState.data
+      .add({'Available': _response.statistic.memoryState.data.available});
+  memoryState.data.add({'Active': _response.statistic.memoryState.data.active});
+  memoryState.data
+      .add({'Inactive': _response.statistic.memoryState.data.inactive});
+  memoryState.data
+      .add({'Swap Total': _response.statistic.memoryState.data.swapTotal});
+  memoryState.data
+      .add({'Swap Used': _response.statistic.memoryState.data.swapUsed});
+  memoryState.data
+      .add({'Swap Cached': _response.statistic.memoryState.data.swapCached});
+  memoryState.data
+      .add({'Swap Free': _response.statistic.memoryState.data.swapFree});
+  memoryState.data.add({
+    'Mem Available Enabled':
+        _response.statistic.memoryState.data.memAvailableEnabled
+  });
   memoryState.status = _response.statistic.memoryState.status.status;
 
-  if(_response.statistic.memoryState.status.errors.isNotEmpty){
-    String errorCode = _response.statistic.memoryState.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.memoryState.status.errors[0].errorMessage;
+  if (_response.statistic.memoryState.status.errors.isNotEmpty) {
+    String errorCode =
+        _response.statistic.memoryState.status.errors[0].errorCode;
+    String errorMessage =
+        _response.statistic.memoryState.status.errors[0].errorMessage;
     memoryState.errors = Errors(errorCode, errorMessage);
   }
 
-  if(memoryState.status!.contains(error)){
-    memoryState.rang  = 1;
-  }else if(memoryState.status!.contains(warning)){
-    memoryState.rang  = 2;
-  }else if(memoryState.status!.contains(ok)){
-    memoryState.rang  = 3;
+  if (memoryState.status!.contains(error)) {
+    memoryState.rang = 1;
+  } else if (memoryState.status!.contains(warning)) {
+    memoryState.rang = 2;
+  } else if (memoryState.status!.contains(ok)) {
+    memoryState.rang = 3;
   }
   sortedDataBlocks.add(memoryState);
 
-
-
   CpuStateModel cpuState = CpuStateModel();
-  cpuState.data.add({'Cpu Qty' : _response.statistic.cpuState.data.cpuQty});
-  cpuState.data.add({'Average Workload' : _response.statistic.cpuState.data.averageWorkload});
+  cpuState.data.add({'Cpu Qty': _response.statistic.cpuState.data.cpuQty});
+  cpuState.data.add(
+      {'Average Workload': _response.statistic.cpuState.data.averageWorkload});
   cpuState.status = _response.statistic.cpuState.status.status;
 
-  if(_response.statistic.cpuState.status.errors.isNotEmpty){
+  if (_response.statistic.cpuState.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.cpuState.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.cpuState.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.cpuState.status.errors[0].errorMessage;
     cpuState.errors = Errors(errorCode, errorMessage);
   }
 
-  if(cpuState.status!.contains(error)){
-    cpuState.rang  = 1;
-  }else if(cpuState.status!.contains(warning)){
-    cpuState.rang  = 2;
-  }else if(cpuState.status!.contains(ok)){
-    cpuState.rang  = 3;
+  if (cpuState.status!.contains(error)) {
+    cpuState.rang = 1;
+  } else if (cpuState.status!.contains(warning)) {
+    cpuState.rang = 2;
+  } else if (cpuState.status!.contains(ok)) {
+    cpuState.rang = 3;
   }
   sortedDataBlocks.add(cpuState);
 
-
-
   NodeStateModel nodeState = NodeStateModel();
-  nodeState.data.add({'Tip Diff' : _response.statistic.nodeState.data.tipDiff});
-  nodeState.data.add({'Density' : _response.statistic.nodeState.data.density});
+  nodeState.data.add({'Tip Diff': _response.statistic.nodeState.data.tipDiff});
+  nodeState.data.add({'Density': _response.statistic.nodeState.data.density});
   nodeState.status = _response.statistic.nodeState.status.status;
 
-  if(_response.statistic.nodeState.status.errors.isNotEmpty){
+  if (_response.statistic.nodeState.status.errors.isNotEmpty) {
     String errorCode = _response.statistic.nodeState.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.nodeState.status.errors[0].errorMessage;
+    String errorMessage =
+        _response.statistic.nodeState.status.errors[0].errorMessage;
     nodeState.errors = Errors(errorCode, errorMessage);
   }
 
-  if(nodeState.status!.contains(error)){
-    nodeState.rang  = 1;
-  }else if(nodeState.status!.contains(warning)){
-    nodeState.rang  = 2;
-  }else if(nodeState.status!.contains(ok)){
-    nodeState.rang  = 3;
+  if (nodeState.status!.contains(error)) {
+    nodeState.rang = 1;
+  } else if (nodeState.status!.contains(warning)) {
+    nodeState.rang = 2;
+  } else if (nodeState.status!.contains(ok)) {
+    nodeState.rang = 3;
   }
   sortedDataBlocks.add(nodeState);
 
-
-
   NodePerformanceModel nodePerformance = NodePerformanceModel();
-  nodePerformance.data.add({'ProcessedTx' : _response.statistic.nodePerformance.data.processedTx});
-  nodePerformance.data.add({'Peers In' : _response.statistic.nodePerformance.data.peersIn});
-  nodePerformance.data.add({'Peers Out' : _response.statistic.nodePerformance.data.peersOut});
+  nodePerformance.data.add(
+      {'ProcessedTx': _response.statistic.nodePerformance.data.processedTx});
+  nodePerformance.data
+      .add({'Peers In': _response.statistic.nodePerformance.data.peersIn});
+  nodePerformance.data
+      .add({'Peers Out': _response.statistic.nodePerformance.data.peersOut});
   nodePerformance.status = _response.statistic.nodePerformance.status.status;
 
-  if(_response.statistic.nodePerformance.status.errors.isNotEmpty){
-    String errorCode = _response.statistic.nodePerformance.status.errors[0].errorCode;
-    String errorMessage = _response.statistic.nodePerformance.status.errors[0].errorMessage;
+  if (_response.statistic.nodePerformance.status.errors.isNotEmpty) {
+    String errorCode =
+        _response.statistic.nodePerformance.status.errors[0].errorCode;
+    String errorMessage =
+        _response.statistic.nodePerformance.status.errors[0].errorMessage;
     nodePerformance.errors = Errors(errorCode, errorMessage);
   }
 
-  if(nodePerformance.status!.contains(error)){
-    nodePerformance.rang  = 1;
-  }else if(nodePerformance.status!.contains(warning)){
-    nodePerformance.rang  = 2;
-  }else if(nodePerformance.status!.contains(ok)){
-    nodePerformance.rang  = 3;
+  if (nodePerformance.status!.contains(error)) {
+    nodePerformance.rang = 1;
+  } else if (nodePerformance.status!.contains(warning)) {
+    nodePerformance.rang = 2;
+  } else if (nodePerformance.status!.contains(ok)) {
+    nodePerformance.rang = 3;
   }
   sortedDataBlocks.add(nodePerformance);
 
-  if(kDebugMode){
+  if (kDebugMode) {
     print('\n\n\n\n not sorted blocks data list: $sortedDataBlocks\n\n\n\n\n');
   }
-  sortedDataBlocks.sort((a,b) => a.rang.compareTo(b.rang));
-  if(kDebugMode){
+  sortedDataBlocks.sort((a, b) => a.rang.compareTo(b.rang));
+  if (kDebugMode) {
     print('\n\n\n\nsorted blocks data list  $sortedDataBlocks\n\n\n\n\n');
   }
 }

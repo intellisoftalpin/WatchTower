@@ -44,7 +44,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
     timer?.cancel();
     super.initState();
     if (mounted) {
-      timer = Timer.periodic(const Duration(milliseconds: 10),
+      timer = Timer.periodic(const Duration(milliseconds: 500),
           (Timer t) => checkTokenExpiration(context));
     }
     WidgetsBinding.instance.addObserver(this);
@@ -57,7 +57,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
     if (mounted) {
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
-          const Duration(milliseconds: 30),
+          const Duration(milliseconds: 300),
           (Timer t) => timeBeforeAutoUpdate(),
         );
       }
@@ -254,7 +254,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                               manualUpdateTimer?.cancel();
                               next = DateTime.now().add(updateSettingsTime);
                               autoUpdateTimer = Timer.periodic(
-                                const Duration(milliseconds: 30),
+                                const Duration(milliseconds: 300),
                                 (Timer t) => timeBeforeAutoUpdate(),
                               );
                             } else {
@@ -927,7 +927,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
                           manualUpdateTimer?.cancel();
                           next = DateTime.now().add(updateSettingsTime);
                           autoUpdateTimer = Timer.periodic(
-                            const Duration(milliseconds: 30),
+                            const Duration(milliseconds: 300),
                             (Timer t) => timeBeforeAutoUpdate(),
                           );
                         } else {
@@ -1224,7 +1224,7 @@ class _ServerDetailsScreenState extends State<ServerDetailsScreen>
       next = now.add(updateSettingsTime);
       if (mode == UpdateMode.auto) {
         autoUpdateTimer = Timer.periodic(
-          const Duration(milliseconds: 30),
+          const Duration(milliseconds: 300),
           (Timer t) => timeBeforeAutoUpdate(),
         );
       }

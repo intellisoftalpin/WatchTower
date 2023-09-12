@@ -43,11 +43,11 @@ dependencies:
       url: https://gitlab.com/encryptoteam/rocket-apps/services/proto.git
       ref: master
 
-#  window_size:
-#    git:
-#      url: https://github.com/google/flutter-desktop-embedding.git
-#      path: plugins/window_size
-#      ref: #896
+  #  window_size:
+  #    git:
+  #      url: https://github.com/google/flutter-desktop-embedding.git
+  #      path: plugins/window_size
+  #      ref: #896
 
   google_fonts: ^5.1.0
   get_storage: ^2.0.3
@@ -56,6 +56,25 @@ dependencies:
   shared_preferences: ^2.0.15
   webview_flutter: ^3.0.4
   window_manager: 0.3.5
+  flutter_launcher_icons: 0.13.1
+
+flutter_launcher_icons:
+  # android: "launcher_icon"
+  # ios: true
+  # image_path: "assets/icon/icon.png"
+  # min_sdk_android: 21 # android min sdk min:16, default 21
+  # web:
+  #   generate: true
+  #   image_path: "path/to/image.png"
+  #   background_color: "#hexcode"
+  #   theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/app_icon.png"
+    icon_size: 256 # min:48, max:256, default: 48
+  # macos:
+  #   generate: true
+  #   image_path: "path/to/image.png"
 
 dev_dependencies:
   flutter_test:
